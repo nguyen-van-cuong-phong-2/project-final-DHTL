@@ -7,7 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="h-screen">{children}</body>
+      <body className="h-screen mx-auto ">{children}</body>
     </html>
   );
 }
