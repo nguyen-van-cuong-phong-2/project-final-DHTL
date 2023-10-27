@@ -1,5 +1,5 @@
 import "../public/globals.css";
-
+// import 
 export default function RootLayout({
   children,
 }: {
@@ -7,7 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="h-screen mx-auto ">{children}</body>
+      <body className="h-screen mx-auto">{children}</body>
     </html>
   );
 }
