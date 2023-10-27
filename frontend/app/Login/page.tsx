@@ -5,8 +5,6 @@ import Register from "../../components/popup/register";
 import { useState } from "react";
 export default function Login() {
   const [popUpRegister, setpopUpRegister] = useState(false);
-
-
   return (
     <div className="w-full h-full relative ">
       <div className="w-full flex items-center h-screen bg-gray-100 gap-10 ">
