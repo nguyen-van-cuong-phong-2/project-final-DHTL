@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 // import Header from "../../components/header/header";
-import Register from "../../components/popup/register.tsx";
+import Register from "../../components/popup/register";
 import { useState } from "react";
 export default function Login() {
   const [popUpRegister, setpopUpRegister] = useState(false);
