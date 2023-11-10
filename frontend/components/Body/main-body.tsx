@@ -1,10 +1,10 @@
+import PostNew from "./layout/post_new";
 export default function bettwenBody() {
-    return (
-      <>
-        <div className=" bg-yellow-600 flex-1 h-[2000px]">
-
-        </div>
-      </>
-    );
-  }
-  
+  return (
+    <>
+      <div className="flex border rounded w-3/5 h-[2000px] justify-center p-2">
+        <PostNew></PostNew>
+      </div>
+    </>
+  );
+}

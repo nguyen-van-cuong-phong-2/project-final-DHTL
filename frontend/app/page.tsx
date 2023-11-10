@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <Header></Header>
-      <div className="flex mt-[75px]">
+      <div className="flex mt-[75px] justify-between">
         <LeftBody />
         <BettwenBody />
         <RightBody />

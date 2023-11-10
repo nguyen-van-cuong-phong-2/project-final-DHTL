@@ -10,7 +10,7 @@ export default function Header() {
 
   return (
     <>
-      <div className="fixed w-full bg-white top-0">
+      <div className="fixed w-full bg-white top-0 z-50">
         <div className="flex border shadow-md p-3 justify-between">
           <div className="flex w-max gap-3">
             <div className="border rounded-full h-max w-max px-5 py-3 bg-blue-600 box-border">
