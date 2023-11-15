@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function Login() {
   const [popUpRegister, setpopUpRegister] = useState(false);
   return (
-    <div className="w-full h-full relative ">
+    <div className="w-full h-full relative">
       <div className="w-full flex items-center h-screen bg-gray-100 gap-10 ">
         <div className="ml-60 w-2/5 h-2/3 pt-32 flex-row">
           <span className="text-6xl text-blue-600 font-bold">bluebook</span>
@@ -52,7 +52,7 @@ export default function Login() {
           </button>
         </div>
       </div>
-      {popUpRegister && <Register tatPopup = {setpopUpRegister}></Register>}
+      {popUpRegister && <Register tatPopup={setpopUpRegister}></Register>}
     </div>
   );
 }
