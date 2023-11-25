@@ -48,15 +48,17 @@ export default function Header() {
                 <path d="M3 9.5a9 9 0 1 1 18 0v2.927c0 1.69.475 3.345 1.37 4.778a1.5 1.5 0 0 1-1.272 2.295h-4.625a4.5 4.5 0 0 1-8.946 0H2.902a1.5 1.5 0 0 1-1.272-2.295A9.01 9.01 0 0 0 3 12.43V9.5zm6.55 10a2.5 2.5 0 0 0 4.9 0h-4.9z"></path>
               </svg>
             </div>
-            <Image
-              className="border rounded-full box-border"
-              src={avatar}
-              width={50}
-              height={40}
-              objectFit="cover"
-              quality={100}
-              alt="avatar"
-            />
+            <div className="w-[47px] h-[47px]">
+              <Image
+                className="w-full h-full border rounded-full box-border"
+                src={avatar}
+                width={50}
+                height={40}
+                quality={100}
+                alt="avatar"
+              />
+              
+            </div>
           </div>
         </div>
       </div>

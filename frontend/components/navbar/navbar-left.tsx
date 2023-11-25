@@ -7,7 +7,7 @@ export default function leftBody() {
       <div className="w-1/5 h-screen sticky top-[75px] pl-5 box-border">
         <div className="flex gap-4 items-center mt-5  hover:bg-gray-300 p-2 box-border cursor-pointer rounded-md">
           <Image
-            className="border rounded-full box-border "
+            className="border rounded-full box-border"
             src={avatar}
             width={40}
             height={30}
