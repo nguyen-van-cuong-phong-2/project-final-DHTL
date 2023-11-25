@@ -3,7 +3,7 @@ import { MessageService } from './message.service';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { Message, MessageSchema } from '../Schemas/message.schema';
+import { Message, MessageSchema } from './Schemas/message.schema';
 
 @Module({
   imports: [
@@ -12,4 +12,4 @@ import { Message, MessageSchema } from '../Schemas/message.schema';
   controllers: [MessageController],
   providers: [MessageService],
 })
-export class CatsModule {}
+export class MessageModule {}
