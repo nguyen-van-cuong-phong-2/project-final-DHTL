@@ -18,8 +18,7 @@ interface registerPopup {
 }
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { MdOutlineCancel } from "react-icons/md";
-const registerPopup: React.FC<registerPopup> = ({tatPopup}) => {
-  
+const registerPopup: React.FC<registerPopup> = ({ tatPopup }) => {
   return (
     <>
       <div className="w-full h-full z-40  bg-BGRegister absolute top-0">
@@ -27,7 +26,12 @@ const registerPopup: React.FC<registerPopup> = ({tatPopup}) => {
           <div className="border-b-2 pb-5 border-gray-500 relative">
             <div className="flex items-center justify-between">
               <span className="text-4xl font-bold">Đăng ký</span>
-              <MdOutlineCancel className="mt-2 text-3xl hover:cursor-pointer" onClick={()=>{tatPopup(false)}}></MdOutlineCancel>
+              <MdOutlineCancel
+                className="mt-2 text-3xl hover:cursor-pointer"
+                onClick={() => {
+                  tatPopup(false);
+                }}
+              ></MdOutlineCancel>
             </div>
             <br />
             <span className="text-slate-500 absolute top-12">
@@ -103,4 +107,4 @@ const registerPopup: React.FC<registerPopup> = ({tatPopup}) => {
   );
 };
 
-export default registerPopup
+export default registerPopup;

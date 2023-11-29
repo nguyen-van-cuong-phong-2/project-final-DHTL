@@ -10,6 +10,7 @@ export default function BettwenBody() {
       <div className="flex border rounded w-3/5 h-max justify-center p-2">
         <PostNew></PostNew>
         {popUpPostNew && <PopupPostNew></PopupPostNew>}
+       
       </div>
     </>
   );

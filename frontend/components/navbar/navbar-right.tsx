@@ -1,113 +1,59 @@
+"use client";
+
 import Image from "next/image";
+import { useMyContext } from "@/components/context/context";
+
 export default function rightBody() {
   const arr = [
     {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 2000,
+      name: "Thảo Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
     {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 2,
+      name: "Nam Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
     {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 3,
+      name: "Linh Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
     {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 4,
+      name: "Mai Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
     {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 5,
+      name: "Tuấn Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
     {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 6,
+      name: "Phương Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
     {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 7,
+      name: "Quỳnh Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
     {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 1,
-      name: "Yến Nguyễn",
+      id: 8,
+      name: "AN Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
   ];
-
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { updateArrMessage } = useMyContext();
+  const handleOnClick = (e: number) => {
+    const ItemFind = arr.find((item) => item.id == e);
+    if (ItemFind) {
+      updateArrMessage(ItemFind);
+    }
+  };
   return (
     <>
       <div
@@ -123,6 +69,7 @@ export default function rightBody() {
             <div
               key={item.id}
               className="flex items-center cursor-pointer hover:bg-gray-300 border rounded-2xl"
+              onClick={() => handleOnClick(item.id)}
             >
               <div
                 className="
