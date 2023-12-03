@@ -8,8 +8,8 @@ import { ChatMessage } from "@/components/chat/chat";
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import JWT from "jsonwebtoken";
-import { io } from "socket.io-client";
 import { AnimationTyping } from "../popup/typingAnimation";
+import { functions } from "@/functions/functions";
 
 interface PopUpMessage {
   item: {
@@ -20,60 +20,94 @@ interface PopUpMessage {
 }
 
 export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
-  const [data, setData] = useState();
-  const { DeleteArrMessage } = useMyContext();
-  const contentRef = useRef();
-  // const router = useRouter();
-  const checkToken = Cookies.get("token");
-  // if (!checkToken) {
-  //   router.push("/dang-nhap.html");
-  // } else {
-  var userID = Number(JWT.decode(checkToken));
-  // }
-  let socket;
+
+  const func = new functions();
+  const token = func.getTokenFromClientSide();
+
+  const [data, setData] = useState<any>([]);
+  const [Typing, SetTyping] = useState(false);
+
+  const { DeleteArrMessage, socket } = useMyContext();
+  const contentRef = useRef<any>();
+  const DivRef = useRef<any>();
+
+  const user = func.getInfoFromToken();
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      if (DivRef.current) {
+        socket.emit("sendMessage", {
+          sender_id: user.id,
+          receiver_id: item.id,
+          content: DivRef.current.innerHTML,
+        });
+        setTimeout(() => {
+          socket.emit("getMessage", {
+            sender_id: user.id,
+            receiver_id: item.id,
+          });
+
+          socket.on("PushMessage", (data: any) => {
+            setData(data?.data);
+          });
+        }, 2000);
+      }
+      DivRef.current.innerHTML = "";
+    }
+  };
+  const handleChange = () => { };
   useEffect(() => {
     const content = contentRef.current;
     if (content) {
       // Cuộn xuống cuối khi component được mount
       content.scrollTop = content.scrollHeight;
-
-      // const handleScroll = () => {
-      //   // Kiểm tra nếu người dùng cuộn lên trên
-      //   if (
-      //     content.scrollTop <
-      //     content.scrollHeight - content.clientHeight - 50
-      //   ) {
-      //     // Người dùng đang xem lịch sử trò chuyện cũ, tạm ngừng tự động cuộn xuống
-      //     content.removeEventListener("scroll", handleScroll);
-      //   }
-      // };
-
-      // content.addEventListener("scroll", handleScroll);
-
-      // return () => {
-      //   content.removeEventListener("scroll", handleScroll);
-      // };
     }
     SocketConnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const SocketConnect = () => {
-    socket = io("http://localhost:8080");
     socket.emit("getMessage", {
-      sender_id: 1000,
-      receiver_id: 2000,
+      sender_id: user.id,
+      receiver_id: item.id,
     });
 
-    socket.on("Message", (data) => {
+    socket.on("PushMessage", (data: any) => {
       setData(data?.data);
     });
   };
-  const content = contentRef.current;
-  if (content) {
-    // Cuộn xuống cuối khi component được mount
-    content.scrollTop = content.scrollHeight;
-  }
+  useEffect(() => {
+    const handleNewMessage = (item: any) => {
+      setData((prevData) => [
+        ...prevData,
+        {
+          ...item,
+          id: item.id,
+          seen: 0,
+          _id: "6566f58cb341441c876c6031",
+          __v: 0,
+          created_at: item.created_at,
+        },
+      ]);
+    };
 
+    // Đăng ký sự kiện "Message" khi component được mount
+    socket.on("Message", handleNewMessage);
+
+    // Hủy đăng ký sự kiện khi component bị unmount
+    return () => {
+      socket.off("Message", handleNewMessage);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const content = contentRef.current;
+    if (content) {
+      // Cuộn xuống cuối khi component được mount
+      content.scrollTop = content.scrollHeight;
+    }
+  }, [data]);
   return (
     <>
       <div className="block rounded-xl bg-white shadow-md">
@@ -113,12 +147,24 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
               key={key}
               index={key}
               item={item}
-              own={itemMap.sender_id == userID}
+              own={itemMap.sender_id == 1000}
               message={itemMap}
               data={data}
             ></ChatMessage>
           ))}
-          <AnimationTyping></AnimationTyping>
+          {Typing && (
+            <div className="flex w-9 h-9 ml-1 gap-2">
+              <Image
+                src={item.avatar}
+                alt="avatar"
+                className="w-full h-full border rounded-full"
+                objectFit="cover"
+                width={30}
+                height={30}
+              ></Image>
+              <AnimationTyping></AnimationTyping>
+            </div>
+          )}
         </div>
         <div className="w-[350px] h-max flex justify-between items-center">
           <div className="p-3 w-[15%]">
@@ -130,6 +176,10 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
             role="textbox"
             data-lexical-editor="true"
             className="w-[70%] outline-none bg-BGICon p-1 border rounded-2xl max-h-20 overflow-auto "
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            ref={DivRef}
+            onInput={handleChange}
           ></div>
 
           <div className="p-3 w-[15%]">

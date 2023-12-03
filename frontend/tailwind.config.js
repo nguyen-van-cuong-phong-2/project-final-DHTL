@@ -14,15 +14,15 @@ module.exports = {
         slide: {
           '0%': {
             transform: 'translateY(0px)',
-            backgroundColor: '#6CAD96', // rgba(20,105,69,.7);
+            backgroundColor: '#b4b4b4', // rgba(20,105,69,.7);
           },
           '28%': {
             transform: 'translateY(-7px)',
-            backgroundColor: '#9ECAB9', // rgba(20,105,69,.4);
+            backgroundColor: '#3c3c3c', // rgba(20,105,69,.4);
           },
           '44%': {
             transform: 'translateY(0px)',
-            backgroundColor: '#B5D9CB', // rgba(20,105,69,.2);
+            backgroundColor: '#787878', // rgba(20,105,69,.2);
           },
         },
       },

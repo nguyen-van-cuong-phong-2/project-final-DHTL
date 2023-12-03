@@ -8,7 +8,8 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MessageService } from '../Message/message.service';
+import { MessageService } from '../module/Message/message.service';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -39,6 +40,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   }
 
   // gửi tin nhắn
+  // @UsePipes(new ValidationPipe())
   @SubscribeMessage('sendMessage')
   public async sendMessage(
     @MessageBody()
@@ -48,13 +50,8 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
       content: string;
     },
   ): Promise<any> {
-    const id = await this.messageService.getMaxID();
-    const created_at = new Date().getTime();
-    await this.messageService.createMessage({ id, created_at, ...data });
-    return this.server.emit(
-      'Message',
-      `${data.sender_id} đã gửi tin nhắn đến ${data.receiver_id} với nội dung: ${data.content}`,
-    );
+    const result = this.messageService.createMessage(data);
+    return this.server.emit('Message', result);
   }
 
   // lấy tin nhắn
@@ -70,7 +67,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     if (data.sender_id && data.receiver_id) {
       const response = await this.messageService.getMessage(data);
       this.server.socketsJoin(client.id);
-      return this.server.to(client.id).emit('Message', { data: response });
+      return this.server.to(client.id).emit('PushMessage', { data: response });
     }
     return this.server.emit('Message', `Missing data`);
   }

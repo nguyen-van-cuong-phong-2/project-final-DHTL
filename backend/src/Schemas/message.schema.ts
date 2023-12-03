@@ -5,7 +5,6 @@ export type MessageDocument = HydratedDocument<Message>;
 
 @Schema()
 export class Message {
-  // [x: string]: boolean;
   @Prop({ required: true, unique: true, index: true })
   id: number;
 

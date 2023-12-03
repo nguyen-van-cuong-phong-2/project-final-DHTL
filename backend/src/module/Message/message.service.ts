@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Message } from 'src/Message/Schemas/message.schema';
+import { Message } from 'src/Schemas/message.schema';
 import { CreateMessageDto } from './dto/create_message.dto';
 import { GetMessageDto } from './dto/get_message.dto';
 
@@ -12,9 +12,17 @@ export class MessageService {
   ) {}
 
   // tạo tin nhắn
-  async createMessage(createMessageDto: CreateMessageDto): Promise<string> {
-    await this.messageModel.create(createMessageDto);
-    return createMessageDto.content;
+  async createMessage(
+    createMessageDto: CreateMessageDto,
+  ): Promise<object | undefined> {
+    try {
+      const id = await this.getMaxID();
+      const created_at = new Date().getTime();
+      await this.messageModel.create({ id, created_at, ...createMessageDto });
+      return { id, created_at, ...createMessageDto };
+    } catch (error) {
+      console.error('Error creating message:', error);
+    }
   }
 
   // lấy id lớn nhất
@@ -27,7 +35,7 @@ export class MessageService {
     return maxID;
   }
 
-  async getMessage(getMessageDto: GetMessageDto): Promise<any[]> {
+  async getMessage(getMessageDto: GetMessageDto): Promise<CreateMessageDto[]> {
     const arr = await this.messageModel
       .find({
         $or: [

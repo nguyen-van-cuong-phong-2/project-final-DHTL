@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { EventsGateway } from './events.gateway';
-import { MessageService } from '../Message/message.service';
+import { MessageService } from '../module/Message/message.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Message, MessageSchema } from '../Message/Schemas/message.schema';
+import { Message, MessageSchema } from '../Schemas/message.schema';
 
 @Module({
   imports: [

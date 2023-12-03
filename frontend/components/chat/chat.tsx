@@ -87,7 +87,6 @@ export const ChatMessage: React.FC<ChatMessage> = ({
           </div>
         </div>
       )}
-      
     </>
   );
 };

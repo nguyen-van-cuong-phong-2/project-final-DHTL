@@ -1,5 +1,12 @@
 "use client";
-import React, { createContext, useContext, ReactNode, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+} from "react";
+import { io } from "socket.io-client";
 
 // Define the interface for the object contained in the array
 interface Message {
@@ -13,6 +20,7 @@ interface MyContextType {
   arrMessage: Message[];
   updateArrMessage: (newMessage: Message) => void;
   DeleteArrMessage: (id: Number) => void;
+  socket: any;
 }
 
 // Create the context with an initial value
@@ -23,6 +31,15 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [arrMessage, setArrMessage] = useState<Message[]>([]);
+  const [socket, SetSocket] = useState<any>();
+
+  useEffect(() => {
+    const socketIO = io("http://localhost:8080");
+    if (socketIO) SetSocket(socketIO);
+    return () => {
+      socketIO.disconnect();
+    };
+  }, []);
 
   const updateArrMessage = (newMessage: Message) => {
     const findItem = arrMessage.find((item) => item.id == newMessage.id);
@@ -43,7 +60,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   };
   return (
     <MyContext.Provider
-      value={{ arrMessage, updateArrMessage, DeleteArrMessage }}
+      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket }}
     >
       {children}
     </MyContext.Provider>
