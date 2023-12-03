@@ -1,9 +1,10 @@
-import avatar from "@/public/images/avatar.jpg";
+import avatar from "../../../public/images/avatar.jpg";
 import Image from "next/image";
 export default function bettwenBody() {
   return (
     <>
-      <div className="w-4/5 h-24 bg-white flex p-3 items-center border rounded-xl mt-5 ">
+      <div className="w-4/5 h-24 bg-white flex p-3 items-center border rounded-xl mt-5  max-lg:w-full
+      max-lg:mr-0">
         <div className="flex items-center">
           <Image
             className="border rounded-full box-border items-center"

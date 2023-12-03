@@ -1,5 +1,5 @@
 import Image from "next/image";
-import avatar from "@/public/images/avatar.jpg";
+import avatar from "../../public/images/avatar.jpg";
 import { IoImagesOutline } from "react-icons/io5";
 import { LiaUserTagSolid } from "react-icons/lia";
 import { ImCancelCircle } from "react-icons/im";

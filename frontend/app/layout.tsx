@@ -1,5 +1,6 @@
 import "../public/globals.css";
-// import 
+import { MyContextProvider } from "../components/context/context";
+import Loading from '../components/loading';
 export default function RootLayout({
   children,
 }: {
@@ -7,7 +8,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="h-screen mx-auto bg-BGICon">{children}</body>
+      <body className="h-screen mx-auto bg-BGICon overflow-hidden">
+        <MyContextProvider>
+          {children}
+          <Loading></Loading>
+        </MyContextProvider>
+
+      </body>
     </html>
   );
 }

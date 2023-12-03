@@ -1,16 +1,41 @@
 "use client";
 import Link from "next/link";
-// import Header from "../../components/header/header";
+import { Button, Checkbox, Form, Input } from 'antd';
 import Register from "../../components/popup/register";
 import { useState } from "react";
 export default function Login() {
   const [popUpRegister, setpopUpRegister] = useState(false);
+  const tatPopUpRegister = () => {
+    setpopUpRegister(false)
+  }
+
+  const validateUserName = (rule: any, value: any, callback: any) => {
+    const gmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const phoneNumberRegex = /^(?:\+84|0|\+1)?([1-9][0-9]{8,9})$/;
+
+    if (value == '' || !value) {
+      callback('Vui lòng nhập trường này!');
+    } else if (value.includes('@') && !gmailRegex.test(value)) {
+      callback('Nhập email không hợp lệ!');
+    } else if (!value.includes('@') && !phoneNumberRegex.test(value)) {
+      callback('Nhập số điện thoại không hợp lệ!');
+    } else {
+      callback();
+    }
+  }
   return (
-    <div className="w-full h-full relative">
-      <div className="w-full flex items-center h-screen bg-gray-100 gap-10 ">
-        <div className="ml-60 w-2/5 h-2/3 pt-32 flex-row">
-          <span className="text-6xl text-blue-600 font-bold">bluebook</span>
+
+    <div className="w-full h-screen">
+      <div className="flex w-full h-screen justify-center items-center gap-5">
+        <div className="
+                  flex
+                  justify-center
+                  items-center
+                  max-lg:hidden
+        ">
           <div>
+            <span className="text-6xl text-blue-600 font-bold">Bluebook</span>
+            <br></br>
             <span className="text-3xl font-normal">
               {" "}
               Bluebook giúp bạn kết nối và chia sẻ
@@ -21,38 +46,85 @@ export default function Login() {
             </span>
           </div>
         </div>
-        <div className=" w-1/3 h-max rounded pt-5 flex-row justify-center bg-white shadow-2xl">
-          <input
-            placeholder="Email hoặc số điện thoại"
-            className="w-11/12 h-16 rounded border-2 ml-6 focus:ring-blue-500 focus:border-blue-500 p-6"
-            required
-          ></input>
-          <input
-            type="password"
-            placeholder="Mật khẩu"
-            className="w-11/12 h-16 rounded border-2 ml-6 mt-5 focus:ring-blue-500 focus:border-blue-500 p-6"
-            required
-          ></input>
-          <button className="bg-blue-600 w-11/12 ml-6 mt-5 h-16 rounded border-2 text-2xl font-bold text-white mb-5">
-            Đăng nhập
-          </button>
-          <Link
-            href={""}
-            className="text-blue-500 w-10/12 ml-[200px] mt-60 h-16"
-          >
-            Quên mật khẩu?
-          </Link>
-          <button
-            className="bg-green-600 w-11/12 ml-6 mt-5 h-16 rounded border-2 text-2xl font-bold text-white mb-5"
-            onClick={() => {
-              setpopUpRegister(true);
-            }}
-          >
-            Tạo tài khoản mới
-          </button>
+        <div className="body-right">
+
+          <div className="rounded bg-white shadow-2xl flex-row px-5 pt-5 pb-1">
+            <Form
+              name="normal_login"
+              className="login-form "
+              initialValues={{
+                remember: true,
+              }}
+            // onFinish={onFinish}
+            >
+              <Form.Item
+                name="username"
+                rules={[{ validator: validateUserName }]}
+              >
+                <Input placeholder="Email hoặc số điện thoại" className="
+                w-96 h-16
+                max-sm:w-60
+                max-sm:h-10
+                " />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your Password!',
+                  },
+                ]}
+              >
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  className="w-96 h-16
+                  max-sm:w-60
+                max-sm:h-10"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <div className="flex flex-col justify-center items-center">
+                  <Button type="primary" htmlType="submit"
+                    className=" 
+                  w-96 
+                  h-16
+                 bg-blue-600 
+                 text-xl 
+                 font-bold
+                 max-sm:w-60
+                max-sm:h-10
+                  text-white">
+                    Đăng nhập
+                  </Button>
+                  <Link href={"#"} className="mt-2">Quên mật khẩu</Link>
+                </div>
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  onClick={() => setpopUpRegister(true)}
+                  className=" 
+                  w-96 
+                  h-16
+                  bg-green-600
+                 text-xl 
+                 font-bold
+                 max-sm:w-60
+                max-sm:h-10
+                  text-white">
+                  Tạo tài khoản mới
+                </Button>
+              </Form.Item>
+            </Form>
+
+          </div>
+
         </div>
       </div>
-      {popUpRegister && <Register tatPopup={setpopUpRegister}></Register>}
+      {popUpRegister && <Register tatPopup={() => tatPopUpRegister}></Register>}
     </div>
   );
 }

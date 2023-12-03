@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import avatar from "@/public/images/avatar.jpg";
+import avatar from "../../public/images/avatar.jpg";
 import Image from "next/image";
-import PopupSearch from "@/components/popup/search";
+import PopupSearch from "../popup/search";
 
 export default function Header() {
   const [popUpSearch, setpopUpSearch] = useState(false);
@@ -19,7 +19,7 @@ export default function Header() {
             <div className="block">
               <input
                 placeholder="Tìm kiếm trên BlueBook"
-                className="bg-BGICon w-[300px] border rounded-3xl px-5 outline-none h-[48px]"
+                className="bg-BGICon w-[300px] max-lg:w-[105px] border rounded-3xl px-5 outline-none h-[48px]"
                 onClick={() => setpopUpSearch(!popUpSearch)}
               />
               {popUpSearch && <PopupSearch />}
