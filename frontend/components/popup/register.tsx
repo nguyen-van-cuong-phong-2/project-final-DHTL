@@ -1,15 +1,59 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 
 import { MdOutlineCancel } from "react-icons/md";
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Input, DatePicker } from 'antd';
+import Notification from '../popup/notification';
+import { callApiRegister } from "../../api/callAPI";
+import { useMyContext } from "../context/context";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface Register {
   tatPopup: () => {};
 }
 
 const Register = ({ tatPopup }: Register) => {
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
+  const router = useRouter();
+
+  const validateUserName = (rule: any, value: any, callback: any) => {
+    const gmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const phoneNumberRegex = /^(?:\+84|0|\+1)?([1-9][0-9]{8,9})$/;
+    if (value == '' || !value) {
+      callback('Vui lòng nhập vào trường này!');
+    } else if (value.includes('@') && !gmailRegex.test(value)) {
+      callback('Nhập email không hợp lệ!');
+    } else if (!value.includes('@') && !phoneNumberRegex.test(value)) {
+      callback('Nhập số điện thoại không hợp lệ!');
+    } else {
+      callback();
+    }
+  }
+  const [showNoti, SetShowNoti] = useState(false);
+  const [contentNoti, SetContentNoti] = useState<string>();
+  const { setLoading } = useMyContext();
+  const onFinish = async (values: any) => {
+    setLoading(true);
+    const response = await callApiRegister({
+      userName: values.phone,
+      name: `${values.ten} ${values.ho}`,
+      password: values.password,
+      birthDay: values.birthday
+    });
+    setTimeout(() => {
+      setLoading(false);
+      if (response.result === true) {
+        SetContentNoti('Đăng kí tài khoản thành công!');
+        SetShowNoti(true);
+        Cookies.set('token', response.data.token)
+        setTimeout(() => SetShowNoti(false), 3000);
+        router.push('/')
+      } else {
+        SetContentNoti('Tài khoản này đã được sử dụng!');
+        SetShowNoti(true);
+        setTimeout(() => SetShowNoti(false), 3000);
+      }
+    }, 2000)
   };
   return (
     <div className='w-full h-full z-40 bg-BGRegister absolute top-0 max-sm:bg-white'>
@@ -26,9 +70,7 @@ const Register = ({ tatPopup }: Register) => {
             <span className='text-4xl font-bold'>Đăng ký</span>
             <MdOutlineCancel
               className="mt-2 text-3xl hover:cursor-pointer"
-              onClick={
-                tatPopup()
-              }
+              onClick={tatPopup()}
             ></MdOutlineCancel>
           </div>
 
@@ -38,7 +80,7 @@ const Register = ({ tatPopup }: Register) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your Username!',
+                  message: 'Nhập vào họ của bạn!',
                 },
               ]}
 
@@ -50,7 +92,7 @@ const Register = ({ tatPopup }: Register) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your Password!',
+                  message: 'Nhập vào tên của bạn!',
                 },
               ]}
             >
@@ -63,12 +105,7 @@ const Register = ({ tatPopup }: Register) => {
 
           <Form.Item
             name="phone"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your Password!',
-              },
-            ]}
+            rules={[{ validator: validateUserName }]}
           >
             <Input
               placeholder="Số di động hoặc email"
@@ -81,7 +118,7 @@ const Register = ({ tatPopup }: Register) => {
             rules={[
               {
                 required: true,
-                message: 'Please input your Password!',
+                message: 'Hãy nhập vào password!',
               },
             ]}
           >
@@ -92,7 +129,12 @@ const Register = ({ tatPopup }: Register) => {
             />
           </Form.Item>
 
-          <Form.Item name="date-picker" label="Ngày sinh">
+          <Form.Item name="birthday" label="Ngày sinh" rules={[
+            {
+              required: true,
+              message: 'Hãy nhập vào ngày sinh của bạn!',
+            },
+          ]}>
             <DatePicker className=' bg-slate-100' />
           </Form.Item>
 
@@ -103,7 +145,7 @@ const Register = ({ tatPopup }: Register) => {
           </Form.Item>
         </Form>
       </div>
-
+      {showNoti && <Notification content={contentNoti}></Notification>}
     </div>
 
   );

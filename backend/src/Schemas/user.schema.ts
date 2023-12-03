@@ -7,6 +7,9 @@ export class Users {
   id: number;
 
   @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
   userName: string;
 
   @Prop({ required: true })

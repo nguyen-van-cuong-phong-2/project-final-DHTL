@@ -3,13 +3,13 @@ import Image from "next/image";
 import { ImCancelCircle } from "react-icons/im";
 import { IoImagesOutline } from "react-icons/io5";
 import { AiFillLike } from "react-icons/ai";
-import { useMyContext } from "@/components/context/context";
-import { ChatMessage } from "@/components/chat/chat";
+import { useMyContext } from "../context/context";
+import { ChatMessage } from "../chat/chat";
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import JWT from "jsonwebtoken";
 import { AnimationTyping } from "../popup/typingAnimation";
-import { functions } from "@/functions/functions";
+import { functions } from "../../functions/functions";
 
 interface PopUpMessage {
   item: {

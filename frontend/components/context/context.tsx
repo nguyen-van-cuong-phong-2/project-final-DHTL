@@ -21,6 +21,8 @@ interface MyContextType {
   updateArrMessage: (newMessage: Message) => void;
   DeleteArrMessage: (id: Number) => void;
   socket: any;
+  Loading: boolean;
+  setLoading: any;
 }
 
 // Create the context with an initial value
@@ -32,6 +34,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [arrMessage, setArrMessage] = useState<Message[]>([]);
   const [socket, SetSocket] = useState<any>();
+  const [Loading, SetLoading] = useState(false);
 
   useEffect(() => {
     const socketIO = io("http://localhost:8080");
@@ -58,9 +61,13 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
     const findItem = arrMessage.filter((item) => item.id != id);
     setArrMessage(findItem);
   };
+
+  const setLoading = (type: boolean) => {
+    SetLoading(type)
+  }
   return (
     <MyContext.Provider
-      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket }}
+      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading }}
     >
       {children}
     </MyContext.Provider>

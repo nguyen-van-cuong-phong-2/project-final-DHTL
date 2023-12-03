@@ -69,6 +69,7 @@ export class UserController {
   @Post('uploadAvatar')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new NotFoundException('Không tìm thấy file tải lên');
     const checkUpload = await this.userService.uploadFile(
       file,
       new Date().getTime(),
@@ -77,5 +78,10 @@ export class UserController {
     if (!checkUpload) {
       throw new NotAcceptableException('Định dạng file không hợp lệ');
     }
+    return {
+      status: 200,
+      result: true,
+      message: 'Upload file thành công',
+    };
   }
 }

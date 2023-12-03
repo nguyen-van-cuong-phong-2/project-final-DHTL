@@ -37,6 +37,7 @@ export class UserService {
                 password,
                 birthDay: new Date(registerUserDto.birthDay).getTime(),
                 userName: registerUserDto.userName,
+                name: registerUserDto.name
             }
             await this.UsersModel.create(conditions);
             const token = await this.generateToken(conditions);

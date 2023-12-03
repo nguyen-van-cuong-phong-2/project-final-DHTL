@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMyContext } from "@/components/context/context";
+import { useMyContext } from "../context/context";
 
 export default function rightBody() {
   const arr = [
@@ -45,6 +45,47 @@ export default function rightBody() {
       name: "AN Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
+    {
+      id: 2000,
+      name: "Thảo Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+    {
+      id: 2,
+      name: "Nam Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+    {
+      id: 2000,
+      name: "Thảo Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+    {
+      id: 2,
+      name: "Nam Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+    {
+      id: 2000,
+      name: "Thảo Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+    {
+      id: 2,
+      name: "Nam Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+    {
+      id: 2000,
+      name: "Thảo Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+    {
+      id: 2,
+      name: "Nam Nguyễn",
+      avatar: "/images/avatarChat.jpg",
+    },
+
   ];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { updateArrMessage } = useMyContext();
@@ -62,6 +103,9 @@ export default function rightBody() {
       h-screen 
       overflow-auto
       no-scrollbar
+      max-lg:hidden
+      sticky 
+      top-[75px]
       "
       >
         <div className="block mt-[1.5rem]">
@@ -74,8 +118,8 @@ export default function rightBody() {
               <div
                 className="
               p-2 
-              w-[18%] 
-              h-[18%] 
+              w-14
+              h-14
               relative 
               cursor-pointer"
               >

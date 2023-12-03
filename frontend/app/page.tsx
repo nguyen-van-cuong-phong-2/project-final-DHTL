@@ -1,17 +1,17 @@
 "use client";
-import Header from "@/components/header/header";
-import LeftBody from "@/components/navbar/navbar-left";
-import RightBody from "@/components/navbar/navbar-right";
-import BettwenBody from "@/components/Body/main-body";
-import { PopUpMessage } from "@/components/popup/message";
-import { useMyContext } from "@/components/context/context";
+import Header from "../components/header/header";
+import LeftBody from "../components/navbar/navbar-left";
+import RightBody from "../components/navbar/navbar-right";
+import BettwenBody from "../components/Body/main-body";
+import { PopUpMessage } from "../components/popup/message";
+import { useMyContext } from "../components/context/context";
 
 export default function Home() {
   const { arrMessage } = useMyContext();
   return (
-    <div>
+    <div className="w-full">
       <Header></Header>
-      <div className="flex mt-[75px] justify-between">
+      <div className="flex mt-[75px] justify-between w-full">
         <LeftBody />
         <BettwenBody />
         <RightBody />
