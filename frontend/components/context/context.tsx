@@ -23,6 +23,8 @@ interface MyContextType {
   socket: any;
   Loading: boolean;
   setLoading: any;
+  contentNotifi: string;
+  SetContentNotifi: any;
 }
 
 // Create the context with an initial value
@@ -35,6 +37,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   const [arrMessage, setArrMessage] = useState<Message[]>([]);
   const [socket, SetSocket] = useState<any>();
   const [Loading, SetLoading] = useState(false);
+  const [contentNotifi, SetContentNotifi] = useState('');
 
   useEffect(() => {
     const socketIO = io("http://localhost:8080");
@@ -67,7 +70,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   }
   return (
     <MyContext.Provider
-      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading }}
+      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading, contentNotifi, SetContentNotifi }}
     >
       {children}
     </MyContext.Provider>

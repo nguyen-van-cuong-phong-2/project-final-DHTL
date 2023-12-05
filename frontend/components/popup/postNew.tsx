@@ -7,7 +7,7 @@ import { ImCancelCircle } from "react-icons/im";
 export default function PopupPostNew() {
   return (
     <>
-      <div className="absolute w-full h-screen bg-BGRegister top-[75px] ">
+      <div className="absolute w-full h-screen bg-BGRegister top-[75px] left-0 z-50">
         <div className="border rounded-2xl bg-white w-1/3 h-[60%] absolute top-20 left-1/3">
           <div className="border-y-2 w-full h-1/6 rounded-md flex items-center">
             <div className="w-[60%] h-full flex justify-end items-center">

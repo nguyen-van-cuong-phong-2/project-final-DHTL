@@ -1,25 +1,28 @@
 /* eslint-disable react/display-name */
+"use client";
 import React, { useEffect } from 'react';
 import { notification } from 'antd';
 import { SmileOutlined } from '@ant-design/icons';
-interface AppProps {
-  content: string;
-}
+import { useMyContext } from '../context/context';
 
-const App: React.FC<AppProps> = React.memo(({ content }) => {
+
+const App: React.FC = React.memo(() => {
   const [api, contextHolder] = notification.useNotification();
-
+  const { contentNotifi, SetContentNotifi } = useMyContext()
   useEffect(() => {
-    const openNotification = () => {
-      api.open({
-        message: 'BlueBook thông báo!',
-        description: `${content}`,
-        icon: <SmileOutlined style={{ color: '#108ee9' }} />,
-      });
-    };
+    if (contentNotifi != '') {
+      const openNotification = () => {
+        api.open({
+          message: 'BlueBook thông báo!',
+          description: `${contentNotifi}`,
+          icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+        });
+      };
+      openNotification();
 
-    openNotification();
-  }, [api, content]);
+    }
+    return () => SetContentNotifi('');
+  }, [api, contentNotifi]);
 
   return <>{contextHolder}</>;
 });

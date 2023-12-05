@@ -19,6 +19,7 @@ interface ChatMessage {
   own: boolean;
   message: message;
   data: message[];
+  show: boolean;
 }
 
 export const ChatMessage: React.FC<ChatMessage> = ({
@@ -27,9 +28,10 @@ export const ChatMessage: React.FC<ChatMessage> = ({
   own,
   message,
   data,
+  show
 }) => {
   return (
-    <>
+    <>{show && <div>
       {own ? (
         <div className="w-full flex items-end mt-1">
           <div className="flex items-end w-full">
@@ -39,12 +41,12 @@ export const ChatMessage: React.FC<ChatMessage> = ({
                   src={item.avatar}
                   alt="avatar"
                   className="
-            w-full
-            h-full
-            border 
-            rounded-full
-            cursor-pointer
-            "
+          w-full
+          h-full
+          border 
+          rounded-full
+          cursor-pointer
+          "
                   width={30}
                   height={30}
                   objectFit="cover"
@@ -75,11 +77,11 @@ export const ChatMessage: React.FC<ChatMessage> = ({
               src={"/images/avatarChat.jpg"}
               alt="avatar"
               className="
-          w-full
-          h-full
-          border 
-          rounded-full
-          "
+        w-full
+        h-full
+        border 
+        rounded-full
+        "
               width={20}
               height={20}
               objectFit="cover"
@@ -87,6 +89,9 @@ export const ChatMessage: React.FC<ChatMessage> = ({
           </div>
         </div>
       )}
+    </div>}
+
+
     </>
   );
 };

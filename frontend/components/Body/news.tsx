@@ -29,7 +29,7 @@ export default function News() {
                 </div>
             </div>
             <div className="content mt-2">
-                Xin chào mọi người ạ, em newbie về AWS, mấy anh chị có thể cho em biết là lấy chứng chỉ AWS về Devops thì em nên lấy Devops Engineer cert hay solution architecture association cert ạ. Tại em không có tiền nhiều nên đủ tiền thi 1 trong 2 cert đó thôi.Xin chào mọi người ạ, em newbie về AWS, mấy anh chị có thể cho em biết là lấy chứng chỉ AWS về Devops thì em nên lấy Devops Engineer cert hay solution architecture association cert ạ. Tại em không có tiền nhiều nên đủ tiền thi 1 trong 2 cert đó thôi.
+                Xin chào mọi người ạ, em newbie về AWS, ôi.bie về AWS, mấy anh chị có thể cho em biết là lấy chứng chỉ AWS về Devops thì em nên lấy Devops Engineer cert hay solution architecture association cert ạ. Tại em không có tiền nhiều nên đủ tiền thi 1 trong 2 cert đó thôi.
             </div>
             <div
                 className="

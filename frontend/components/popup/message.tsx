@@ -6,8 +6,6 @@ import { AiFillLike } from "react-icons/ai";
 import { useMyContext } from "../context/context";
 import { ChatMessage } from "../chat/chat";
 import { useEffect, useRef, useState } from "react";
-import Cookies from "js-cookie";
-import JWT from "jsonwebtoken";
 import { AnimationTyping } from "../popup/typingAnimation";
 import { functions } from "../../functions/functions";
 
@@ -22,7 +20,6 @@ interface PopUpMessage {
 export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
 
   const func = new functions();
-  const token = func.getTokenFromClientSide();
 
   const [data, setData] = useState<any>([]);
   const [Typing, SetTyping] = useState(false);
@@ -32,16 +29,15 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   const DivRef = useRef<any>();
 
   const user = func.getInfoFromToken();
-
   const handleKeyDown = (event: any) => {
     if (event.key === "Enter") {
       event.preventDefault();
 
-      if (DivRef.current) {
+      if (DivRef.current && DivRef.current.innerHTML !="") {
         socket.emit("sendMessage", {
           sender_id: user.id,
           receiver_id: item.id,
-          content: DivRef.current.innerHTML,
+          content: DivRef.current.innerHTML.trim(),
         });
         setTimeout(() => {
           socket.emit("getMessage", {
@@ -52,20 +48,23 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
           socket.on("PushMessage", (data: any) => {
             setData(data?.data);
           });
+
         }, 2000);
+        DivRef.current.innerHTML = "";
+        return socket.off("PushMessage");
       }
-      DivRef.current.innerHTML = "";
     }
   };
   const handleChange = () => { };
   useEffect(() => {
     const content = contentRef.current;
     if (content) {
-      // Cuộn xuống cuối khi component được mount
       content.scrollTop = content.scrollHeight;
     }
     SocketConnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      socket.off("PushMessage");
+    };
   }, []);
   const SocketConnect = () => {
     socket.emit("getMessage", {
@@ -76,6 +75,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
     socket.on("PushMessage", (data: any) => {
       setData(data?.data);
     });
+
   };
   useEffect(() => {
     const handleNewMessage = (item: any) => {
@@ -100,7 +100,6 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       socket.off("Message", handleNewMessage);
     };
   }, [socket]);
-
   useEffect(() => {
     const content = contentRef.current;
     if (content) {
@@ -108,6 +107,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       content.scrollTop = content.scrollHeight;
     }
   }, [data]);
+  console.log(data)
   return (
     <>
       <div className="block rounded-xl bg-white shadow-md">
@@ -139,7 +139,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
         </div>
 
         <div
-          className="max-w-[350px] h-[350px] min-w-[100px] overflow-auto"
+          className="max-w-[350px] h-[350px] min-w-[100px] overflow-auto no-scrollbar"
           ref={contentRef}
         >
           {data?.map((itemMap, key) => (
@@ -147,9 +147,10 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
               key={key}
               index={key}
               item={item}
-              own={itemMap.sender_id == 1000}
+              own={itemMap.sender_id != user.id}
               message={itemMap}
               data={data}
+              show={itemMap.receiver_id == item.id || itemMap.sender_id == item.id}
             ></ChatMessage>
           ))}
           {Typing && (
