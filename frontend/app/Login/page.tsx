@@ -1,10 +1,18 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import Link from "next/link";
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import Register from "../../components/popup/register";
 import { useState } from "react";
+import { callApiLogin } from "../../api/callAPI";
+import { useMyContext } from '../../components/context/context';
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+
 export default function Login() {
   const [popUpRegister, setpopUpRegister] = useState(false);
+  const { SetContentNotifi, setLoading } = useMyContext();
+  const router = useRouter();
   const tatPopUpRegister = () => {
     setpopUpRegister(false)
   }
@@ -12,7 +20,6 @@ export default function Login() {
   const validateUserName = (rule: any, value: any, callback: any) => {
     const gmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const phoneNumberRegex = /^(?:\+84|0|\+1)?([1-9][0-9]{8,9})$/;
-
     if (value == '' || !value) {
       callback('Vui lòng nhập trường này!');
     } else if (value.includes('@') && !gmailRegex.test(value)) {
@@ -21,6 +28,21 @@ export default function Login() {
       callback('Nhập số điện thoại không hợp lệ!');
     } else {
       callback();
+    }
+  }
+
+  const onFinish = async (e: any) => {
+    const response = await callApiLogin({
+      userName: e.username,
+      password: e.password
+    });
+    if (response.statusCode === 404) {
+      SetContentNotifi('Tài khoản hoặc mật khẩu không chính xác');
+    } else if (response.result === true) {
+      SetContentNotifi('Đăng nhập thành công');
+      Cookies.set('token', response.data.token);
+      setLoading(true);
+      router.push('/')
     }
   }
   return (
@@ -55,7 +77,7 @@ export default function Login() {
               initialValues={{
                 remember: true,
               }}
-            // onFinish={onFinish}
+              onFinish={onFinish}
             >
               <Form.Item
                 name="username"

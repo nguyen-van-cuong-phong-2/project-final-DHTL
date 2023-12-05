@@ -35,12 +35,13 @@ const callApiPost_Json = async (url: string, conditions: object, token_freelance
             return response.data;
         })
     } catch (error) {
-        return error;
+        return error?.response?.data;
     }
 };
 
 export const callApiLogin = async (data: object) => {
-    const response = await callApiPost_Json('user/login', data)
+    const response = await callApiPost_Json('user/login', data);
+    return response;
 }
 
 export const callApiRegister = async (data: object) => {

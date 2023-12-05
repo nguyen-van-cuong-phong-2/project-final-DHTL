@@ -6,7 +6,7 @@ import { useMyContext } from "../context/context";
 export default function rightBody() {
   const arr = [
     {
-      id: 2000,
+      id: 1,
       name: "Thảo Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
@@ -25,67 +25,6 @@ export default function rightBody() {
       name: "Mai Nguyễn",
       avatar: "/images/avatarChat.jpg",
     },
-    {
-      id: 5,
-      name: "Tuấn Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 6,
-      name: "Phương Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 7,
-      name: "Quỳnh Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 8,
-      name: "AN Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2000,
-      name: "Thảo Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2,
-      name: "Nam Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2000,
-      name: "Thảo Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2,
-      name: "Nam Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2000,
-      name: "Thảo Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2,
-      name: "Nam Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2000,
-      name: "Thảo Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2,
-      name: "Nam Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-
   ];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { updateArrMessage } = useMyContext();

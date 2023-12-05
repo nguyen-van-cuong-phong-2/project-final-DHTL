@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div className="w-full">
       <Header></Header>
-      <div className="flex mt-[75px] justify-between w-full">
+      <div className="flex mt-[80px] justify-between w-full">
         <LeftBody />
         <BettwenBody />
         <RightBody />

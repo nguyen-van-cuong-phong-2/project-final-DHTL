@@ -50,7 +50,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
       content: string;
     },
   ): Promise<any> {
-    const result = this.messageService.createMessage(data);
+    const result = await this.messageService.createMessage(data);
     return this.server.emit('Message', result);
   }
 

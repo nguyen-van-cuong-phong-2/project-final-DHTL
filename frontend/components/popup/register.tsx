@@ -8,7 +8,7 @@ import { callApiRegister } from "../../api/callAPI";
 import { useMyContext } from "../context/context";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-
+import Upload from "../popup/upload";
 interface Register {
   tatPopup: () => {};
 }
@@ -43,15 +43,11 @@ const Register = ({ tatPopup }: Register) => {
     setTimeout(() => {
       setLoading(false);
       if (response.result === true) {
-        SetContentNoti('Đăng kí tài khoản thành công!');
-        SetShowNoti(true);
         Cookies.set('token', response.data.token)
         setTimeout(() => SetShowNoti(false), 3000);
         router.push('/')
       } else {
-        SetContentNoti('Tài khoản này đã được sử dụng!');
-        SetShowNoti(true);
-        setTimeout(() => SetShowNoti(false), 3000);
+
       }
     }, 2000)
   };
@@ -129,23 +125,24 @@ const Register = ({ tatPopup }: Register) => {
             />
           </Form.Item>
 
-          <Form.Item name="birthday" label="Ngày sinh" rules={[
+          <Form.Item
+          className=""
+          name="birthday" label="Ngày sinh:" rules={[
             {
               required: true,
               message: 'Hãy nhập vào ngày sinh của bạn!',
             },
           ]}>
-            <DatePicker className=' bg-slate-100' />
+            <DatePicker className=' bg-slate-100 ml-2 ' />
           </Form.Item>
-
           <Form.Item className="flex justify-center items-center">
-            <Button type="primary" htmlType="submit" className="bg-green-700 text-white text-xl px-6 py-5 text-center flex justify-center items-center">
+            <Button type="primary" htmlType="submit" className="bg-green-700 text-white text-xl px-6 py-5 text-center flex justify-center items-center mt-2">
               Đăng ký
             </Button>
           </Form.Item>
         </Form>
       </div>
-      {showNoti && <Notification content={contentNoti}></Notification>}
+      {/* {showNoti && <Notification content={contentNoti}></Notification>} */}
     </div>
 
   );

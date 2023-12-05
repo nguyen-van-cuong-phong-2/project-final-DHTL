@@ -1,6 +1,7 @@
 import "../public/globals.css";
 import { MyContextProvider } from "../components/context/context";
 import Loading from '../components/loading';
+import Notifications from "../components/popup/notification"
 export default function RootLayout({
   children,
 }: {
@@ -12,6 +13,7 @@ export default function RootLayout({
         <MyContextProvider>
           {children}
           <Loading></Loading>
+          <Notifications></Notifications>
         </MyContextProvider>
 
       </body>
