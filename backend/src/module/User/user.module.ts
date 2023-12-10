@@ -10,7 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
   imports: [
     MongooseModule.forFeature([{ name: Users.name, schema: UserSchema }]),
     JwtModule.register({
-      secret: `${process.env.NODE_SERCET}`,
+      secret: 'reqr2141!@321321*!!@$%',
       signOptions: { expiresIn: '1d' },
     }),
   ],
@@ -19,6 +19,6 @@ import { JwtModule } from '@nestjs/jwt';
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(Middleware).forRoutes('*');
+    consumer.apply(Middleware).forRoutes('/user/uploadAvatar');
   }
 }

@@ -3,12 +3,10 @@
 import { MdOutlineCancel } from "react-icons/md";
 import React, { useState } from 'react';
 import { Button, Form, Input, DatePicker } from 'antd';
-import Notification from '../popup/notification';
-import { callApiRegister } from "../../api/callAPI";
+import { callApi_Register } from "../../api/callAPI";
 import { useMyContext } from "../context/context";
-import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import Upload from "../popup/upload";
+import { useRouter } from "next/navigation";
 interface Register {
   tatPopup: () => {};
 }
@@ -29,25 +27,30 @@ const Register = ({ tatPopup }: Register) => {
       callback();
     }
   }
-  const [showNoti, SetShowNoti] = useState(false);
-  const [contentNoti, SetContentNoti] = useState<string>();
-  const { setLoading } = useMyContext();
+  const { setLoading, SetContentNotifi, SetUser } = useMyContext();
   const onFinish = async (values: any) => {
     setLoading(true);
-    const response = await callApiRegister({
+    const response = await callApi_Register({
       userName: values.phone,
       name: `${values.ten} ${values.ho}`,
       password: values.password,
       birthDay: values.birthday
     });
     setTimeout(() => {
-      setLoading(false);
       if (response.result === true) {
-        Cookies.set('token', response.data.token)
-        setTimeout(() => SetShowNoti(false), 3000);
-        router.push('/')
+        setLoading(false);
+        Cookies.set('token', response.data.token);
+        SetUser({
+          id: response.data.id,
+          userName: values.phone,
+          name: `${values.ten} ${values.ho}`,
+          password: values.password,
+          birthDay: values.birthday
+        });
+        SetContentNotifi('Tạo tài khoản thành công!')
+        router.push('/UploadAvatar')
       } else {
-
+        SetContentNotifi('Email hoặc số điện thoại đã được sử dụng!')
       }
     }, 2000)
   };
@@ -66,7 +69,7 @@ const Register = ({ tatPopup }: Register) => {
             <span className='text-4xl font-bold'>Đăng ký</span>
             <MdOutlineCancel
               className="mt-2 text-3xl hover:cursor-pointer"
-              onClick={tatPopup()}
+              onClick={() => tatPopup()}
             ></MdOutlineCancel>
           </div>
 
@@ -126,13 +129,13 @@ const Register = ({ tatPopup }: Register) => {
           </Form.Item>
 
           <Form.Item
-          className=""
-          name="birthday" label="Ngày sinh:" rules={[
-            {
-              required: true,
-              message: 'Hãy nhập vào ngày sinh của bạn!',
-            },
-          ]}>
+            className=""
+            name="birthday" label="Ngày sinh:" rules={[
+              {
+                required: true,
+                message: 'Hãy nhập vào ngày sinh của bạn!',
+              },
+            ]}>
             <DatePicker className=' bg-slate-100 ml-2 ' />
           </Form.Item>
           <Form.Item className="flex justify-center items-center">
@@ -142,9 +145,7 @@ const Register = ({ tatPopup }: Register) => {
           </Form.Item>
         </Form>
       </div>
-      {/* {showNoti && <Notification content={contentNoti}></Notification>} */}
     </div>
-
   );
 };
 export default Register;

@@ -43,6 +43,7 @@ export class UserService {
             const token = await this.generateToken(conditions);
             const refreshToken = await this.generateToken(conditions);
             return {
+                id,
                 token,
                 refreshToken,
             };
@@ -123,5 +124,27 @@ export class UserService {
         }
         fs.writeFileSync(filePath, file.buffer);
         return `/pictures/${pathFolder}/${time}_${file.originalname}`;
+    }
+
+    // lưu file đã upload vào base
+    public async saveFileOnBase(id: number, path: string): Promise<void> {
+        try {
+            await this.UsersModel.findOneAndUpdate({ id }, { avatar: path });
+        } catch (error) {
+            throw new BadRequestException(error.message, 'Bad request');
+        }
+    }
+
+    // lấy thông tin người dùng (thiếu lấy danh sách bạn bè online và offline)
+    public async getInfoUser(id: number): Promise<object> {
+        const response = await this.UsersModel.aggregate([
+            { $match: { id } }
+        ]);
+        for (let i = 0; i < response.length; i++) {
+            const element = response[i];
+            element.avatar = `${process.env.DOMAIN}${element.avatar}`;
+        }
+        return response
+
     }
 }

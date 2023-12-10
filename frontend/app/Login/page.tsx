@@ -4,14 +4,14 @@ import Link from "next/link";
 import { Button, Form, Input } from 'antd';
 import Register from "../../components/popup/register";
 import { useState } from "react";
-import { callApiLogin } from "../../api/callAPI";
+import { callApi_Login } from "../../api/callAPI";
 import { useMyContext } from '../../components/context/context';
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 export default function Login() {
   const [popUpRegister, setpopUpRegister] = useState(false);
-  const { SetContentNotifi, setLoading } = useMyContext();
+  const { SetContentNotifi, setLoading, socket } = useMyContext();
   const router = useRouter();
   const tatPopUpRegister = () => {
     setpopUpRegister(false)
@@ -32,7 +32,7 @@ export default function Login() {
   }
 
   const onFinish = async (e: any) => {
-    const response = await callApiLogin({
+    const response = await callApi_Login({
       userName: e.username,
       password: e.password
     });

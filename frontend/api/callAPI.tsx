@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import axios from "axios";
-const callApiPost_Json = async (url: string, conditions: object, token_freelancer?: string) => {
+const callApiPost_Json = async (url: string, conditions: object, token_server?: string) => {
     try {
         type header = {
             "Content-Type": string,
@@ -11,7 +11,7 @@ const callApiPost_Json = async (url: string, conditions: object, token_freelance
             "Content-Type": "application/json",
             Authorization: ""
         };
-        const token = Cookies.get("token_freelancer")
+        const token = Cookies.get("token")
         if (!conditions) conditions = {};
 
         if (token)
@@ -19,10 +19,10 @@ const callApiPost_Json = async (url: string, conditions: object, token_freelance
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             };
-        if (token_freelancer) {
+        if (token_server) {
             headers = {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token_freelancer}`,
+                Authorization: `Bearer ${token_server}`,
             };
         }
 
@@ -39,12 +39,41 @@ const callApiPost_Json = async (url: string, conditions: object, token_freelance
     }
 };
 
-export const callApiLogin = async (data: object) => {
+const callApiPost_formdata = async (url: string, conditions: object, token_server?: string) => {
+    try {
+        const token = Cookies.get("token")
+        if (!conditions) conditions = {};
+        return await axios({
+            method: "post",
+            url: `${process.env.NEXT_PUBLIC_DOMAIN_API}/${url}`,
+            data: conditions,
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+            },
+        }).then(async (response) => {
+            return response.data;
+        })
+    } catch (error) {
+        return error?.response?.data;
+    }
+};
+export const callApi_Login = async (data: object) => {
     const response = await callApiPost_Json('user/login', data);
     return response;
 }
 
-export const callApiRegister = async (data: object) => {
+export const callApi_Register = async (data: object) => {
     const response = await callApiPost_Json('user/register', data)
+    return response;
+}
+
+export const callApi_uploadAvatar = async (data: object) => {
+    const response = await callApiPost_formdata('user/uploadAvatar', data)
+    return response;
+}
+
+export const callApi_getInforUser = async (data: object) => {
+    const response = await callApiPost_Json('user/getInforUser', data)
     return response;
 }
