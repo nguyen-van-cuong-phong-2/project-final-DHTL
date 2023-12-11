@@ -16,7 +16,7 @@ export default function UploadAvatar() {
         const file = e.target.files[0];
         setfileAvatar(file);
         if (file) {
-            const reader = new FileReader();
+            const reader: any = new FileReader();
             reader.onload = () => {
                 SetAvatar(reader.result);
             };

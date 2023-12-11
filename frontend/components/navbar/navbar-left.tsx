@@ -21,7 +21,7 @@ export default function LeftBody() {
             objectFit="contain"
             quality={100}
             alt="avatar"
-            onError={(e) => {
+            onError={(e:any) => {
               e.target.onerror = null;
               e.target.setsrc = "/images/user.png";
             }}
