@@ -1,13 +1,12 @@
 "use client";
-
 import { useState } from "react";
 import avatar from "../../public/images/avatar.jpg";
 import Image from "next/image";
 import PopupSearch from "../popup/search";
-
+import { useMyContext } from "../context/context";
 export default function Header() {
   const [popUpSearch, setpopUpSearch] = useState(false);
-
+  const { user } = useMyContext();
   return (
     <>
       <div className="fixed w-full bg-white top-0 z-50">
@@ -51,13 +50,17 @@ export default function Header() {
             <div className="w-[47px] h-[47px]">
               <Image
                 className="w-full h-full border rounded-full box-border"
-                src={avatar}
+                src={user?.avatar ? user.avatar : "/images/user.png"}
                 width={50}
                 height={40}
                 quality={100}
                 alt="avatar"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.setsrc = "/images/user.png";
+                }}
               />
-              
+
             </div>
           </div>
         </div>

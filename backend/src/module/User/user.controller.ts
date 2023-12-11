@@ -18,6 +18,15 @@ import { RegisterUserDto } from './dto/register.dto';
 import { Login } from './dto/login.dto';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { getInfor } from './dto/getInfo.dto';
+
+interface UserPayload {
+  id: string;
+}
+
+interface ExtendedRequest extends Request {
+  user?: UserPayload;
+}
 
 @Controller('user')
 export class UserController {
@@ -68,7 +77,10 @@ export class UserController {
   // Cập nhật avatar
   @Post('uploadAvatar')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: ExtendedRequest,
+  ) {
     if (!file) throw new NotFoundException('Không tìm thấy file tải lên');
     const checkUpload = await this.userService.uploadFile(
       file,
@@ -78,10 +90,35 @@ export class UserController {
     if (!checkUpload) {
       throw new NotAcceptableException('Định dạng file không hợp lệ');
     }
-    return {
-      status: 200,
-      result: true,
-      message: 'Upload file thành công',
-    };
+    if (req.user && req.user.id) {
+      await this.userService.saveFileOnBase(Number(req.user.id), checkUpload);
+      return {
+        status: 200,
+        result: true,
+        message: 'Upload file thành công',
+      };
+    } else {
+      return {
+        status: 400,
+        result: true,
+        message: 'Upload file thất bại',
+      };
+    }
+  }
+
+  // lấy thông tin user
+  @Post('getInforUser')
+  @UsePipes(new ValidationPipe())
+  async GetInforUser(@Body() getInfor: getInfor): Promise<object> {
+    try {
+      const result = await this.userService.getInfoUser(getInfor.id);
+      return {
+        status: 200,
+        result: true,
+        data: result,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

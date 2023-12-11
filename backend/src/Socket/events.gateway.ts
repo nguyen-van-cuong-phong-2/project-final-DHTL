@@ -9,7 +9,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MessageService } from '../module/Message/message.service';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -30,13 +29,17 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   }
 
   @SubscribeMessage('login')
-  login(@MessageBody() data: number, @ConnectedSocket() client: Socket): void {
-    console.log(this.arrUserOnline.set(client.id, data));
+  login(
+    @MessageBody() data: { id: number },
+    @ConnectedSocket() client: Socket,
+  ): void {
+    console.log(this.arrUserOnline.set(client.id, data.id));
   }
 
   @SubscribeMessage('getOnline')
   getOnline(): void {
-    this.server.emit('getOnline', this.arrUserOnline);
+    const values = Array.from(this.arrUserOnline.values());
+    this.server.emit('listOnline', values);
   }
 
   // gửi tin nhắn

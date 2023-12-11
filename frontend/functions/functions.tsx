@@ -6,10 +6,6 @@ interface TokenInfo {
 }
 
 export class functions {
-    public getTokenFromServerSide = (context: any) => {
-
-    }
-
     public getTokenFromClientSide() {
         try {
             const token = Cookies.get('token');
@@ -19,7 +15,7 @@ export class functions {
         }
     }
 
-    public getInfoFromToken(): TokenInfo {
+    public getInfoFromToken() {
         try {
             const token = this.getTokenFromClientSide();
             const response = JWT.decode(token as string);
@@ -35,4 +31,17 @@ export class functions {
             throw new Error('Error decoding token');
         }
     }
+
+    public getTokenServerSide(context: any) {
+        try {
+            const cookieString = context.req.headers.cookie;
+            const token = cookieString
+                .split(";")
+                .find((cookie: any) => cookie.trim().startsWith("token="));
+            const tokenValue = token.split('=')[1];
+            return tokenValue
+        } catch (error) {
+            return null
+        }
+    };
 }

@@ -7,6 +7,8 @@ import React, {
   useEffect,
 } from "react";
 import { io } from "socket.io-client";
+import { functions } from "../../functions/functions";
+import { callApi_getInforUser } from "../../api/callAPI";
 
 // Define the interface for the object contained in the array
 interface Message {
@@ -15,6 +17,11 @@ interface Message {
   name: string;
 }
 
+interface Users {
+  id: number,
+  avatar: string,
+  name: string
+}
 // Define the interface for the context
 interface MyContextType {
   arrMessage: Message[];
@@ -25,6 +32,8 @@ interface MyContextType {
   setLoading: any;
   contentNotifi: string;
   SetContentNotifi: any;
+  user: Users;
+  SetUser: any;
 }
 
 // Create the context with an initial value
@@ -38,10 +47,30 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   const [socket, SetSocket] = useState<any>();
   const [Loading, SetLoading] = useState(false);
   const [contentNotifi, SetContentNotifi] = useState('');
+  const [user, SetUser] = useState<Users>();
 
   useEffect(() => {
     const socketIO = io("http://localhost:8080");
+
     if (socketIO) SetSocket(socketIO);
+
+    const fetchAPIGetInfo = async () => {
+      const token = new functions().getInfoFromToken();
+      if (token) {
+        socketIO.emit("login", { id: token.id })
+        const response = await callApi_getInforUser({ id: Number(token.id) });
+        SetUser(response.data[0]);
+      } else {
+        return {
+          redirect: {
+            destination: "/Login",
+            permanent: false,
+          },
+        }
+      }
+    }
+
+    fetchAPIGetInfo();
     return () => {
       socketIO.disconnect();
     };
@@ -70,7 +99,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   }
   return (
     <MyContext.Provider
-      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading, contentNotifi, SetContentNotifi }}
+      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading, contentNotifi, SetContentNotifi, user, SetUser }}
     >
       {children}
     </MyContext.Provider>

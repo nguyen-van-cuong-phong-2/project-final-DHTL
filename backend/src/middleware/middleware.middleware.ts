@@ -1,9 +1,10 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 
 interface UserPayload {
-  userId: string;
+  id: number;
 }
 
 interface ExtendedRequest extends Request {
@@ -12,19 +13,22 @@ interface ExtendedRequest extends Request {
 
 @Injectable()
 export class Middleware implements NestMiddleware {
-  use(req: ExtendedRequest, res: Response, next: NextFunction) {
+  constructor(private jwtService: JwtService) { }
+  async use(req: ExtendedRequest, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    next();
-    // if (token) {
-    //   return jwt.verify(token, 'reqr2141!@321321*!!@$%', (err, user) => {
-    //     if (err) {
-    //       return res.status(400).json({ message: 'Invalid token' });
-    //     }
-    //     req.user = user as UserPayload;
-    //     next();
-    //   });
-    // }
-    // return res.status(401).json({ message: 'Missing token' });
+    if (token) {
+      try {
+        const user = await this.jwtService.verifyAsync(token, {
+          secret: process.env.NODE_SERCET,
+        });
+        req.user = user as UserPayload;
+        next();
+      } catch (error) {
+        throw new UnauthorizedException();
+      }
+    } else {
+      return res.status(401).json({ message: 'Missing token' });
+    }
   }
 }

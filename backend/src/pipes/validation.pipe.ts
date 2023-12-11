@@ -31,8 +31,9 @@ export class ValidationPipe implements PipeTransform<any> {
       if (!phoneNumberRegex.test(value.userName)) {
         throw new BadRequestException('Invalid PhoneNumber');
       }
+    } else if (value.id) {
+      value.id = Number(value.id);
     }
-
     return value;
   }
 
