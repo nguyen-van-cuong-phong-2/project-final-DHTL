@@ -55,7 +55,7 @@ export default function Header() {
                 height={40}
                 quality={100}
                 alt="avatar"
-                onError={(e) => {
+                onError={(e: any) => {
                   e.target.onerror = null;
                   e.target.setsrc = "/images/user.png";
                 }}
