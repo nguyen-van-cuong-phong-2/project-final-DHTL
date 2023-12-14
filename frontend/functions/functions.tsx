@@ -11,7 +11,7 @@ export class functions {
             const token = Cookies.get('token');
             return token
         } catch (error) {
-            console.log(error)
+            return null
         }
     }
 
@@ -25,10 +25,10 @@ export class functions {
                 const tokenInfo = response as TokenInfo;
                 return tokenInfo;
             } else {
-                throw new Error('Invalid response type');
+                return null
             }
         } catch (error) {
-            throw new Error('Error decoding token');
+            return null
         }
     }
 
