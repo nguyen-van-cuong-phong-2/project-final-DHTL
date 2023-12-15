@@ -7,6 +7,7 @@ import { UserModule } from './module/User/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { NewsModule } from './module/News/news.module';
+import { FriendModule } from './module/Friend/friend.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { NewsModule } from './module/News/news.module';
     }),
     UserModule,
     NewsModule,
+    FriendModule,
   ],
   controllers: [AppController],
   providers: [AppService],
