@@ -2,13 +2,8 @@
 import React from 'react';
 import { Spin } from 'antd';
 import { useMyContext } from "../../components/context/context";
-
-
-const App: React.FC = () => {
+export default function App(){
     const { Loading } = useMyContext();
-
-
-
     return (
         <>
             {
@@ -22,5 +17,3 @@ const App: React.FC = () => {
         </>
     );
 }
-
-export default App;

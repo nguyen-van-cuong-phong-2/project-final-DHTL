@@ -10,7 +10,7 @@ import { functions } from '../functions/functions'
 
 async function LoadingData(token: string): Promise<any> {
   const user = await new functions().getInfoFromTokenServerSide(token);
-  const playlists = await callApi_getInforUser({ id: Number(user.id) })
+  const playlists = await callApi_getInforUser({ id: Number(user.id) }, token)
   return playlists
 }
 
@@ -21,10 +21,10 @@ export default async function Home() {
   const data = await LoadingData(token.value);
   return (
     <div className="w-full">
-      <Header data={data?.data[0]}></Header>
+      <Header data={data?.data}></Header>
       <div className="flex mt-[80px] justify-between w-full">
-        <LeftBody data={data?.data[0]} />
-        <BettwenBody data={data?.data[0]} />
+        <LeftBody data={data?.data} />
+        <BettwenBody data={data?.data} />
         <RightBody />
         <ArrMessage></ArrMessage>
       </div>

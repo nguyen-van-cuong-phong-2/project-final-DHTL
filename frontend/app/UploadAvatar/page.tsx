@@ -1,7 +1,7 @@
 "use client";
 import Image from 'next/image';
 import { BsCloudUpload } from "react-icons/bs";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { callApi_uploadAvatar } from '../../api/callAPI';
 import { useMyContext } from '../../components/context/context';
@@ -24,6 +24,9 @@ export default function UploadAvatar() {
         }
     };
 
+    useEffect(() => {
+        setLoading(false);
+    }, [])
     const handleSubmit = async () => {
         const response = await callApi_uploadAvatar({ file: fileAvatar })
         if (response.status == 200) {

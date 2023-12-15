@@ -36,6 +36,12 @@ const Header: React.FC<Header> = ({ data }) => {
   const tatPopup = () => {
     setpopUpSearch(false)
   }
+
+  const fecth_API_Search = async () => {
+    const response = await callApi_SearchUser({ key: key });
+    SetfetchData(response.data)
+  }
+
   return (
     <>
       <div className="fixed w-full bg-white top-0 z-50">
@@ -53,7 +59,7 @@ const Header: React.FC<Header> = ({ data }) => {
                 onClick={() => setpopUpSearch(true)}
                 onChange={(e: any) => SetKey(e.target.value)}
               />
-              {popUpSearch && <PopupSearch data={fetchData} tatPopup={tatPopup} />}
+              {popUpSearch && <PopupSearch data={fetchData} tatPopup={tatPopup} fecth_API_Search={fecth_API_Search} />}
             </div>
           </div>
           <div className="flex gap-3">

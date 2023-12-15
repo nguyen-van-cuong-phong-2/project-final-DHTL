@@ -8,21 +8,52 @@ import { useState } from "react";
 import { useMyContext } from "../../components/context/context";
 import { PopUpMessage } from "../popup/message";
 import { IoCamera } from "react-icons/io5";
+import { callApi_MakeFriend, callApi_cancelMakeFriend, callApi_getInforUser } from "../../api/callAPI";
 
 interface Body {
     data: {
         id: number,
         avatar: string,
         name: string,
+        makefriend: number
     }
 }
 
 const Body: React.FC<Body> = ({ data }) => {
     const [menu, SetMenu] = useState(false);
-    const { arrMessage, updateArrMessage } = useMyContext();
+    const [dataResult, SetDataResult] = useState(data);
+
+    const { arrMessage, updateArrMessage, SetContentNotifi } = useMyContext();
     const handleOnClick = (data: any) => {
         updateArrMessage(data);
     };
+
+    const them_ban_be = async (id: number) => {
+        const response = await callApi_MakeFriend({ receiver_id: id });
+        if (response.result === true) {
+            ReloadInfoUser();
+            SetContentNotifi("Thêm bạn bè thành công")
+        } else {
+            SetContentNotifi("Thêm bạn bè thất bại, vui lòng thử lại sau!")
+        }
+    }
+
+    const huy_loi_moi = async (id: number) => {
+        const response = await callApi_cancelMakeFriend({ receiver_id: id });
+        if (response.result === true) {
+            ReloadInfoUser();
+            SetContentNotifi("Huỷ lời mời thành công")
+        } else {
+            SetContentNotifi("Huỷ lời mời thất bại, vui lòng thử lại sau!")
+        }
+    }
+
+    const ReloadInfoUser = async () => {
+        const response = await callApi_getInforUser({ id: Number(dataResult.id) });
+        console.log("🚀 ~ file: body.tsx:53 ~ ReloadInfoUser ~ response:", response)
+        // SetDataResult(response?.data[0])
+    }
+
     return (
         <>
             <div className="h-screen w-full flex justify-center items-center  bg-white">
@@ -32,7 +63,7 @@ const Body: React.FC<Body> = ({ data }) => {
                             <Image
                                 alt="avatar"
                                 className="border rounded-full w-[180px] h-[180px] max-md:w-[120px] max-md:h-[120px] max-sm:w-[140px] max-sm:h-[140px] hover:bg-white"
-                                src={data.avatar}
+                                src={dataResult?.avatar}
                                 width={180}
                                 height={180}
                                 loading="lazy"
@@ -48,12 +79,21 @@ const Body: React.FC<Body> = ({ data }) => {
                             </div>
                         </div>
                         <div className="mt-10 max-sm:mt-0">
-                            <div className="font-semibold text-4xl ">{data.name}</div>
+                            <div className="font-semibold text-4xl ">{dataResult?.name}</div>
                             <div className="max-sm:hidden"><Link href={''} >299 bạn bè</Link></div>
                         </div>
                     </div>
+                    {
+                        dataResult?.makefriend == 0 && <div className="border rounded-xl bg-blue-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer"
+                            onClick={() => them_ban_be(dataResult?.id)}
+                        >thêm bạn bè</div>
+                    }
+                    {
+                        dataResult?.makefriend == 1 && <div className="border rounded-xl bg-gray-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer"
+                            onClick={() => huy_loi_moi(dataResult?.id)}
+                        >Huỷ lời mời</div>
+                    }
 
-                    <div className="border rounded-xl bg-blue-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer">thêm bạn bè</div>
                     {/* <div className="flex flex-col items-end">
                         <div className="flex items-center mt-10 max-sm:mt-2 gap-2">
                             <div onClick={() => handleOnClick({
