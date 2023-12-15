@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Spin } from 'antd';
-import { useMyContext } from "../components/context/context";
+import { useMyContext } from "../../components/context/context";
 
 
 const App: React.FC = () => {

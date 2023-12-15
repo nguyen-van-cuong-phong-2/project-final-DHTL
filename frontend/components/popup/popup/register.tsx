@@ -3,7 +3,7 @@
 import { MdOutlineCancel } from "react-icons/md";
 import React, { useState } from 'react';
 import { Button, Form, Input, DatePicker } from 'antd';
-import { callApi_Register } from "../../api/callAPI";
+import { callApi_Register } from "../../../api/callAPI";
 import { useMyContext } from "../context/context";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";

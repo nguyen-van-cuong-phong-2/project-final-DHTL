@@ -3,8 +3,8 @@ import avatar from "../../public/images/avatar.jpg";
 import { FaUserFriends } from "react-icons/fa";
 import Image from "next/image";
 import { useMyContext } from "../context/context";
-import { functions } from "../../functions/functions";
-import { callApi_getInforUser } from "../../api/callAPI";
+import { functions } from "../../../functions/functions";
+import { callApi_getInforUser } from "../../../api/callAPI";
 
 export default function LeftBody() {
   const { user, SetUser } = useMyContext();

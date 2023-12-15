@@ -7,8 +7,8 @@ import React, {
   useEffect,
 } from "react";
 import { io } from "socket.io-client";
-import { functions } from "../../functions/functions";
-import { callApi_getInforUser } from "../../api/callAPI";
+import { functions } from "../../../functions/functions";
+import { callApi_getInforUser } from "../../../api/callAPI";
 import { useRouter } from "next/navigation";
 
 // Define the interface for the object contained in the array

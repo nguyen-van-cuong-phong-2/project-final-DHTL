@@ -1,7 +1,17 @@
+'use client';
 import Image from "next/image"
 import { IoCamera } from "react-icons/io5";
 
-export default function AnhBia() {
+interface AnhBia {
+    data: {
+        id: number,
+        avatar: string,
+        name: string,
+        coverImage: string,
+    }
+}
+
+const AnhBia: React.FC<AnhBia> = ({ data }) => {
     return (
         <>
             <div className=" w-full flex justify-center items-center">
@@ -9,10 +19,14 @@ export default function AnhBia() {
                     <Image
                         alt="anhbia"
                         className="border rounded-b-xl"
-                        src="/images/bia.jpg"
+                        src={data.coverImage ? data.coverImage : '/images/anhbia.jpg'}
                         fill={true}
                         objectFit="cover"
                         quality={100}
+                        onError={(e: any) => {
+                            e.target.onerror = null;
+                            e.target.setsrc = "/images/anhbia.jpg";
+                        }}
                     ></Image>
                     <div className="absolute right-4 bottom-2 px-4 cursor-pointer hover:bg-slate-50 py-1 border-none z-0 text-white rounded-full bg-slate-600 opacity-80 flex gap-2">
                         <IoCamera className="w-7 h-7 cursor-pointer"></IoCamera>
@@ -24,3 +38,4 @@ export default function AnhBia() {
         </>
     )
 }
+export default AnhBia

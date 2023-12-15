@@ -5,7 +5,7 @@ import { FiMessageCircle } from "react-icons/fi";
 import { CiMenuBurger } from "react-icons/ci";
 import { SlUserUnfollow } from "react-icons/sl";
 import { useState } from "react";
-import { useMyContext } from "../../components/context/context";
+import { useMyContext } from "../../../components/context/context";
 import { PopUpMessage } from "../popup/message";
 import { IoCamera } from "react-icons/io5";
 

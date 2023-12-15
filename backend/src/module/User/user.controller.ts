@@ -121,4 +121,20 @@ export class UserController {
       throw error;
     }
   }
+
+  // lấy thông tin user
+  @Post('SearchUser')
+  @UsePipes(new ValidationPipe())
+  async SearchUser(@Body() data: { key: string }): Promise<object> {
+    try {
+      const result = await this.userService.SearchUser(data.key);
+      return {
+        status: 200,
+        result: true,
+        data: result,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

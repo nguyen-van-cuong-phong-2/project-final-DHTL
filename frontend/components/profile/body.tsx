@@ -9,7 +9,15 @@ import { useMyContext } from "../../components/context/context";
 import { PopUpMessage } from "../popup/message";
 import { IoCamera } from "react-icons/io5";
 
-export default function Body() {
+interface Body {
+    data: {
+        id: number,
+        avatar: string,
+        name: string,
+    }
+}
+
+const Body: React.FC<Body> = ({ data }) => {
     const [menu, SetMenu] = useState(false);
     const { arrMessage, updateArrMessage } = useMyContext();
     const handleOnClick = (data: any) => {
@@ -24,11 +32,15 @@ export default function Body() {
                             <Image
                                 alt="avatar"
                                 className="border rounded-full w-[180px] h-[180px] max-md:w-[120px] max-md:h-[120px] max-sm:w-[140px] max-sm:h-[140px] hover:bg-white"
-                                src="/images/avatar.jpg"
+                                src={data.avatar}
                                 width={180}
                                 height={180}
                                 loading="lazy"
                                 style={{ background: "none" }}
+                                onError={(e: any) => {
+                                    e.target.onerror = null;
+                                    e.target.setsrc = "/images/user.png";
+                                }}
                             />
                             <div className="absolute right-0 top-32 p-1 border rounded-full bg-BGICon cursor-pointer">
                                 <IoCamera className="w-7 h-7 cursor-pointer"></IoCamera>
@@ -36,12 +48,12 @@ export default function Body() {
                             </div>
                         </div>
                         <div className="mt-10 max-sm:mt-0">
-                            <div className="font-semibold text-4xl ">Nguyễn Cường</div>
+                            <div className="font-semibold text-4xl ">{data.name}</div>
                             <div className="max-sm:hidden"><Link href={''} >299 bạn bè</Link></div>
                         </div>
                     </div>
 
-                    {/* <div className="border rounded-xl bg-blue-600 py-2 px-5 text-white mt-10 max-sm:mt-2">thêm bạn bè</div> */}
+                    <div className="border rounded-xl bg-blue-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer">thêm bạn bè</div>
                     {/* <div className="flex flex-col items-end">
                         <div className="flex items-center mt-10 max-sm:mt-2 gap-2">
                             <div onClick={() => handleOnClick({
@@ -78,3 +90,4 @@ export default function Body() {
         </>
     )
 }
+export default Body

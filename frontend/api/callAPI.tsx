@@ -58,6 +58,7 @@ const callApiPost_formdata = async (url: string, conditions: object, token_serve
         return error?.response?.data;
     }
 };
+
 export const callApi_Login = async (data: object) => {
     const response = await callApiPost_Json('user/login', data);
     return response;
@@ -75,5 +76,10 @@ export const callApi_uploadAvatar = async (data: object) => {
 
 export const callApi_getInforUser = async (data: object) => {
     const response = await callApiPost_Json('user/getInforUser', data)
+    return response;
+}
+
+export const callApi_SearchUser = async (data: object) => {
+    const response = await callApiPost_Json('user/SearchUser', data)
     return response;
 }

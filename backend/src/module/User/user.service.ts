@@ -147,4 +147,15 @@ export class UserService {
         return response
 
     }
+
+    // tìm kiếm người dùng
+    public async SearchUser(key: string): Promise<object> {
+        console.log("🚀 ~ file: user.service.ts:153 ~ UserService ~ SearchUser ~ key:", key)
+        const response = await this.UsersModel.find({name:new RegExp(key, 'i')});
+        for (let i = 0; i < response.length; i++) {
+            const element = response[i];
+            if (element.avatar) element.avatar = `${process.env.DOMAIN}${element.avatar}`;
+        }
+        return response
+    }
 }

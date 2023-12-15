@@ -1,6 +1,6 @@
 "use client";
-import { PopUpMessage } from "../../components/popup/message";
-import { useMyContext } from "../../components/context/context";
+import { PopUpMessage } from "../../../components/popup/message";
+import { useMyContext } from "../../../components/context/context";
 export default function ArrMessage() {
     const { arrMessage } = useMyContext();
     return (

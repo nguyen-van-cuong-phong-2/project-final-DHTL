@@ -49,7 +49,6 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   const [Loading, SetLoading] = useState(false);
   const [contentNotifi, SetContentNotifi] = useState('');
   const [user, SetUser] = useState<Users>();
-  const router = useRouter()
   useEffect(() => {
     const socketIO = io(`${process.env.NEXT_PUBLIC_DOMAIN_SOCKET}`);
 
@@ -59,8 +58,6 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
       const token = new functions().getInfoFromToken();
       if (token) {
         socketIO.emit("login", { id: token.id })
-        const response = await callApi_getInforUser({ id: Number(token.id) });
-        SetUser(response.data[0]);
       } else {
         return {
           redirect: {

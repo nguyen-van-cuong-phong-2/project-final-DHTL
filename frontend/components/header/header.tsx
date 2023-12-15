@@ -1,27 +1,59 @@
 "use client";
-import { useState } from "react";
-import avatar from "../../public/images/avatar.jpg";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PopupSearch from "../popup/search";
 import { useMyContext } from "../context/context";
-export default function Header() {
+import React from "react";
+import { useRouter } from "next/navigation";
+import { callApi_SearchUser } from "../../api/callAPI";
+
+interface Header {
+  data: {
+    id: number,
+    avatar: string,
+    name: string,
+  }
+}
+
+const Header: React.FC<Header> = ({ data }) => {
+  const { setLoading } = useMyContext()
   const [popUpSearch, setpopUpSearch] = useState(false);
-  const { user } = useMyContext();
+  const [fetchData, SetfetchData] = useState<any>([]);
+  const router = useRouter();
+  useEffect(() => {
+    setLoading(false)
+
+  }, []);
+  const [key, SetKey] = useState('');
+  useEffect(() => {
+    const fetchAPi = async () => {
+      const response = await callApi_SearchUser({ key: key });
+      SetfetchData(response.data)
+    }
+    fetchAPi();
+  }, [key]);
+
+  const tatPopup = () => {
+    setpopUpSearch(false)
+  }
   return (
     <>
       <div className="fixed w-full bg-white top-0 z-50">
         <div className="flex border shadow-md p-3 justify-between">
           <div className="flex w-max gap-3">
-            <div className="border rounded-full h-max w-max px-5 py-3 bg-blue-600 box-border">
+            <div className="border rounded-full h-max w-max px-5 py-3 bg-blue-600 box-border cursor-pointer"
+              onClick={() => { router.push('/') }}
+            >
               <p className="text-white text-1xl font-bold">B</p>
             </div>
             <div className="block">
               <input
                 placeholder="Tìm kiếm trên BlueBook"
-                className="bg-BGICon w-[300px] max-lg:w-[105px] border rounded-3xl px-5 outline-none h-[48px]"
-                onClick={() => setpopUpSearch(!popUpSearch)}
+                className="bg-BGICon w-[500px] max-md:w-[105px] border rounded-3xl px-5 outline-none h-[48px] search"
+                onClick={() => setpopUpSearch(true)}
+                onChange={(e: any) => SetKey(e.target.value)}
               />
-              {popUpSearch && <PopupSearch />}
+              {popUpSearch && <PopupSearch data={fetchData} tatPopup={tatPopup} />}
             </div>
           </div>
           <div className="flex gap-3">
@@ -50,7 +82,7 @@ export default function Header() {
             <div className="w-[47px] h-[47px]">
               <Image
                 className="w-full h-full border rounded-full box-border"
-                src={user?.avatar ? user.avatar : "/images/user.png"}
+                src={data?.avatar ? data.avatar : "/images/user.png"}
                 width={50}
                 height={40}
                 quality={100}
@@ -68,3 +100,5 @@ export default function Header() {
     </>
   );
 }
+
+export default Header;

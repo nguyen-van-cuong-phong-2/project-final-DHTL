@@ -7,7 +7,7 @@ import { useMyContext } from "../context/context";
 import { ChatMessage } from "../chat/chat";
 import { useEffect, useRef, useState } from "react";
 import { AnimationTyping } from "../popup/typingAnimation";
-import { functions } from "../../functions/functions";
+import { functions } from "../../../functions/functions";
 
 interface PopUpMessage {
   item: {
