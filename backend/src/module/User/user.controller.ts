@@ -109,13 +109,47 @@ export class UserController {
   // lấy thông tin user
   @Post('getInforUser')
   @UsePipes(new ValidationPipe())
-  async GetInforUser(@Body() getInfor: getInfor): Promise<object> {
+  async GetInforUser(
+    @Body() getInfor: getInfor,
+    @Req() req: ExtendedRequest,
+  ): Promise<object> {
     try {
-      const result = await this.userService.getInfoUser(getInfor.id);
+      const result = await this.userService.getInfoUser(
+        getInfor.id,
+        Number(req?.user?.id),
+      );
       return {
         status: 200,
         result: true,
         data: result,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // tìm kiếm user
+  @Post('SearchUser')
+  @UsePipes(new ValidationPipe())
+  async SearchUser(
+    @Body() data: { key: string },
+    @Req() req: ExtendedRequest,
+  ): Promise<object> {
+    try {
+      if (req.user && req.user.id) {
+        const result = await this.userService.SearchUser(
+          data.key,
+          Number(req.user.id),
+        );
+        return {
+          status: 200,
+          result: true,
+          data: result,
+        };
+      }
+      return {
+        status: 401,
+        result: false,
       };
     } catch (error) {
       throw error;

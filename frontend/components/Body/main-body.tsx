@@ -3,7 +3,16 @@ import { useState } from "react";
 import PostNew from "./layout/post_new";
 import PopupPostNew from "../popup/postNew";
 import News from "./news";
-export default function BettwenBody() {
+
+interface BettwenBody {
+  data: {
+    id: number,
+    avatar: string,
+    name: string,
+  }
+}
+
+const BettwenBody: React.FC<BettwenBody> = ({ data }) => {
   const [popUpPostNew, SetPopUpPostNew] = useState(false);
   return (
 
@@ -25,7 +34,7 @@ export default function BettwenBody() {
       "
     >
 
-      <PostNew></PostNew>
+      <PostNew data={data}></PostNew>
       {popUpPostNew && <PopupPostNew></PopupPostNew>}
       <News></News>
       <News></News>
@@ -34,7 +43,7 @@ export default function BettwenBody() {
       <News></News>
 
     </div>
-
-
   );
 }
+
+export default BettwenBody;

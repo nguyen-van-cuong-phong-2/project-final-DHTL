@@ -4,17 +4,27 @@ import RightBody from "../components/navbar/navbar-right";
 import BettwenBody from "../components/Body/main-body";
 import ArrMessage from "../components/Body/arrMessage";
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers'
+import { cookies } from 'next/headers';
+import { callApi_getInforUser } from "../api/callAPI";
+import { functions } from '../functions/functions'
+
+async function LoadingData(token: string): Promise<any> {
+  const user = await new functions().getInfoFromTokenServerSide(token);
+  const playlists = await callApi_getInforUser({ id: Number(user.id) }, token)
+  return playlists
+}
+
 export default async function Home() {
   const cookieStore = cookies()
   const token = cookieStore.get('token')
-  if (!token) redirect('/Login')
+  if (!token) redirect('/Login');
+  const data = await LoadingData(token.value);
   return (
     <div className="w-full">
-      <Header></Header>
+      <Header data={data?.data}></Header>
       <div className="flex mt-[80px] justify-between w-full">
-        <LeftBody />
-        <BettwenBody />
+        <LeftBody data={data?.data} />
+        <BettwenBody data={data?.data} />
         <RightBody />
         <ArrMessage></ArrMessage>
       </div>

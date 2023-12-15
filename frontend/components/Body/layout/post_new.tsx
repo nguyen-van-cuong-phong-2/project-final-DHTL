@@ -1,9 +1,17 @@
 import avatar from "../../../public/images/avatar.jpg";
 import Image from "next/image";
 import { useMyContext } from "../../context/context";
-export default function BettwenBody() {
-  const { user } = useMyContext();
-  const name = user?.name.split(' ')[0]
+
+interface BettwenBody {
+  data: {
+    id: number,
+    avatar: string,
+    name: string,
+  }
+}
+
+const PostNew: React.FC<BettwenBody> = ({ data }) => {
+  const name = data?.name.split(' ')[0]
   return (
     <>
       <div className="w-4/5 h-24 bg-white flex p-3 items-center border rounded-xl mt-5  max-lg:w-full
@@ -11,7 +19,7 @@ export default function BettwenBody() {
         <div className="flex items-center w-10 h-10">
           <Image
             className="border rounded-full box-border items-center w-full h-full"
-            src={user?.avatar ? user.avatar : "/images/user.png"}
+            src={data?.avatar ? data.avatar : "/images/user.png"}
             width={50}
             height={40}
             objectFit="cover"
@@ -27,3 +35,5 @@ export default function BettwenBody() {
     </>
   );
 }
+
+export default PostNew;

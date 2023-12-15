@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import JWT from "jsonwebtoken";
+import { redirect } from 'next/navigation';
 
 interface TokenInfo {
     id: number;
@@ -44,4 +45,19 @@ export class functions {
             return null
         }
     };
+
+    public async getInfoFromTokenServerSide(token: string) {
+        try {
+            const response = JWT.decode(token as string);
+            if (typeof response === 'object' && response !== null) {
+                // If the response is an object and not null, attempt to cast it to TokenInfo
+                const tokenInfo = response as TokenInfo;
+                return tokenInfo;
+            } else {
+                return null
+            }
+        } catch (error) {
+            return redirect('/Login')
+        }
+    }
 }

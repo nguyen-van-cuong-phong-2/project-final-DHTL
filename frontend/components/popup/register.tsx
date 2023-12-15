@@ -38,7 +38,6 @@ const Register = ({ tatPopup }: Register) => {
     });
     setTimeout(() => {
       if (response.result === true) {
-        setLoading(false);
         Cookies.set('token', response.data.token);
         SetUser({
           id: response.data.id,

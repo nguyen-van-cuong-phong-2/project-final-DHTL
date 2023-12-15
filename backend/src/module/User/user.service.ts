@@ -16,10 +16,13 @@ import * as crypto from 'crypto';
 import { Login } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as path from 'path';
+import { Friend } from 'src/Schemas/friend.schema';
+
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel(Users.name) private UsersModel: Model<Users>,
+        @InjectModel(Friend.name) private FriendsModel: Model<Friend>,
         private readonly jwtService: JwtService,
     ) { }
 
@@ -136,15 +139,88 @@ export class UserService {
     }
 
     // lấy thông tin người dùng (thiếu lấy danh sách bạn bè online và offline)
-    public async getInfoUser(id: number): Promise<object> {
-        const response = await this.UsersModel.aggregate([
-            { $match: { id } }
-        ]);
-        for (let i = 0; i < response.length; i++) {
-            const element = response[i];
-            element.avatar = `${process.env.DOMAIN}${element.avatar}`;
+    public async getInfoUser(id: number, id_token: number): Promise<object> {
+        try {
+            const response = await this.UsersModel.findOne({ id }).lean();
+            if (response) {
+                response.avatar = `${process.env.DOMAIN}${response.avatar}`;
+                if (id !== id_token) {
+                    const checkFriend = await this.FriendsModel.findOne({
+                        $or: [
+                            {
+                                $and: [
+                                    { sender_id: id },
+                                    { receiver_id: id_token }
+                                ]
+                            },
+                            {
+                                $and: [
+                                    { receiver_id: id },
+                                    { sender_id: id_token }
+                                ]
+                            }
+                        ]
+                    });
+                    type Objectt = {
+                        id: number,
+                        avatar: string,
+                        name: string,
+                        makefriend: number
+                    }
+                    const object: Objectt = {
+                        ...response,
+                        makefriend: 0
+                    }
+                    if (!checkFriend) object.makefriend = 0;
+                    else if (checkFriend.status == 0) object.makefriend = 1;
+                    else if (checkFriend.status == 1) object.makefriend = 2;
+                    return object
+                }
+                return response
+            }
+            throw new NotFoundException('Không tìm thấy người dùng')
+        } catch (error) {
+            throw new BadRequestException(error.message)
         }
-        return response
+
+    }
+
+    // tìm kiếm người dùng
+    public async SearchUser(key: string, id: number): Promise<object> {
+        try {
+            const response = await this.UsersModel.aggregate([
+                { $match: { name: new RegExp(key, 'i') } },
+            ]);
+
+            const arrMakeFriend = await Promise.all(response.map(item => (
+                this.FriendsModel.findOne({
+                    $or: [
+                        {
+                            $and: [
+                                { sender_id: id },
+                                { receiver_id: item.id }
+                            ]
+                        },
+                        {
+                            $and: [
+                                { receiver_id: id },
+                                { sender_id: item.id }
+                            ]
+                        }
+                    ]
+                }).lean()
+            )));
+            for (let i = 0; i < response.length; i++) {
+                const element = response[i];
+                if (element.avatar) element.avatar = `${process.env.DOMAIN}${element.avatar}`;
+                element.makefriend = arrMakeFriend[i]?.status ? 1 : 0;
+                if (!arrMakeFriend[i]) element.makefriend = 0;
+                else element.makefriend = arrMakeFriend[i]?.status == 0 ? 1 : 2;
+            }
+            return response
+        } catch (error) {
+            throw new BadRequestException()
+        }
 
     }
 }

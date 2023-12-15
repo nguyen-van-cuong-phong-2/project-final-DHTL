@@ -25,7 +25,7 @@ const callApiPost_Json = async (url: string, conditions: object, token_server?: 
                 Authorization: `Bearer ${token_server}`,
             };
         }
-
+        console.log(token_server)
         return await axios({
             method: "post",
             url: `${process.env.NEXT_PUBLIC_DOMAIN_API}/${url}`,
@@ -35,6 +35,7 @@ const callApiPost_Json = async (url: string, conditions: object, token_server?: 
             return response.data;
         })
     } catch (error) {
+        console.log("🚀 ~ file: callAPI.tsx:38 ~ constcallApiPost_Json= ~ error:", error)
         return error?.response?.data;
     }
 };
@@ -58,6 +59,7 @@ const callApiPost_formdata = async (url: string, conditions: object, token_serve
         return error?.response?.data;
     }
 };
+
 export const callApi_Login = async (data: object) => {
     const response = await callApiPost_Json('user/login', data);
     return response;
@@ -73,7 +75,22 @@ export const callApi_uploadAvatar = async (data: object) => {
     return response;
 }
 
-export const callApi_getInforUser = async (data: object) => {
-    const response = await callApiPost_Json('user/getInforUser', data)
+export const callApi_getInforUser = async (data: object, token?: string) => {
+    const response = await callApiPost_Json('user/getInforUser', data, token)
+    return response;
+}
+
+export const callApi_SearchUser = async (data: object) => {
+    const response = await callApiPost_Json('user/SearchUser', data)
+    return response;
+}
+
+export const callApi_MakeFriend = async (data: object) => {
+    const response = await callApiPost_Json('friend/sendMakeFriend', data)
+    return response;
+}
+
+export const callApi_cancelMakeFriend = async (data: object) => {
+    const response = await callApiPost_Json('friend/cancelMakeFriend', data)
     return response;
 }
