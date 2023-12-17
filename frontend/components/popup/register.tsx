@@ -49,6 +49,7 @@ const Register = ({ tatPopup }: Register) => {
         SetContentNotifi('Tạo tài khoản thành công!')
         router.push('/UploadAvatar')
       } else {
+        setLoading(false);
         SetContentNotifi('Email hoặc số điện thoại đã được sử dụng!')
       }
     }, 2000)

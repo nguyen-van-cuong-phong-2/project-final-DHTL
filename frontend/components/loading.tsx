@@ -6,9 +6,6 @@ import { useMyContext } from "../components/context/context";
 
 const App: React.FC = () => {
     const { Loading } = useMyContext();
-
-
-
     return (
         <>
             {

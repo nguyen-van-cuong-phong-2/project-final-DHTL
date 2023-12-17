@@ -2,34 +2,42 @@
 
 import Image from "next/image";
 import { useMyContext } from "../context/context";
+import { useEffect, useState } from "react";
+import { callApi_GetListFriendOnline } from '../../api/callAPI';
+import { functions } from "../../functions/functions";
 
-export default function rightBody() {
-  const arr = [
-    {
-      id: 1,
-      name: "Thảo Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 2,
-      name: "Nam Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 3,
-      name: "Linh Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-    {
-      id: 4,
-      name: "Mai Nguyễn",
-      avatar: "/images/avatarChat.jpg",
-    },
-  ];
+export default function RightBody() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { updateArrMessage } = useMyContext();
+  const { updateArrMessage, socket } = useMyContext();
+
+  const [userOnline, setUserOnline] = useState([]);
+  const [arrFriend, setArrFriend] = useState([]);
+  useEffect(() => {
+    if (socket) {
+      const getUserOnline = () => {
+        socket.emit("getOnline");
+        socket.on("listOnline", (data: Array<number>) => {
+          setUserOnline(data);
+        });
+        const token = new functions().getInfoFromToken();
+        if (token) {
+          socket.emit("login", { id: token.id })
+        };
+        getUserOnline();
+        return () => socket.off("listOnline");
+      }
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    const fecthAPI = async () => {
+      const response = await callApi_GetListFriendOnline({ arr: userOnline });
+      setArrFriend(response.data)
+    }
+    fecthAPI();
+  }, [userOnline]);
   const handleOnClick = (e: number) => {
-    const ItemFind = arr.find((item) => item.id == e);
+    const ItemFind = arrFriend.find((item) => item.id == e);
     if (ItemFind) {
       updateArrMessage(ItemFind);
     }
@@ -48,7 +56,7 @@ export default function rightBody() {
       "
       >
         <div className="block mt-[1.5rem]">
-          {arr.map((item) => (
+          {arrFriend?.map((item) => (
             <div
               key={item.id}
               className="flex items-center cursor-pointer hover:bg-gray-300 border rounded-2xl"
@@ -63,11 +71,15 @@ export default function rightBody() {
               cursor-pointer"
               >
                 <Image
-                  src={item.avatar}
+                  src={item.avatar ? item.avatar : "/images/user.png"}
                   className="w-full h-full border rounded-full"
                   width={20}
                   height={20}
                   alt="avatar"
+                  onError={(e: any) => {
+                    e.target.onerror = null;
+                    e.target.setsrc = "/images/user.png";
+                  }}
                 />
                 <div className="absolute w-3 h-3 right-2 top-9 border rounded-full bg-green-600"></div>
               </div>

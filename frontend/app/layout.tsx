@@ -14,8 +14,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="h-screen mx-auto bg-BGICon overflow-hidden">
         <MyContextProvider>
-          {children}
           <Loading></Loading>
+          {children}
           <Notifications></Notifications>
         </MyContextProvider>
 

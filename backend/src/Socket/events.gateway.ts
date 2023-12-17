@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   MessageBody,
   SubscribeMessage,
@@ -9,6 +10,8 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MessageService } from '../module/Message/message.service';
+import { UserService } from '../module/User/user.service';
+import { NotificationService } from '../module/notification/notification.service';
 
 @WebSocketGateway({
   cors: {
@@ -17,7 +20,11 @@ import { MessageService } from '../module/Message/message.service';
 })
 export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   private arrUserOnline = new Map();
-  constructor(private readonly messageService: MessageService) {}
+  constructor(
+    private readonly messageService: MessageService,
+    private readonly UserService: UserService,
+    private readonly NotificationService: NotificationService,
+  ) { }
   handleConnection(client: any) {
     console.log(`${client.id} connected`);
   }
@@ -33,7 +40,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     @MessageBody() data: { id: number },
     @ConnectedSocket() client: Socket,
   ): void {
-    console.log(this.arrUserOnline.set(client.id, data.id));
+    console.log(this.arrUserOnline.set(data.id, client.id));
   }
 
   @SubscribeMessage('getOnline')
@@ -73,5 +80,33 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
       return this.server.to(client.id).emit('PushMessage', { data: response });
     }
     return this.server.emit('Message', `Missing data`);
+  }
+
+  // send friend request
+  @SubscribeMessage('sendNotification')
+  async sendMakeFriends(
+    @MessageBody()
+    data: {
+      sender_id: number;
+      receiver_id: number;
+      type: number;
+    },
+  ): Promise<any> {
+    if (data.type == 1 || data.type == 2) {
+      const find = this.arrUserOnline.get(data.receiver_id);
+      if (find) {
+        this.server.socketsJoin(find);
+        const response_Promise = this.UserService.getInfoUser(data.sender_id);
+        const totalNotifi_Promise =
+          this.NotificationService.getTotalNotification(data.receiver_id);
+        const [response, totalNotifi] = await Promise.all([
+          response_Promise,
+          totalNotifi_Promise,
+        ]);
+        return this.server.to(find).emit('notification', {
+          data: { sender_id: response, type: data.type, totalNotifi },
+        });
+      }
+    }
   }
 }

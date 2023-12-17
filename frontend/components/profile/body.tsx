@@ -8,22 +8,31 @@ import { useState } from "react";
 import { useMyContext } from "../../components/context/context";
 import { PopUpMessage } from "../popup/message";
 import { IoCamera } from "react-icons/io5";
-import { callApi_MakeFriend, callApi_cancelMakeFriend, callApi_getInforUser } from "../../api/callAPI";
+import { functions } from "../../functions/functions";
+import {
+    callApi_MakeFriend,
+    callApi_acceptMakeFriend,
+    callApi_cancelMakeFriend,
+    callApi_getInforUser,
+    callApi_DeleteMakeFriend
+} from "../../api/callAPI";
 
 interface Body {
     data: {
         id: number,
         avatar: string,
         name: string,
-        makefriend: number
+        makefriend: number,
+        totalFriend: number
     }
 }
 
 const Body: React.FC<Body> = ({ data }) => {
     const [menu, SetMenu] = useState(false);
     const [dataResult, SetDataResult] = useState(data);
+    const user = new functions().getInfoFromToken();
 
-    const { arrMessage, updateArrMessage, SetContentNotifi } = useMyContext();
+    const { arrMessage, updateArrMessage, SetContentNotifi, socket } = useMyContext();
     const handleOnClick = (data: any) => {
         updateArrMessage(data);
     };
@@ -31,8 +40,13 @@ const Body: React.FC<Body> = ({ data }) => {
     const them_ban_be = async (id: number) => {
         const response = await callApi_MakeFriend({ receiver_id: id });
         if (response.result === true) {
+            socket.emit('sendNotification', {
+                sender_id: user.id,
+                receiver_id: id,
+                type: 1
+            })
             ReloadInfoUser();
-            SetContentNotifi("Thêm bạn bè thành công")
+            SetContentNotifi("Gửi lời mời thành công")
         } else {
             SetContentNotifi("Thêm bạn bè thất bại, vui lòng thử lại sau!")
         }
@@ -50,10 +64,29 @@ const Body: React.FC<Body> = ({ data }) => {
 
     const ReloadInfoUser = async () => {
         const response = await callApi_getInforUser({ id: Number(dataResult.id) });
-        console.log("🚀 ~ file: body.tsx:53 ~ ReloadInfoUser ~ response:", response)
-        // SetDataResult(response?.data[0])
+        SetDataResult(response?.data)
     }
 
+    const handleAccept = async (id: number) => {
+        const response = await callApi_acceptMakeFriend({ receiver_id: id });
+        if (response.status) {
+            socket.emit('sendNotification', {
+                sender_id: user.id,
+                receiver_id: id,
+                type: 1
+            })
+            ReloadInfoUser();
+            SetContentNotifi(`Từ giờ bạn và ${data.name} sẽ trở thành bạn bè của nhau!`);
+        }
+    }
+
+    const handleCancel = async (id: number) => {
+        const response = await callApi_DeleteMakeFriend({ receiver_id: id });
+        if (response.status) {
+            ReloadInfoUser();
+            SetContentNotifi(`Từ chối kết bạn thành công!`);
+        }
+    }
     return (
         <>
             <div className="h-screen w-full flex justify-center items-center  bg-white">
@@ -80,7 +113,7 @@ const Body: React.FC<Body> = ({ data }) => {
                         </div>
                         <div className="mt-10 max-sm:mt-0">
                             <div className="font-semibold text-4xl ">{dataResult?.name}</div>
-                            <div className="max-sm:hidden"><Link href={''} >299 bạn bè</Link></div>
+                            <div className="max-sm:hidden"><Link href={''} >{dataResult?.totalFriend} bạn bè</Link></div>
                         </div>
                     </div>
                     {
@@ -94,12 +127,12 @@ const Body: React.FC<Body> = ({ data }) => {
                         >Huỷ lời mời</div>
                     }
 
-                    {/* <div className="flex flex-col items-end">
+                    {dataResult?.makefriend == 3 && <div className="flex flex-col items-end">
                         <div className="flex items-center mt-10 max-sm:mt-2 gap-2">
                             <div onClick={() => handleOnClick({
-                                id: 2,
-                                name: "Nam Nguyễn",
-                                avatar: "/images/avatarChat.jpg",
+                                id: dataResult.id,
+                                name: dataResult?.name,
+                                avatar: dataResult?.avatar,
                             })} className="flex items-center border p-2 gap-2 rounded-xl bg-BGICon cursor-pointer hover:bg-slate-300">
                                 <FiMessageCircle></FiMessageCircle>
                                 <div className="">Nhắn tin</div>
@@ -112,12 +145,17 @@ const Body: React.FC<Body> = ({ data }) => {
                             <div><SlUserUnfollow></SlUserUnfollow></div>
                             <div>Huỷ kết bạn</div>
                         </div>}
-                    </div> */}
-
-                    {/* <div className="flex justify-center items-center gap-2 mt-7">
-                        <div className="border rounded-xl bg-blue-600 text-white px-3 py-2 cursor-pointer hover:bg-slate-300">Chấp nhận lời mời</div>
-                        <div className="border rounded-xl bg-BGICon px-3 py-2 cursor-pointer">Xoá lời mời</div>
-                    </div> */}
+                    </div>}
+                    {
+                        dataResult?.makefriend == 2 && <div className="flex justify-center items-center gap-2 mt-7">
+                            <div className="border rounded-xl bg-blue-600 text-white px-3 py-2 cursor-pointer hover:bg-slate-300"
+                                onClick={() => handleAccept(dataResult.id)}
+                            >Chấp nhận lời mời</div>
+                            <div className="border rounded-xl bg-BGICon px-3 py-2 cursor-pointer hover:bg-slate-300"
+                                onClick={() => handleCancel(dataResult.id)}
+                            >Xoá lời mời</div>
+                        </div>
+                    }
 
                     <div className="right-20 fixed z-50 bottom-0 flex gap-2">
                         {arrMessage.map((item) => (

@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Controller, Req } from '@nestjs/common';
+import { BadRequestException, Controller, Req } from '@nestjs/common';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { FriendService } from './friend.service';
+import { Friend } from 'src/Schemas/friend.schema';
 import {
     Post,
     Body,
@@ -67,8 +68,6 @@ export class FriendController {
     @UsePipes(new ValidationPipe())
     async CancelMakeFriend(@Body() data: { receiver_id: number }, @Req() req: ExtendedRequest): Promise<object> {
         try {
-            console.log("🚀 ~ file: friend.controller.ts:69 ~ FriendController ~ CancelMakeFriend ~ receiver_id:", req.user?.id)
-
             await this.friendService.DeleteMakeFriend(data.receiver_id, Number(req.user?.id));
             return {
                 status: 200,
@@ -78,4 +77,26 @@ export class FriendController {
             throw error;
         }
     }
+
+    // danh sách bạn bè online
+    @Post('getListFriendOnline')
+    @UsePipes(new ValidationPipe())
+    async getListFriendOnline(@Body() data: { arr: Array<number> }, @Req() req: ExtendedRequest): Promise<object> {
+        try {
+            if (req.user && data.arr) {
+                const query = await this.friendService.getListFriend(Number(req.user.id));
+                const filter = query.filter((item: { id: number; }) => data.arr.includes(item.id));
+                console.log("🚀 ~ file: friend.controller.ts:90 ~ FriendController ~ getListFriendOnline ~ filter:", query)
+                return {
+                    status: 200,
+                    result: true,
+                    data: filter,
+                }
+            }
+            throw new BadRequestException()
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }

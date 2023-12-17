@@ -33,7 +33,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
     if (event.key === "Enter") {
       event.preventDefault();
 
-      if (DivRef.current && DivRef.current.innerHTML !="") {
+      if (DivRef.current && DivRef.current.innerHTML != "") {
         socket.emit("sendMessage", {
           sender_id: user.id,
           receiver_id: item.id,
@@ -114,12 +114,16 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
           <div className="flex items-center gap-1">
             <div className="w-9 h-9 relative">
               <Image
-                src={item.avatar}
+                src={item.avatar ? item.avatar : "/images/user.png"}
                 alt="avatar"
                 className="w-full h-full border rounded-full"
                 objectFit="cover"
                 width={30}
                 height={30}
+                onError={(e: any) => {
+                  e.target.onerror = null;
+                  e.target.setsrc = "/images/user.png";
+                }}
               ></Image>
 
               <div className="bg-green-600 absolute right-0 bottom-0 p-1 border rounded-full"></div>
