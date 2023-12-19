@@ -36,7 +36,7 @@ interface MyContextType {
   user: Users;
   SetUser: any;
   totalNoti: number;
-  SetTotalNoti
+  SetTotalNoti: any
 }
 
 // Create the context with an initial value
@@ -60,11 +60,14 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
       SetTotalNoti(data.data.totalNotifi)
       if (data?.data?.type == 1) {
         SetContentNotifi(`${data.data.sender_id.name} đã gửi lời mời kết bạn!`)
-      }else if (data?.data?.type == 2) {
+      } else if (data?.data?.type == 2) {
         SetContentNotifi(`${data.data.sender_id.name} đã chấp nhận kết bạn!`)
       }
     });
-   
+    const user = new functions().getInfoFromToken();
+    if (user) {
+      socketIO.emit('login', { id: user.id })
+    }
     return () => {
       socketIO.disconnect();
     };

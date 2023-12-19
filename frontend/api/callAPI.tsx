@@ -34,7 +34,6 @@ const callApiPost_Json = async (url: string, conditions: object, token_server?: 
             return response.data;
         })
     } catch (error) {
-        console.log("🚀 ~ file: callAPI.tsx:38 ~ constcallApiPost_Json= ~ error:", error)
         return error?.response?.data;
     }
 };

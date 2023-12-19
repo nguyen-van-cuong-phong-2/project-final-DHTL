@@ -24,18 +24,18 @@ const BettwenBody: React.FC<BettwenBody> = ({ data }) => {
       rounded 
       w-3/5 
       p-2 
-      
       h-screen 
       overflow-auto
       no-scrollbar
       ml-20
       max-lg:w-full
       max-lg:m-0
+      
       "
     >
 
-      <PostNew data={data}></PostNew>
-      {popUpPostNew && <PopupPostNew></PopupPostNew>}
+      <PostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PostNew>
+      {popUpPostNew && <PopupPostNew SetPopUpPostNew={SetPopUpPostNew}></PopupPostNew>}
       <News></News>
       <News></News>
       <News></News>

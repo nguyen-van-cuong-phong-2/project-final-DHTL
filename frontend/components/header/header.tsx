@@ -99,12 +99,12 @@ const Header: React.FC<Header> = ({ data }) => {
                 <div className="border rounded-full bg-red-700 w-6 h-6 absolute right-0 bottom-[-3px] text-white flex justify-center items-center text-sm">{totalNoti}</div>
               }
             </div>
-            <div className="w-[47px] h-[47px]">
+            <div className="w-[47px] h-[47px] relative">
               <Image
                 className="w-full h-full border rounded-full box-border"
                 src={data?.avatar ? data.avatar : "/images/user.png"}
-                width={50}
-                height={40}
+                objectFit="cover"
+                fill={true}
                 quality={100}
                 alt="avatar"
                 onError={(e: any) => {

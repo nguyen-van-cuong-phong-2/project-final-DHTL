@@ -86,7 +86,6 @@ export class FriendController {
             if (req.user && data.arr) {
                 const query = await this.friendService.getListFriend(Number(req.user.id));
                 const filter = query.filter((item: { id: number; }) => data.arr.includes(item.id));
-                console.log("🚀 ~ file: friend.controller.ts:90 ~ FriendController ~ getListFriendOnline ~ filter:", query)
                 return {
                     status: 200,
                     result: true,

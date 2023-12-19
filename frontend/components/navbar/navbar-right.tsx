@@ -9,7 +9,6 @@ import { functions } from "../../functions/functions";
 export default function RightBody() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { updateArrMessage, socket } = useMyContext();
-
   const [userOnline, setUserOnline] = useState([]);
   const [arrFriend, setArrFriend] = useState([]);
   useEffect(() => {
@@ -19,16 +18,11 @@ export default function RightBody() {
         socket.on("listOnline", (data: Array<number>) => {
           setUserOnline(data);
         });
-        const token = new functions().getInfoFromToken();
-        if (token) {
-          socket.emit("login", { id: token.id })
-        };
-        getUserOnline();
-        return () => socket.off("listOnline");
       }
+      getUserOnline();
+      return () => socket.off("listOnline");
     }
   }, [socket]);
-
   useEffect(() => {
     const fecthAPI = async () => {
       const response = await callApi_GetListFriendOnline({ arr: userOnline });
@@ -42,20 +36,19 @@ export default function RightBody() {
       updateArrMessage(ItemFind);
     }
   };
+ 
   return (
     <>
       <div
         className="
       w-1/5 
       h-screen 
-      overflow-auto
-      no-scrollbar
       max-lg:hidden
       sticky 
       top-[75px]
       "
       >
-        <div className="block mt-[1.5rem]">
+        {/* <div className="block mt-[1.5rem] overflow-auto no-scrollbar">
           {arrFriend?.map((item) => (
             <div
               key={item.id}
@@ -86,7 +79,7 @@ export default function RightBody() {
               <p className="font-semibold">{item.name}</p>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </>
   );

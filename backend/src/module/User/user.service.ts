@@ -53,7 +53,6 @@ export class UserService {
                 refreshToken,
             };
         } catch (error) {
-            console.log(error);
             throw new BadRequestException(error.message, 'Bad request');
         }
     }
@@ -109,11 +108,11 @@ export class UserService {
     // hàm đăng nhập
     public async login(@Body() login: Login): Promise<object> {
         const hashedPassword = this.createMd5(login.password);
-        const checkExists = await this.UsersModel.findOne({ userName: login.userName, password: hashedPassword }).lean();
+        const checkExists = await this.UsersModel.findOne({ userName: login.userName, password: hashedPassword }, { password: 0 }).lean();
         if (!checkExists) throw new NotFoundException("Tài khoản hoặc mật khẩu không chính xác");
         const token = await this.generateToken(checkExists);
         const refreshToken = await this.generateToken(checkExists);
-        return { token, refreshToken }
+        return { token, refreshToken, data: checkExists }
     }
 
     // upload file 

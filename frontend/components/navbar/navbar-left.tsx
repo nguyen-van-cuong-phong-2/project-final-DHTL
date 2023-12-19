@@ -21,12 +21,11 @@ const LeftBody: React.FC<LeftBody> = ({ data }) => {
           onClick={() => router.push(`/Profile?id=${data.id}`)}
         >
           <div
-            className="w-12 h-12"
+            className="w-12 h-12 relative"
           ><Image
               className="border rounded-full box-border w-full h-full"
               src={data?.avatar ? data.avatar : "/images/user.png"}
-              width={300}
-              height={300}
+              fill={true}
               objectFit="cover"
               quality={100}
               alt="avatar"

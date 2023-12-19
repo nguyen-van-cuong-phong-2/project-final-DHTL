@@ -27,7 +27,7 @@ const Register = ({ tatPopup }: Register) => {
       callback();
     }
   }
-  const { setLoading, SetContentNotifi, SetUser } = useMyContext();
+  const { setLoading, SetContentNotifi, SetUser, socket } = useMyContext();
   const onFinish = async (values: any) => {
     setLoading(true);
     const response = await callApi_Register({
@@ -46,6 +46,7 @@ const Register = ({ tatPopup }: Register) => {
           password: values.password,
           birthDay: values.birthday
         });
+        socket.emit("login", { id: response.data.id })
         SetContentNotifi('Tạo tài khoản thành công!')
         router.push('/UploadAvatar')
       } else {

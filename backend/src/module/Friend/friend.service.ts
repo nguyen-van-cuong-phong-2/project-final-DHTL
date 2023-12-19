@@ -154,7 +154,6 @@ export class FriendService {
             if (item.sender_id != id) arr.push(item.sender_id)
             if (item.receiver_id != id) arr.push(item.receiver_id)
         })
-        console.log("🚀 ~ file: friend.service.ts:153 ~ FriendService ~ getListFriend ~ arr:", arr)
 
         const arrUser = await this.UsersModel.find({
             id: { $in: arr }

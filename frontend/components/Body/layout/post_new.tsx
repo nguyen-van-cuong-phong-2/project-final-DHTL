@@ -7,25 +7,26 @@ interface BettwenBody {
     id: number,
     avatar: string,
     name: string,
-  }
+  },
+  SetPopUpPostNew: any
 }
 
-const PostNew: React.FC<BettwenBody> = ({ data }) => {
+const PostNew: React.FC<BettwenBody> = ({ data, SetPopUpPostNew }) => {
   const name = data?.name.split(' ')[0]
   return (
     <>
       <div className="w-4/5 h-24 bg-white flex p-3 items-center border rounded-xl mt-5  max-lg:w-full
-      max-lg:mr-0">
-        <div className="flex items-center w-10 h-10">
+      max-lg:mr-0" onClick={() => SetPopUpPostNew(true)}>
+        <div className="relative w-10 h-10">
           <Image
             className="border rounded-full box-border items-center w-full h-full"
             src={data?.avatar ? data.avatar : "/images/user.png"}
-            width={50}
-            height={40}
+            fill
             objectFit="cover"
             quality={100}
             alt="avatar"
           />
+
         </div>{" "}
         <input
           placeholder={`${name} ơi, bạn đang nghĩ gì thế?`}

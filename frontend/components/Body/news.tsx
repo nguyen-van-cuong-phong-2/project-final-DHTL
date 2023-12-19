@@ -12,15 +12,14 @@ export default function News() {
         <div className="w-4/5 border rounded-xl h-max bg-white mt-5 p-5  max-lg:w-full
         max-lg:m-0  max-lg:mt-5">
             <div className="flex gap-2">
-                <div className="w-10 h-10">
+                <div className="w-10 h-10 relative">
                     <Image
                         alt="avatar"
-                        src={'/images/avatarChat.jpg'}
-                        width={50}
-                        height={40}
+                        src='/images/emgai.jpg'
+                        fill
                         objectFit="cover"
                         quality={100}
-                        className="w-full h-full border rounded-full"
+                        className="w-10 h-10 border rounded-full"
                     ></Image>
                 </div>
                 <div>

@@ -24,7 +24,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     private readonly messageService: MessageService,
     private readonly UserService: UserService,
     private readonly NotificationService: NotificationService,
-  ) { }
+  ) {}
   handleConnection(client: any) {
     console.log(`${client.id} connected`);
   }
@@ -45,7 +45,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
 
   @SubscribeMessage('getOnline')
   getOnline(): void {
-    const values = Array.from(this.arrUserOnline.values());
+    const values = Array.from(this.arrUserOnline.keys());
     this.server.emit('listOnline', values);
   }
 

@@ -4,17 +4,21 @@ import { IoImagesOutline } from "react-icons/io5";
 import { LiaUserTagSolid } from "react-icons/lia";
 import { ImCancelCircle } from "react-icons/im";
 
-export default function PopupPostNew() {
+interface Popup {
+  SetPopUpPostNew: any
+}
+
+const PopupPostNew: React.FC<Popup> = ({ SetPopUpPostNew }) => {
   return (
     <>
       <div className="absolute w-full h-screen bg-BGRegister top-[75px] left-0 z-50">
-        <div className="border rounded-2xl bg-white w-1/3 h-[60%] absolute top-20 left-1/3">
-          <div className="border-y-2 w-full h-1/6 rounded-md flex items-center">
-            <div className="w-[60%] h-full flex justify-end items-center">
+        <div className="border rounded-2xl bg-white max-md:w-[80%] h-[60%] absolute lg:top-20 lg:left-[25%] max-sm:w-full max-sm:left-0 max-sm:h-full max-sm:top-0 sm:w-[80%] sm:left-20 sm:h-[60%] lg:w-[50%] xl:w-[30%] xl:left-[35%] max-sm:overflow-hidden">
+          <div className="border-y-2 w-full h-1/6 rounded-md flex items-center max-sm:h-[10%] md:h-[10%]">
+            <div className="w-[60%] h-full flex justify-end items-center max-sm:w-[70%] ">
               <h2 className="text-2xl font-bold">Tạo bài viết</h2>
             </div>
             <div className="w-[40%] h-full flex justify-end items-center">
-              <div className="w-8 h-8 mt-2 bg-BGICon border rounded-full mr-5">
+              <div className="w-8 h-8 mt-2 bg-BGICon border rounded-full mr-5 cursor-pointer" onClick={() => SetPopUpPostNew(false)}>
                 <ImCancelCircle className="w-full h-full text-gray-400" />
               </div>
             </div>
@@ -56,8 +60,9 @@ export default function PopupPostNew() {
               <span>Thêm vào bài viết của bạn</span>
               <div className="w-[70px] h-[60px]">
                 <div className="w-full h-full mt-1 flex gap-2">
-                  <div className="w-[30px] h-full">
-                    <IoImagesOutline className="w-full h-full"></IoImagesOutline>
+                  <div className="w-[30px] h-full relative cursor-pointer">
+                    <IoImagesOutline className="w-full h-full cursor-pointer"></IoImagesOutline>
+                    <input type="file" className="absolute top-3 z-50 opacity-0" />
                   </div>
                   <div className="w-[30px] h-full">
                     <LiaUserTagSolid className="w-full h-full"></LiaUserTagSolid>
@@ -76,3 +81,5 @@ export default function PopupPostNew() {
     </>
   );
 }
+
+export default PopupPostNew
