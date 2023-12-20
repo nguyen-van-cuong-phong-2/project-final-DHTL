@@ -1,9 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { FriendController } from './friend.controller';
 import { FriendService } from './friend.service';
 import { MongooseModule } from '@nestjs/mongoose';

@@ -112,3 +112,8 @@ export const callApi_GetListFriendOnline = async (data: object) => {
     const response = await callApiPost_Json('friend/getListFriendOnline', data)
     return response;
 }
+
+export const callApi_PostNews = async (data: object) => {
+    const response = await callApiPost_Json('news/PostNews', data)
+    return response;
+}
