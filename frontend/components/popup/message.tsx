@@ -79,7 +79,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   };
   useEffect(() => {
     const handleNewMessage = (item: any) => {
-      setData((prevData) => [
+      setData((prevData: any) => [
         ...prevData,
         {
           ...item,

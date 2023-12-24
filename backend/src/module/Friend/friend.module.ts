@@ -20,6 +20,7 @@ import { UserSchema, Users } from 'src/Schemas/user.schema';
   ],
   controllers: [FriendController],
   providers: [FriendService],
+  exports: [FriendService],
 })
 export class FriendModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

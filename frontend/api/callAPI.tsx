@@ -117,3 +117,18 @@ export const callApi_PostNews = async (data: object) => {
     const response = await callApiPost_Json('news/PostNews', data)
     return response;
 }
+
+export const callApi_GetNews = async (data: object, token?: string) => {
+    const response = await callApiPost_Json('news/GetNews', data, token)
+    return response;
+}
+
+export const callApi_LikeNews = async (data: object, token?: string) => {
+    const response = await callApiPost_Json('news/LikeNews', data, token)
+    return response;
+}
+
+export const callApi_GetDetailNews = async (data: object, token?: string) => {
+    const response = await callApiPost_Json('news/GetDetailNews', data, token)
+    return response;
+}

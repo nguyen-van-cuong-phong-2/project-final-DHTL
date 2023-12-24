@@ -16,7 +16,7 @@ const LeftBody: React.FC<LeftBody> = ({ data }) => {
   const router = useRouter();
   return (
     <>
-      <div className="w-1/5 h-screen sticky top-[75px] pl-5 box-border max-lg:hidden">
+      <div className="w-1/5 h-screen mt-[75px] pl-5 box-border max-lg:hidden">
         <div className="flex gap-4 items-center mt-5  hover:bg-gray-300 p-2 box-border cursor-pointer rounded-md"
           onClick={() => router.push(`/Profile?id=${data.id}`)}
         >

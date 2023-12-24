@@ -29,10 +29,13 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     console.log(`${client.id} connected`);
   }
   @WebSocketServer()
-  server: Server;
+  public server: Server;
 
   handleDisconnect(client: Socket) {
-    this.arrUserOnline.delete(client.id);
+    const id = Array.from(this.arrUserOnline.values()).find(
+      (item) => item == client.id,
+    );
+    this.arrUserOnline.delete(id);
   }
 
   @SubscribeMessage('login')

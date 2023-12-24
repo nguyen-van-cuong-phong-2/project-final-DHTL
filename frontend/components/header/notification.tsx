@@ -37,7 +37,7 @@ const App = () => {
                     <div className="w-[80%]">
                         <span className="font-bold text-sm">{item.name}</span>
                         {item.type == 1 && <span> &nbsp;đã gửi cho bạn lời mời kết bạn</span>}
-                        {item.type == 2 && <span> &nbsp;đã thích bài viết của bạn</span>}
+                        {item.type == 2 && <span> &nbsp;đã thả cảm xúc bài viết của bạn</span>}
                         {item.type == 3 && <span> &nbsp;đã bình luận bài viết của bạn</span>}
                     </div>
                 </div>

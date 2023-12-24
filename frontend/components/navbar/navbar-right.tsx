@@ -23,6 +23,7 @@ export default function RightBody() {
       return () => socket.off("listOnline");
     }
   }, [socket]);
+
   useEffect(() => {
     const fecthAPI = async () => {
       const response = await callApi_GetListFriendOnline({ arr: userOnline });
@@ -44,11 +45,11 @@ export default function RightBody() {
       w-1/5 
       h-screen 
       max-lg:hidden
-      sticky 
+      relative 
       top-[75px]
       "
       >
-        {/* <div className="block mt-[1.5rem] overflow-auto no-scrollbar">
+        <div className="block mt-[1.5rem] overflow-auto no-scrollbar">
           {arrFriend?.map((item) => (
             <div
               key={item.id}
@@ -79,7 +80,7 @@ export default function RightBody() {
               <p className="font-semibold">{item.name}</p>
             </div>
           ))}
-        </div> */}
+        </div>
       </div>
     </>
   );

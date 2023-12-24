@@ -22,12 +22,7 @@ const Header: React.FC<Header> = ({ data }) => {
   const [popUpNoti, setpopUpNoti] = useState(false);
   const [fetchData, SetfetchData] = useState<any>([]);
   const router = useRouter();
-  useEffect(() => {
-    setLoading(true)
-    if (socket) setTimeout(() => {
-      setLoading(false)
-    }, 1000);
-  }, [socket]);
+  
   const [key, SetKey] = useState('');
   useEffect(() => {
     const fetchAPi = async () => {
@@ -112,7 +107,6 @@ const Header: React.FC<Header> = ({ data }) => {
                   e.target.setsrc = "/images/user.png";
                 }}
               />
-
             </div>
           </div>
         </div>

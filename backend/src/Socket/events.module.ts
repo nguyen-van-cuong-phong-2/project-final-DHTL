@@ -19,5 +19,6 @@ import { NotificationModule } from 'src/module/notification/notification.module'
     NotificationModule,
   ],
   providers: [EventsGateway, MessageService],
+  exports: [EventsGateway],
 })
 export class EventsModule {}

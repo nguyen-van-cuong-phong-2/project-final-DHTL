@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Post,
   Req,
   UnsupportedMediaTypeException,
@@ -14,6 +15,7 @@ import { createNews } from './dto/createNews.dto';
 import { UserService } from '../User/user.service';
 import { NewsService } from './news.service';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
+import { FriendService } from '../Friend/friend.service';
 
 interface UserPayload {
   id: string;
@@ -27,7 +29,8 @@ export class NewsController {
   constructor(
     private readonly userService: UserService,
     private readonly newsService: NewsService,
-  ) {}
+    private readonly friendService: FriendService,
+  ) { }
   @Post('PostNews')
   @UsePipes(new ValidationPipe())
   @UseInterceptors(FilesInterceptor('files'))
@@ -40,7 +43,6 @@ export class NewsController {
       if (req.user && req.user.id) {
         const arrImage = [];
         const time = Math.round(new Date().getTime());
-        console.log(files);
         if (files && files.length > 0) {
           for (let i = 0; i < files.length; i++) {
             const upload = await this.userService.uploadFile(
@@ -58,6 +60,7 @@ export class NewsController {
           userId: Number(req.user.id),
           content: body.content,
           created_at: time,
+          updated_at: time,
           type_seen: body.type_seen,
           image: arrImage,
         });
@@ -69,6 +72,94 @@ export class NewsController {
       throw new BadRequestException();
     } catch (error) {
       throw error;
+    }
+  }
+
+  @Post('GetNews')
+  @UsePipes(new ValidationPipe())
+  async GetNews(
+    @Body() data: { page: number },
+    @Req() req: ExtendedRequest,
+  ): Promise<object> {
+    try {
+      if (req.user && req.user.id && data) {
+        const list_friends = await this.friendService.getListFriend(
+          Number(req.user.id),
+        );
+        const arrID: any[] = [];
+        list_friends.map((item: any) => arrID.push(item.id));
+        const response = await this.newsService.GetNews(
+          Number(req.user.id),
+          data.page,
+          arrID,
+        );
+        return {
+          result: true,
+          status: 200,
+          data: response,
+        };
+      }
+      throw new ForbiddenException('missing token');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post('LikeNews')
+  @UsePipes(new ValidationPipe())
+  async LikeNews(
+    @Body()
+    data: {
+      news_id: number;
+      type: number;
+    },
+    @Req() req: ExtendedRequest,
+  ): Promise<any> {
+    try {
+      if (req.user && req.user.id) {
+        const id = await this.newsService.GetMaxID_Like();
+        const created_at = new Date().getTime();
+        await this.newsService.LikeNews({
+          id,
+          created_at,
+          ...data,
+          userId: Number(req.user.id),
+        });
+        return {
+          status: 200,
+          result: true,
+        };
+      }
+      throw new ForbiddenException('missing token');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @Post('GetDetailNews')
+  @UsePipes(new ValidationPipe())
+  async GetDetailNews(
+    @Body()
+    data: {
+      id: number;
+    },
+    @Req() req: ExtendedRequest,
+  ): Promise<object> {
+    try {
+      if (req.user && req.user.id) {
+        const response = await this.newsService.GetDetailNews(
+          data.id,
+          Number(req.user.id),
+        );
+        return {
+          status: 200,
+          result: true,
+          data: response,
+        };
+      }
+      throw new ForbiddenException('missing token');
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 }

@@ -16,8 +16,11 @@ export class News {
     @Prop({ required: true })
     created_at: number;
 
+    @Prop({ required: true })
+    updated_at: number;
+
     @Prop()
-    image: [string]
+    image: [string];
 
     @Prop({ required: true })
     type_seen: number;

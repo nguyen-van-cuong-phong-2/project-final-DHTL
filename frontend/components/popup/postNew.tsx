@@ -10,6 +10,7 @@ import { useRef } from "react";
 import { useMyContext } from "../context/context";
 import FormData from 'form-data';
 import Cookies from "js-cookie";
+import axios from "axios";
 
 interface Popup {
   SetPopUpPostNew: any
@@ -33,11 +34,17 @@ const PopupPostNew: React.FC<Popup> = ({ SetPopUpPostNew }) => {
   } = useForm<Inputs>()
 
   const handleChange = ({ fileList }) => {
-    setFileList(fileList);
+    if (fileList.length < 4) {
+      setFileList(fileList);
+    }
   };
 
   const handleBeforeUpload = file => {
-    setFileList([...fileList, file]);
+    if (fileList.length < 3) {
+      setFileList([...fileList, file]);
+    } else {
+      SetContentNotifi("Tải lên tối đa không quá 5 ảnh!")
+    }
     return false;
   };
 
@@ -50,19 +57,26 @@ const PopupPostNew: React.FC<Popup> = ({ SetPopUpPostNew }) => {
     if (ref_content.current && ref_content.current.innerHTML != '') {
       const formData = new FormData();
       formData.append('content', ref_content.current.innerHTML)
-      formData.append('type_seen', 1)
+      formData.append('type_seen', Number(data.type_seen))
       fileList.map(item => (
         formData.append('files', item.originFileObj)
       ))
 
       const token = Cookies.get('token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN_API}/news/PostNews`, {
-        method: 'POST',
-        body: formData,
+      const response: any = await axios({
+        method: 'post',
+        url: `${process.env.NEXT_PUBLIC_DOMAIN_API}/news/PostNews`,
+        data: formData,
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      })
+      if (response.data.result == true) {
+        SetContentNotifi("Đăng tin thành công!")
+        SetPopUpPostNew(false)
+      }{
+        SetContentNotifi("Đăng bài thất bại, vui lòng đợi chúng tôi kiểm tra")
+      }
     } else {
       SetContentNotifi("Bạn cần điền nội dung cho bài viết!")
     }
