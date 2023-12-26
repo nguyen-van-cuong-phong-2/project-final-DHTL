@@ -41,9 +41,10 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
       rounded 
       w-3/5 
       p-2 
-      h-screen 
-      overflow-auto
       no-scrollbar
+      h-screen
+      overflow-auto
+      overscroll-y-contain
       ml-20
       max-lg:w-full
       max-lg:m-0
@@ -57,7 +58,7 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
       {result_1?.map(item => (
         <News key={item.id} data={item}></News>
       ))}
-      {/* <Comment></Comment> */}
+      {/* <Comment id={0}></Comment> */}
     </div>
   );
 }

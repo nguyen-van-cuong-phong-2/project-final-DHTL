@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class createNotifi {
   @IsNumber()
   @IsNotEmpty()
@@ -23,4 +23,7 @@ export class createNotifi {
   @IsString()
   @IsNotEmpty()
   readonly link: string;
+
+  @IsOptional()
+  type_enmoji?: number;
 }

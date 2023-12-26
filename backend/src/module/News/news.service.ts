@@ -11,6 +11,7 @@ import { likeNews } from './dto/likeNews.dto';
 import { Like } from 'src/Schemas/like.schema';
 import { Comment } from 'src/Schemas/comment.schema';
 import { EventsGateway } from 'src/Socket/events.gateway';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class NewsService {
@@ -19,6 +20,7 @@ export class NewsService {
     @InjectModel(Like.name) private LikeModel: Model<Like>,
     @InjectModel(Comment.name) private CommentModel: Model<Comment>,
     @Inject(EventsGateway) private readonly appGateway: EventsGateway,
+    private readonly notificationService: NotificationService,
   ) {}
 
   // đăng tin
@@ -61,7 +63,7 @@ export class NewsService {
     list_friends: Array<object>,
   ): Promise<Array<object>> {
     try {
-      const skip = (page - 1) * 5;
+      const skip = (page - 1) * 10;
       const data = await this.NewsModel.aggregate([
         {
           $match: {
@@ -149,8 +151,32 @@ export class NewsService {
           news_id: data.news_id,
         });
       } else if (!check) {
-        await this.LikeModel.create(data);
-        this.appGateway.server.emit('sendNotification', 'gà');
+        const maxId_noti = await this.notificationService.GetMaxID();
+        const new_userId = await this.NewsModel.findOne(
+          { id: data.news_id },
+          { userId: 1 },
+        ).lean();
+        if (new_userId) {
+          Promise.all([
+            this.appGateway.sendNotification({
+              sender_id: Number(data.userId),
+              receiver_id: new_userId.userId,
+              type: 2,
+              type_enmoji: data.type,
+            }),
+            this.LikeModel.create(data),
+            this.notificationService.createNotifi({
+              id: maxId_noti,
+              sender_id: Number(data.userId),
+              receiver_id: new_userId.userId,
+              created_at: new Date().getTime(),
+              type: 3,
+              link: '#',
+              type_enmoji: data.type,
+            }),
+          ]);
+        }
+        throw new NotFoundException('Không tìm thấy bài viết');
       } else {
         await this.LikeModel.findOneAndUpdate(
           {

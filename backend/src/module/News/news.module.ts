@@ -10,6 +10,7 @@ import { FriendModule } from '../Friend/friend.module';
 import { Like, LikeSchema } from 'src/Schemas/like.schema';
 import { Comment, CommentSchema } from 'src/Schemas/comment.schema';
 import { EventsModule } from 'src/Socket/events.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { EventsModule } from 'src/Socket/events.module';
     UserModule,
     FriendModule,
     EventsModule,
+    NotificationModule,
   ],
   controllers: [NewsController],
   providers: [NewsService],

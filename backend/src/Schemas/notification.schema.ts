@@ -22,6 +22,9 @@ export class Notification {
     @Prop({ required: true })
     link: string;
 
+    @Prop({})
+    type_enmoji: number;
+
     @Prop({ default: 0 })
     seen: number;
 }

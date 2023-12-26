@@ -27,6 +27,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   ) {}
   handleConnection(client: any) {
     console.log(`${client.id} connected`);
+    // this.arrUserOnline.set(27, client.id);
   }
   @WebSocketServer()
   public server: Server;
@@ -87,29 +88,34 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
 
   // send friend request
   @SubscribeMessage('sendNotification')
-  async sendMakeFriends(
+  async sendNotification(
     @MessageBody()
     data: {
       sender_id: number;
       receiver_id: number;
       type: number;
+      type_enmoji?: number;
     },
   ): Promise<any> {
-    if (data.type == 1 || data.type == 2) {
-      const find = this.arrUserOnline.get(data.receiver_id);
-      if (find) {
-        this.server.socketsJoin(find);
-        const response_Promise = this.UserService.getInfoUser(data.sender_id);
-        const totalNotifi_Promise =
-          this.NotificationService.getTotalNotification(data.receiver_id);
-        const [response, totalNotifi] = await Promise.all([
-          response_Promise,
-          totalNotifi_Promise,
-        ]);
-        return this.server.to(find).emit('notification', {
-          data: { sender_id: response, type: data.type, totalNotifi },
-        });
-      }
+    const find = this.arrUserOnline.get(data.receiver_id);
+    if (find) {
+      this.server.socketsJoin(find);
+      const response_Promise = this.UserService.getInfoUser(data.sender_id);
+      const totalNotifi_Promise = this.NotificationService.getTotalNotification(
+        data.receiver_id,
+      );
+      const [response, totalNotifi] = await Promise.all([
+        response_Promise,
+        totalNotifi_Promise,
+      ]);
+      return this.server.to(find).emit('notification', {
+        data: {
+          sender_id: response,
+          type: data.type,
+          totalNotifi,
+          type_enmoji: data.type_enmoji,
+        },
+      });
     }
   }
 }

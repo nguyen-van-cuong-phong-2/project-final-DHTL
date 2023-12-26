@@ -38,6 +38,7 @@ const News: React.FC<News> = ({ data }) => {
     const [type_like, setType_like] = useState(data?.type_like);
     const [total_like, setTotal_like] = useState(data?.total_like);
     const handleLikeNews = async (id: number, type: number) => {
+        console.log("🚀 ~ file: news.tsx:41 ~ handleLikeNews ~ id:", id)
         if (type_like != 10 && type == 0) {
             setType_like(10)
             setTotal_like(prev => prev - 1)

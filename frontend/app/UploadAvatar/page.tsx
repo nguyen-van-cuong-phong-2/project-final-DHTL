@@ -30,7 +30,7 @@ export default function UploadAvatar() {
     const handleSubmit = async () => {
         const response = await callApi_uploadAvatar({ file: fileAvatar })
         if (response.status == 200) {
-            setLoading(true);
+            // setLoading(true);
             router.push('/')
         }
     }
