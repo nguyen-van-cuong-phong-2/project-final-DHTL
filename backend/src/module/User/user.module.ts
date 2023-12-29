@@ -11,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Middleware } from 'src/middleware/middleware.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { Friend, FriendSchema } from 'src/Schemas/friend.schema';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -25,9 +26,11 @@ import { Friend, FriendSchema } from 'src/Schemas/friend.schema';
       secret: 'reqr2141!@321321*!!@$%',
       signOptions: { expiresIn: '1d' },
     }),
+    NotificationModule,
   ],
   providers: [UserService],
   controllers: [UserController],
+  exports: [UserService],
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

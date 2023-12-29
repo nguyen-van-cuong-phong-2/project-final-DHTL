@@ -25,9 +25,18 @@ module.exports = {
             backgroundColor: '#787878', // rgba(20,105,69,.2);
           },
         },
+        slideeee: {
+          '0%': {
+            transform: 'translateY(0px)',
+          },
+          '100%': {
+            transform: 'translateY(-40px)',
+          },
+        },
       },
       animation: {
         slide: 'slide 1.8s ease infinite',
+        slideeee:'slideeee 1s ease infinite'
       },
       colors: {
         'BGRegister': '#FFFFFFCC',

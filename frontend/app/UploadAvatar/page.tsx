@@ -12,7 +12,7 @@ export default function UploadAvatar() {
     const { SetContentNotifi, setLoading } = useMyContext();
     const router = useRouter()
     const [fileAvatar, setfileAvatar] = useState();
-    const handleChangeFile = (e) => {
+    const handleChangeFile = (e:any) => {
         const file = e.target.files[0];
         setfileAvatar(file);
         if (file) {
@@ -30,7 +30,7 @@ export default function UploadAvatar() {
     const handleSubmit = async () => {
         const response = await callApi_uploadAvatar({ file: fileAvatar })
         if (response.status == 200) {
-            setLoading(true);
+            // setLoading(true);
             router.push('/')
         }
     }

@@ -5,11 +5,14 @@ import { makeFriends } from './dto/makefriend.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Friend } from 'src/Schemas/friend.schema';
 import { Model } from 'mongoose';
-
+import { NotificationService } from '../notification/notification.service';
+import { Users } from 'src/Schemas/user.schema';
 @Injectable()
 export class FriendService {
     constructor(
         @InjectModel(Friend.name) private FriendsModel: Model<Friend>,
+        @InjectModel(Users.name) private UsersModel: Model<Users>,
+        private readonly NotificationService: NotificationService,
     ) { }
 
     // gửi kết bạn
@@ -31,11 +34,20 @@ export class FriendService {
                     }
                 ]
             });
+            const id = await this.NotificationService.GetMaxID();
+            this.NotificationService.createNotifi({
+                id,
+                sender_id: data.sender_id,
+                receiver_id: data.receiver_id,
+                created_at: new Date().getTime(),
+                type: 1,
+                link: `/Profile?id=${data.sender_id}`
+            })
             if (check) {
-                await this.FriendsModel.findOneAndUpdate({ id: check.id }, { status: 1 })
+                this.FriendsModel.findOneAndUpdate({ id: check.id }, { status: 1 });
                 return 1
             } else {
-                await this.FriendsModel.create(data);
+                this.FriendsModel.create(data);
                 return 2
             }
         } catch (error) {
@@ -78,6 +90,15 @@ export class FriendService {
                     }
                 ]
             }, { status: 1 });
+            const id = await this.NotificationService.GetMaxID();
+            await this.NotificationService.createNotifi({
+                id,
+                sender_id: receiver_id,
+                receiver_id: sender_id,
+                created_at: new Date().getTime(),
+                type: 2,
+                link: `/Profile?id=${receiver_id}`
+            })
         } catch (error) {
             throw new BadRequestException('Bad request', error.message);
         }
@@ -86,7 +107,8 @@ export class FriendService {
     // huỷ kết bạn
     public async DeleteMakeFriend(sender_id: number, receiver_id: number): Promise<void> {
         try {
-            await this.FriendsModel.findOneAndDelete({
+
+            const response = await this.FriendsModel.findOneAndDelete({
                 $or: [
                     {
                         $and: [
@@ -102,8 +124,45 @@ export class FriendService {
                     }
                 ]
             });
+            console.log("🚀 ~ file: friend.service.ts:117 ~ FriendService ~ DeleteMakeFriend ~ response:", response)
         } catch (error) {
             throw new BadRequestException('Bad request', error.message);
         }
+    }
+
+    // danh sách bạn bè
+    public async getListFriend(id: number): Promise<any> {
+        const response = await this.FriendsModel.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { sender_id: id },
+                        { receiver_id: id }
+                    ],
+                    status: 1
+                }
+            },
+            {
+                $project: {
+                    sender_id: 1,
+                    receiver_id: 1
+                }
+            }
+        ]);
+        const arr: number[] = [];
+        response.map(item => {
+            if (item.sender_id != id) arr.push(item.sender_id)
+            if (item.receiver_id != id) arr.push(item.receiver_id)
+        })
+
+        const arrUser = await this.UsersModel.find({
+            id: { $in: arr }
+        }).lean()
+        for (let i = 0; i < arrUser.length; i++) {
+            const element = arrUser[i];
+            if (element.avatar)
+                element.avatar = `${process.env.DOMAIN}${element.avatar}`;
+        }
+        return arrUser;
     }
 }

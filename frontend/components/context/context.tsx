@@ -35,6 +35,8 @@ interface MyContextType {
   SetContentNotifi: any;
   user: Users;
   SetUser: any;
+  totalNoti: number;
+  SetTotalNoti: any
 }
 
 // Create the context with an initial value
@@ -49,26 +51,23 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   const [Loading, SetLoading] = useState(false);
   const [contentNotifi, SetContentNotifi] = useState('');
   const [user, SetUser] = useState<Users>();
+  const [totalNoti, SetTotalNoti] = useState<number>(0);
   useEffect(() => {
     const socketIO = io(`${process.env.NEXT_PUBLIC_DOMAIN_SOCKET}`);
 
     if (socketIO) SetSocket(socketIO);
-
-    const fetchAPIGetInfo = async () => {
-      const token = new functions().getInfoFromToken();
-      if (token) {
-        socketIO.emit("login", { id: token.id })
-      } else {
-        return {
-          redirect: {
-            destination: "/Login",
-            permanent: false,
-          },
-        }
+    socketIO.on('notification', (data) => {
+      SetTotalNoti(data.data.totalNotifi)
+      if (data?.data?.type == 1) {
+        SetContentNotifi(`${data.data.sender_id.name} đã gửi lời mời kết bạn!`)
+      } else if (data?.data?.type == 2) {
+        SetContentNotifi(`${data.data.sender_id.name} đã chấp nhận kết bạn!`)
       }
+    });
+    const user = new functions().getInfoFromToken();
+    if (user) {
+      socketIO.emit('login', { id: user.id })
     }
-
-    fetchAPIGetInfo();
     return () => {
       socketIO.disconnect();
     };
@@ -97,7 +96,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   }
   return (
     <MyContext.Provider
-      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading, contentNotifi, SetContentNotifi, user, SetUser }}
+      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading, contentNotifi, SetContentNotifi, user, SetUser, totalNoti, SetTotalNoti }}
     >
       {children}
     </MyContext.Provider>

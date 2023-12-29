@@ -24,7 +24,9 @@ const App: React.FC = React.memo(() => {
     return () => SetContentNotifi('');
   }, [api, contentNotifi]);
 
-  return <>{contextHolder}</>;
+  return <div>
+    {contextHolder}
+  </div>;
 });
 
 export default App;

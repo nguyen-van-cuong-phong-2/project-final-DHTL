@@ -17,6 +17,7 @@ import { Login } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as path from 'path';
 import { Friend } from 'src/Schemas/friend.schema';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class UserService {
@@ -24,6 +25,7 @@ export class UserService {
         @InjectModel(Users.name) private UsersModel: Model<Users>,
         @InjectModel(Friend.name) private FriendsModel: Model<Friend>,
         private readonly jwtService: JwtService,
+        private readonly NotificationService: NotificationService,
     ) { }
 
     // Đăng kí tài khoản
@@ -51,7 +53,6 @@ export class UserService {
                 refreshToken,
             };
         } catch (error) {
-            console.log(error);
             throw new BadRequestException(error.message, 'Bad request');
         }
     }
@@ -107,11 +108,11 @@ export class UserService {
     // hàm đăng nhập
     public async login(@Body() login: Login): Promise<object> {
         const hashedPassword = this.createMd5(login.password);
-        const checkExists = await this.UsersModel.findOne({ userName: login.userName, password: hashedPassword }).lean();
+        const checkExists = await this.UsersModel.findOne({ userName: login.userName, password: hashedPassword }, { password: 0 }).lean();
         if (!checkExists) throw new NotFoundException("Tài khoản hoặc mật khẩu không chính xác");
         const token = await this.generateToken(checkExists);
         const refreshToken = await this.generateToken(checkExists);
-        return { token, refreshToken }
+        return { token, refreshToken, data: checkExists }
     }
 
     // upload file 
@@ -139,12 +140,23 @@ export class UserService {
     }
 
     // lấy thông tin người dùng (thiếu lấy danh sách bạn bè online và offline)
-    public async getInfoUser(id: number, id_token: number): Promise<object> {
+    public async getInfoUser(id: number, id_token?: number): Promise<object> {
         try {
-            const response = await this.UsersModel.findOne({ id }).lean();
+            const response_Promise = this.UsersModel.findOne({ id }, { password: 0 }).lean();
+            const totalNoti_Promise = this.NotificationService.getTotalNotification(id);
+            const totalFriend_Promise = this.FriendsModel.countDocuments({
+                $or: [
+                    { receiver_id: id },
+                    { sender_id: id },
+                ],
+                status: 1
+            })
+            const [response, totalNoti, totalFriend] = await Promise.all([
+                response_Promise, totalNoti_Promise, totalFriend_Promise
+            ])
             if (response) {
                 response.avatar = `${process.env.DOMAIN}${response.avatar}`;
-                if (id !== id_token) {
+                if (id && id_token && id !== id_token) {
                     const checkFriend = await this.FriendsModel.findOne({
                         $or: [
                             {
@@ -160,29 +172,33 @@ export class UserService {
                                 ]
                             }
                         ]
-                    });
+                    }).lean();
                     type Objectt = {
                         id: number,
                         avatar: string,
                         name: string,
-                        makefriend: number
+                        makefriend: number,
+                        totalNoti: number,
+                        totalFriend: number,
                     }
                     const object: Objectt = {
                         ...response,
-                        makefriend: 0
+                        makefriend: 0,
+                        totalNoti,
+                        totalFriend
                     }
                     if (!checkFriend) object.makefriend = 0;
-                    else if (checkFriend.status == 0) object.makefriend = 1;
-                    else if (checkFriend.status == 1) object.makefriend = 2;
+                    else if (checkFriend.status == 0 && id_token === checkFriend.sender_id) object.makefriend = 1;
+                    else if (checkFriend.status == 0 && id_token === checkFriend.receiver_id) object.makefriend = 2;
+                    else if (checkFriend.status == 1) object.makefriend = 3;
                     return object
                 }
-                return response
+                return { totalNoti, totalFriend, ...response }
             }
             throw new NotFoundException('Không tìm thấy người dùng')
         } catch (error) {
             throw new BadRequestException(error.message)
         }
-
     }
 
     // tìm kiếm người dùng
@@ -208,7 +224,7 @@ export class UserService {
                             ]
                         }
                     ]
-                }).lean()
+                }, { password: 0 }).lean()
             )));
             for (let i = 0; i < response.length; i++) {
                 const element = response[i];

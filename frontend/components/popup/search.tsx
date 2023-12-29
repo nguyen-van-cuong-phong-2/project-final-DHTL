@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { callApi_MakeFriend, callApi_cancelMakeFriend } from "../../api/callAPI";
 import { useMyContext } from "../context/context";
+import { functions } from "../../functions/functions";
 
 interface PopUpSearch {
   data: [{
@@ -19,7 +20,7 @@ interface PopUpSearch {
 
 const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search }) => {
 
-  const { SetContentNotifi, setLoading } = useMyContext();
+  const { SetContentNotifi, setLoading, socket } = useMyContext();
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
@@ -40,7 +41,13 @@ const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search }
     const response = await callApi_MakeFriend({ receiver_id: id });
     if (response.result === true) {
       fecth_API_Search();
-      SetContentNotifi("Thêm bạn bè thành công")
+      SetContentNotifi("Gửi yêu cầu thành công");
+      const user = new functions().getInfoFromToken();
+      socket.emit('sendNotification', {
+        sender_id: user.id,
+        receiver_id: id,
+        type: 1
+      })
     } else {
       SetContentNotifi("Thêm bạn bè thất bại, vui lòng thử lại sau!")
     }

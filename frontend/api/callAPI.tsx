@@ -25,7 +25,6 @@ const callApiPost_Json = async (url: string, conditions: object, token_server?: 
                 Authorization: `Bearer ${token_server}`,
             };
         }
-        console.log(token_server)
         return await axios({
             method: "post",
             url: `${process.env.NEXT_PUBLIC_DOMAIN_API}/${url}`,
@@ -35,7 +34,6 @@ const callApiPost_Json = async (url: string, conditions: object, token_server?: 
             return response.data;
         })
     } catch (error) {
-        console.log("🚀 ~ file: callAPI.tsx:38 ~ constcallApiPost_Json= ~ error:", error)
         return error?.response?.data;
     }
 };
@@ -92,5 +90,45 @@ export const callApi_MakeFriend = async (data: object) => {
 
 export const callApi_cancelMakeFriend = async (data: object) => {
     const response = await callApiPost_Json('friend/cancelMakeFriend', data)
+    return response;
+}
+
+export const callApi_notification = async (data: object) => {
+    const response = await callApiPost_Json('notification/getNotification', data)
+    return response;
+}
+
+export const callApi_acceptMakeFriend = async (data: object) => {
+    const response = await callApiPost_Json('friend/acceptMakeFriend', data)
+    return response;
+}
+
+export const callApi_DeleteMakeFriend = async (data: object) => {
+    const response = await callApiPost_Json('friend/cancelMakeFriend', data)
+    return response;
+}
+
+export const callApi_GetListFriendOnline = async (data: object) => {
+    const response = await callApiPost_Json('friend/getListFriendOnline', data)
+    return response;
+}
+
+export const callApi_PostNews = async (data: object) => {
+    const response = await callApiPost_Json('news/PostNews', data)
+    return response;
+}
+
+export const callApi_GetNews = async (data: object, token?: string) => {
+    const response = await callApiPost_Json('news/GetNews', data, token)
+    return response;
+}
+
+export const callApi_LikeNews = async (data: object, token?: string) => {
+    const response = await callApiPost_Json('news/LikeNews', data, token)
+    return response;
+}
+
+export const callApi_GetDetailNews = async (data: object, token?: string) => {
+    const response = await callApiPost_Json('news/GetDetailNews', data, token)
     return response;
 }
