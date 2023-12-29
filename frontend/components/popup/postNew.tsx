@@ -5,7 +5,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, Upload, message } from 'antd';
 import { useState } from "react";
 import { callApi_PostNews } from "../../api/callAPI";
-import { useForm, SubmitHandler } from "react-hook-form"
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useRef } from "react";
 import { useMyContext } from "../context/context";
 import FormData from 'form-data';

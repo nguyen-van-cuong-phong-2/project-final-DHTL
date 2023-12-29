@@ -16,6 +16,7 @@ import { IoMdLock } from "react-icons/io";
 import { FaUserFriends } from "react-icons/fa";
 import { callApi_LikeNews, callApi_GetDetailNews } from "../../api/callAPI";
 import LoadComment from "../comment/LoadComment";
+import WriteComment from "../comment/writeComment";
 interface Comment {
     id: number
 }
@@ -59,8 +60,8 @@ const Comment: React.FC<Comment> = ({ id }) => {
     return (
         <>
             <div className="absolute w-screen h-screen top-0 left-0 z-50 bg-BGRegister ">
-                <div className="w-full h-full flex justify-center items-center">
-                    <div className="w-1/2 lg:h-[calc(100%-80px)] max-md:h-full h-full bg-white border rounded-2xl max-md:w-full shadow-xl px-5 overflow-y-auto overflow-x-hidden">
+                <div className="w-full h-full flex justify-center items-center flex-col relative">
+                    <div className="w-1/2 lg:h-[90%] max-md:h-full h-full bg-white border rounded-2xl max-md:w-full shadow-xl px-5 overflow-y-auto overflow-x-hidden pb-40">
                         <div className="flex justify-center items-center font-bold text-2xl h-20 border-b-2 relative">
                             <div className=""> Bài viết của {data?.name}</div>
                             <div className="absolute right-0  w-8 
@@ -233,8 +234,12 @@ const Comment: React.FC<Comment> = ({ id }) => {
                         </div>
 
                         <div>
-                             <LoadComment></LoadComment>  
+                            <LoadComment></LoadComment>
                         </div>
+
+                    </div>
+                    <div className="border bg-white px-2 absolute bottom-5 w-1/2 max-md:w-full rounded-b-xl flex justify-center items-center">
+                        <WriteComment></WriteComment>
                     </div>
                 </div>
             </div>

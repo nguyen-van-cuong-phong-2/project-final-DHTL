@@ -19,6 +19,12 @@ export class Comment {
 
   @Prop({ required: true })
   content: string;
+
+  @Prop({ default: 0 })
+  parent_id: number;
+
+  @Prop({ default: null })
+  image: string;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

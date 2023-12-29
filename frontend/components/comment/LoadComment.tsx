@@ -1,5 +1,4 @@
 import Image from "next/image"
-
 const LoadComment = () => {
     return (
         <>
@@ -35,7 +34,7 @@ const LoadComment = () => {
                             fill
                         ></Image>
                     </div>
-                    <div className="bg-[#f0f2f5] p-2 rounded-2xl max-w-[70%] max-md:max-w-[80%] relative">
+                    <div className="bg-[#f0f2f5] p-2 rounded-2xl max-w-[90%] max-md:max-w-[80%] relative">
                         <div className="text-base font-semibold">Nguyễn Cường</div>
                         <div className="text-base ">Lúc về mới biết chị nhân viên là nyc của anh đó
                             Lúc về mới biết chị nhân viên là nyc của anh đó

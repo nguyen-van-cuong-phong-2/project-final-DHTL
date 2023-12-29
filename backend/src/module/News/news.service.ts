@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   BadRequestException,
   Inject,
@@ -21,7 +22,7 @@ export class NewsService {
     @InjectModel(Comment.name) private CommentModel: Model<Comment>,
     @Inject(EventsGateway) private readonly appGateway: EventsGateway,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) { }
 
   // đăng tin
   public async createNews(data: {
@@ -247,6 +248,15 @@ export class NewsService {
             as: 'like',
           },
         },
+        {
+          $lookup: {
+            from: 'comments',
+            localField: 'id',
+            foreignField: 'news_id',
+            pipeline: [{ $match: { parent_id: 0 } }],
+            as: 'comment',
+          },
+        },
         { $unwind: '$user' },
         { $unwind: { path: '$like', preserveNullAndEmptyArrays: true } },
         {
@@ -260,6 +270,7 @@ export class NewsService {
             name: '$user.name',
             updated_at: 1,
             type_like: '$like.type',
+            comment: 1,
           },
         },
       ]);
@@ -287,6 +298,31 @@ export class NewsService {
         element.total_like = total_like[i];
       }
       return data[0];
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // comment bài viết
+  public async Comment(
+    id: number,
+    userId: number,
+    news_id: number,
+    created_at: number,
+    content: string,
+    parent_id: number,
+    image?: any,
+  ): Promise<void> {
+    try {
+      await this.CommentModel.create({
+        id,
+        userId,
+        news_id,
+        created_at,
+        content,
+        parent_id,
+        image: image ? image : null,
+      });
     } catch (error) {
       throw new BadRequestException(error.message);
     }

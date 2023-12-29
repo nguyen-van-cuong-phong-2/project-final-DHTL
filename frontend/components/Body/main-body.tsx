@@ -58,7 +58,7 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
       {result_1?.map(item => (
         <News key={item.id} data={item}></News>
       ))}
-      {/* <Comment id={0}></Comment> */}
+      <Comment id={0}></Comment>
     </div>
   );
 }

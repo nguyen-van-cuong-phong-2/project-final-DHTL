@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   BadRequestException,
   Body,
@@ -10,7 +11,7 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { createNews } from './dto/createNews.dto';
 import { UserService } from '../User/user.service';
 import { NewsService } from './news.service';
@@ -162,4 +163,47 @@ export class NewsController {
       throw new BadRequestException(error.message);
     }
   }
+
+  @Post('Comment')
+  @UsePipes(new ValidationPipe())
+  @UseInterceptors(FileInterceptor('file'))
+  async Comment(
+    @UploadedFiles() file: Express.Multer.File,
+    @Req() req: ExtendedRequest,
+    @Body() data: { content: string, parent_id: number,news_id:number }
+  ): Promise<object> {
+    try {
+      let Image = null;
+      if (req.user && req.user.id) {
+        const time = Math.round(new Date().getTime());
+        if (file) {
+          const upload = await this.userService.uploadFile(
+            file,
+            time,
+            'comment',
+          );
+          if (!upload) throw new UnsupportedMediaTypeException();
+          Image = upload;
+        }
+        const id = await this.newsService.GetMaxID_Comment();
+        await this.newsService.Comment(
+          id,
+          Number(req.user.id),
+          data.news_id,
+          time,
+          data.content,
+          data.parent_id,
+          Image,
+          
+        );
+      return {
+        result: true,
+        status: 200,
+      };
+    }
+      throw new ForbiddenException('missing token');
+  } catch(error) {
+    throw new BadRequestException(error.message)
+  }
+}
 }
