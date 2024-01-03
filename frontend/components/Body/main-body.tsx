@@ -55,7 +55,7 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
     >
       <PostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PostNew>
       {popUpPostNew && <PopupPostNew SetPopUpPostNew={SetPopUpPostNew}></PopupPostNew>}
-      {result_1?.map(item => (
+      {result_1?.map((item: any) => (
         <News key={item.id} data={item}></News>
       ))}
       <Comment id={0}></Comment>

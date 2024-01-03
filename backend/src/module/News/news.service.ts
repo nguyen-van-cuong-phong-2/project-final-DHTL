@@ -227,10 +227,8 @@ export class NewsService {
   // lấy chi tiết bài viết
   public async GetDetailNews(id: number, userId: number): Promise<object> {
     try {
-      const data = await this.NewsModel.aggregate([
-        {
-          $match: { id },
-        },
+      const data_promise = this.NewsModel.aggregate([
+        { $match: { id } },
         {
           $lookup: {
             from: 'users',
@@ -246,15 +244,6 @@ export class NewsService {
             foreignField: 'news_id',
             pipeline: [{ $match: { userId: userId } }],
             as: 'like',
-          },
-        },
-        {
-          $lookup: {
-            from: 'comments',
-            localField: 'id',
-            foreignField: 'news_id',
-            pipeline: [{ $match: { parent_id: 0 } }],
-            as: 'comment',
           },
         },
         { $unwind: '$user' },
@@ -274,12 +263,119 @@ export class NewsService {
           },
         },
       ]);
-      if (!data[0]) throw new NotFoundException('Không tìm thấy bài viết');
-      const total_like = await Promise.all(
-        data.map((item: any) =>
-          this.LikeModel.countDocuments({ news_id: item.id }),
-        ),
-      );
+      const comment_promise = this.CommentModel.aggregate([
+        { $match: { news_id: id, parent_id: 0 } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: 'id',
+            as: 'user',
+          }
+        },
+        { $sort: { created_at: -1 } },
+        { $unwind: '$user' },
+        {
+          $project: {
+            name: "$user.name",
+            created_at: 1,
+            content: 1,
+            image: 1,
+            id: 1,
+            avatar: {
+              $concat: [
+                {
+                  $cond: {
+                    if: { $ne: ["$user.avatar", null] },
+                    then:  `${process.env.DOMAIN}`,  
+                    else: "$$REMOVE"
+                  }
+                },
+                {
+                  $cond: {
+                    if: { $ne: ["$user.avatar", null] },
+                    then: "$user.avatar",  
+                    else: "$$REMOVE"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ])
+      const [data, total_like, comment] = await Promise.all([
+        data_promise,
+        this.LikeModel.countDocuments({ news_id: id }),
+        comment_promise
+      ]);
+
+      const comment_child = await Promise.all(
+        comment?.map((item: any) => (
+          this.CommentModel.aggregate([
+            { $match: { parent_id: item.id } },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: 'id',
+                as: 'user',
+              }
+            },
+            { $sort: { created_at: 1 } },
+            { $unwind: '$user' },
+            {
+              $project: {
+                name: "$user.name",
+                avatar: {
+                  $concat: [
+                    {
+                      $cond: {
+                        if: { $ne: ["$user.avatar", null] },
+                        then:  `${process.env.DOMAIN}`,  
+                        else: "$$REMOVE"
+                      }
+                    },
+                    {
+                      $cond: {
+                        if: { $ne: ["$user.avatar", null] },
+                        then: "$user.avatar",  
+                        else: "$$REMOVE"
+                      }
+                    }
+                  ]
+                },
+                created_at: 1,
+                content: 1,
+                image: 1,
+                images: {
+                  $concat: [
+                    {
+                      $cond: {
+                        if: { $ne: ["$image", null] },
+                        then:  `${process.env.DOMAIN}`,  
+                        else: "$$REMOVE"
+                      }
+                    },
+                    {
+                      $cond: {
+                        if: { $ne: ["$image", null] },
+                        then: "$image",  
+                        else: "$$REMOVE"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ])
+        )))
+      for (let i = 0; i < comment.length; i++) {
+        const element = comment[i];
+        if (element.image) element.image = `${process.env.DOMAIN}${element.image}`
+        element.comment_child = comment_child[i]
+      }
+
+    
       for (let i = 0; i < data.length; i++) {
         const element = data[i];
         if (element.image && element.image.length > 0) {
@@ -295,7 +391,8 @@ export class NewsService {
         } else {
           element.type_like = element.type_like + 2;
         }
-        element.total_like = total_like[i];
+        element.total_like = total_like;
+        element.comment = comment;
       }
       return data[0];
     } catch (error) {

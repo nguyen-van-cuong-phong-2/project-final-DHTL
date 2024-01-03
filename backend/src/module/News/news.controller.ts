@@ -7,6 +7,7 @@ import {
   Post,
   Req,
   UnsupportedMediaTypeException,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
   UsePipes,
@@ -168,7 +169,7 @@ export class NewsController {
   @UsePipes(new ValidationPipe())
   @UseInterceptors(FileInterceptor('file'))
   async Comment(
-    @UploadedFiles() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
     @Req() req: ExtendedRequest,
     @Body() data: { content: string, parent_id: number,news_id:number }
   ): Promise<object> {

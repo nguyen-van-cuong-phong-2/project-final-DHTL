@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -17,12 +18,14 @@ import { FaUserFriends } from "react-icons/fa";
 import { callApi_LikeNews, callApi_GetDetailNews } from "../../api/callAPI";
 import LoadComment from "../comment/LoadComment";
 import WriteComment from "../comment/writeComment";
+import { useMyContext } from "../context/context";
 interface Comment {
     id: number
 }
 
 const Comment: React.FC<Comment> = ({ id }) => {
     const [data, setData] = useState<{
+        comment: any;
         id: number;
         userId: number;
         content: string;
@@ -33,16 +36,23 @@ const Comment: React.FC<Comment> = ({ id }) => {
         updated_at: number;
         type_like: number;
         total_like: number;
-    }>()
+        
+    }>();
+    const [callAPI, setCallAPI] = useState(false)
+    const { setComment } = useMyContext()
     useEffect(() => {
         const fetchAPI = async () => {
             const response = await callApi_GetDetailNews({ id: 6 });
             setData(response?.data)
             setType_like(response?.data?.type_like)
             setTotal_like(response?.data?.total_like)
+            setComment({
+                content: "Viết bình luận...",
+                parent_id: 0
+            })
         }
         fetchAPI()
-    }, [])
+    }, [callAPI])
     const router = useRouter();
     const myFunction = new functions();
     const [type_like, setType_like] = useState(data?.type_like);
@@ -223,7 +233,11 @@ const Comment: React.FC<Comment> = ({ id }) => {
                                     }
                                 </div>
                             </div>
-                            <div className="relative z-50 flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]">
+                            <div className="relative z-50 flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]"
+                                onClick={() => setComment({
+                                    content: "Viết bình luận...",
+                                    parent_id: 0
+                                })}>
                                 <FaRegComment className="h-6 w-6 text-[#6a7079]"></FaRegComment>
                                 <div className="text-lg min-w-max">Bình luận</div>
                             </div>
@@ -234,12 +248,14 @@ const Comment: React.FC<Comment> = ({ id }) => {
                         </div>
 
                         <div>
-                            <LoadComment></LoadComment>
+                            {data?.comment.map((item: any) =>
+                                <LoadComment data={item} setCallAPI={setCallAPI}></LoadComment>
+                            )}
                         </div>
 
                     </div>
                     <div className="border bg-white px-2 absolute bottom-5 w-1/2 max-md:w-full rounded-b-xl flex justify-center items-center">
-                        <WriteComment></WriteComment>
+                        <WriteComment setCallAPI={setCallAPI}></WriteComment>
                     </div>
                 </div>
             </div>

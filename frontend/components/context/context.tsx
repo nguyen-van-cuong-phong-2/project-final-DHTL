@@ -36,7 +36,9 @@ interface MyContextType {
   user: Users;
   SetUser: any;
   totalNoti: number;
-  SetTotalNoti: any
+  SetTotalNoti: any;
+  comment: any;
+  setComment: any
 }
 
 // Create the context with an initial value
@@ -52,6 +54,10 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   const [contentNotifi, SetContentNotifi] = useState('');
   const [user, SetUser] = useState<Users>();
   const [totalNoti, SetTotalNoti] = useState<number>(0);
+  const [comment, setComment] = useState<any>({
+    content: "Viết bình luận...",
+    parent_id: 0
+  });
   useEffect(() => {
     const socketIO = io(`${process.env.NEXT_PUBLIC_DOMAIN_SOCKET}`);
 
@@ -96,7 +102,22 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   }
   return (
     <MyContext.Provider
-      value={{ arrMessage, updateArrMessage, DeleteArrMessage, socket, Loading, setLoading, contentNotifi, SetContentNotifi, user, SetUser, totalNoti, SetTotalNoti }}
+      value={{
+        arrMessage,
+        updateArrMessage,
+        socket,
+        DeleteArrMessage,
+        Loading,
+        setLoading,
+        contentNotifi,
+        SetContentNotifi,
+        user,
+        SetUser,
+        totalNoti,
+        SetTotalNoti,
+        comment,
+        setComment
+      }}
     >
       {children}
     </MyContext.Provider>
