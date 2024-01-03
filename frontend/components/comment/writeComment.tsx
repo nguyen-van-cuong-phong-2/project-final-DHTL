@@ -15,9 +15,14 @@ type Inputs = {
     type_seen: number
 }
 
-const WriteComment = () => {
+interface Comment {
+    setCallAPI: any
+}
+
+
+const WriteComment: React.FC<Comment> = ({ setCallAPI }) => {
     const ref_content = useRef<any>();
-    const { SetContentNotifi } = useMyContext()
+    const { SetContentNotifi, comment } = useMyContext()
 
     const {
         register,
@@ -25,26 +30,27 @@ const WriteComment = () => {
         watch,
         formState: { errors },
     } = useForm<Inputs>();
-    const [file, setFile] = useState<any>();
+    const [file, setFile] = useState<any>([]);
 
     const handleChange = ({ fileList }) => {
-        setFile(fileList);
+        if (fileList.length < 2) {
+            setFile([...fileList]);
+        }
     };
 
-
     const handleBeforeUpload = file => {
-        setFile(file);
+        setFile([...file]);
         return false;
     };
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         if (ref_content.current && ref_content.current.innerHTML != '') {
             const formData = new FormData();
             formData.append('content', ref_content.current.innerHTML)
-            formData.append('parent_id', '0')
+            formData.append('parent_id', comment.parent_id)
             formData.append('news_id', '6')
-            if (file) formData.append('file', file.originFileObj)
+            if (file[0]) formData.append('file', file[0].originFileObj)
             const token = Cookies.get('token')
-            const response: any = await axios({
+            await axios({
                 method: 'post',
                 url: `${process.env.NEXT_PUBLIC_DOMAIN_API}/news/Comment`,
                 data: formData,
@@ -52,9 +58,11 @@ const WriteComment = () => {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            console.log("🚀 ~ file: writeComment.tsx:53 ~ constonSubmit:SubmitHandler<Inputs>= ~ response:", response)
+            setCallAPI((prev: boolean) => (!prev))
+            ref_content.current.innerHTML = "";
+            setFile([])
         } else {
-            SetContentNotifi("Bạn cần điền nội dung cho bài viết!")
+            SetContentNotifi("Bạn cần điền nội dung cho bình luận!")
         }
     }
     return (
@@ -69,27 +77,28 @@ const WriteComment = () => {
                             fill
                         ></Image>
                     </div>
-                    <div className="bg-BGICon rounded-2xl w-[90%] max-w-[90%] py-1 relative">
+                    <div className="bg-BGICon rounded-2xl w-[90%] max-w-[90%] py-1 relative ">
                         <div
-                            aria-label="Viết bình luận..."
-                            data-text="Viết bình luận..."
-                            className="w-full h-1/6 px-5  text-sm outline-none empty:before:content-[attr(data-text)] text-black "
+                            aria-label={comment.content}
+                            data-text={comment.content}
+                            className={`w-full  px-5 text-sm outline-none empty:before:content-[attr(data-text)]  empty:before:text-gray-400 `}
                             autoFocus
                             contentEditable="true"
                             role="textbox"
                             data-lexical-editor="true"
                             ref={ref_content}
                         ></div>
-                        <div className="px-5 w-full mt-5 flex">
+                        <div className="px-5 w-full flex">
                             <Upload
                                 listType="picture"
                                 className="w-full"
                                 beforeUpload={handleBeforeUpload}
                                 onChange={handleChange}
+                                fileList={file}
                             >
                                 <Button icon={<UploadOutlined />} className="w-full"></Button>
                             </Upload>
-                            <div className="flex justify-end cursor-pointer" >
+                            <div className="flex justify-center items-center cursor-pointer" >
                                 <button type="submit"> <IoMdSend className="text-blue-600 text-2xl" /></button>
                             </div>
                         </div>
