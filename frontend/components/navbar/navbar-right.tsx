@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useMyContext } from "../context/context";
 import { useEffect, useState } from "react";
 import { callApi_GetListFriendOnline } from '../../api/callAPI';
-import { functions } from "../../functions/functions";
 
 export default function RightBody() {
   // eslint-disable-next-line react-hooks/rules-of-hooks

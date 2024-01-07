@@ -9,6 +9,7 @@ import { join } from 'path';
 import { NewsModule } from './module/News/news.module';
 import { FriendModule } from './module/Friend/friend.module';
 import { NotificationModule } from './module/notification/notification.module';
+import { MessageModule } from './module/Message/message.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { NotificationModule } from './module/notification/notification.module';
     NewsModule,
     FriendModule,
     NotificationModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

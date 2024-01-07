@@ -5,7 +5,7 @@ export default function ArrMessage() {
     const { arrMessage } = useMyContext();
     return (
         <>
-            <div className="right-20 fixed z-50 bottom-0 flex gap-2">
+            <div className="right-20 fixed z-50 bottom-0 flex gap-2 max-sm:right-0">
                 {arrMessage.map((item) => (
                     <PopUpMessage key={item.id} item={item} />
                 ))}

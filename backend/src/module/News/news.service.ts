@@ -64,7 +64,7 @@ export class NewsService {
     list_friends: Array<object>,
   ): Promise<Array<object>> {
     try {
-      const skip = (page - 1) * 10;
+      const skip = (page - 1) * 20;
       const data = await this.NewsModel.aggregate([
         {
           $match: {
@@ -77,7 +77,7 @@ export class NewsService {
         },
         { $sort: { created_at: -1 } },
         { $skip: skip },
-        { $limit: 5 },
+        { $limit: 20 },
         {
           $lookup: {
             from: 'users',
@@ -116,6 +116,11 @@ export class NewsService {
           this.LikeModel.countDocuments({ news_id: item.id }),
         ),
       );
+      const total_comment = await Promise.all(
+        data.map((item: any) =>
+          this.CommentModel.countDocuments({ news_id: item.id }),
+        ),
+      );
       for (let i = 0; i < data.length; i++) {
         const element = data[i];
         if (element.image && element.image.length > 0) {
@@ -132,6 +137,7 @@ export class NewsService {
           element.type_like = element.type_like + 2;
         }
         element.total_like = total_like[i];
+        element.total_comment = total_comment[i];
       }
       return data;
     } catch (error) {
@@ -287,14 +293,14 @@ export class NewsService {
                 {
                   $cond: {
                     if: { $ne: ["$user.avatar", null] },
-                    then:  `${process.env.DOMAIN}`,  
+                    then: `${process.env.DOMAIN}`,
                     else: "$$REMOVE"
                   }
                 },
                 {
                   $cond: {
                     if: { $ne: ["$user.avatar", null] },
-                    then: "$user.avatar",  
+                    then: "$user.avatar",
                     else: "$$REMOVE"
                   }
                 }
@@ -303,10 +309,11 @@ export class NewsService {
           }
         }
       ])
-      const [data, total_like, comment] = await Promise.all([
+      const [data, total_like, comment, total_comment] = await Promise.all([
         data_promise,
         this.LikeModel.countDocuments({ news_id: id }),
-        comment_promise
+        comment_promise,
+        this.CommentModel.countDocuments({ news_id: id })
       ]);
 
       const comment_child = await Promise.all(
@@ -331,14 +338,14 @@ export class NewsService {
                     {
                       $cond: {
                         if: { $ne: ["$user.avatar", null] },
-                        then:  `${process.env.DOMAIN}`,  
+                        then: `${process.env.DOMAIN}`,
                         else: "$$REMOVE"
                       }
                     },
                     {
                       $cond: {
                         if: { $ne: ["$user.avatar", null] },
-                        then: "$user.avatar",  
+                        then: "$user.avatar",
                         else: "$$REMOVE"
                       }
                     }
@@ -352,14 +359,14 @@ export class NewsService {
                     {
                       $cond: {
                         if: { $ne: ["$image", null] },
-                        then:  `${process.env.DOMAIN}`,  
+                        then: `${process.env.DOMAIN}`,
                         else: "$$REMOVE"
                       }
                     },
                     {
                       $cond: {
                         if: { $ne: ["$image", null] },
-                        then: "$image",  
+                        then: "$image",
                         else: "$$REMOVE"
                       }
                     }
@@ -374,8 +381,6 @@ export class NewsService {
         if (element.image) element.image = `${process.env.DOMAIN}${element.image}`
         element.comment_child = comment_child[i]
       }
-
-    
       for (let i = 0; i < data.length; i++) {
         const element = data[i];
         if (element.image && element.image.length > 0) {
@@ -393,6 +398,7 @@ export class NewsService {
         }
         element.total_like = total_like;
         element.comment = comment;
+        element.total_comment = total_comment;
       }
       return data[0];
     } catch (error) {

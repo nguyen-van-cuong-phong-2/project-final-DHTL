@@ -18,6 +18,7 @@ interface BettwenBody {
 const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
   const [popUpPostNew, SetPopUpPostNew] = useState(false);
   const [result_1, setResult] = useState<any>(result);
+  const [idNews, setIdNews] = useState<number>(0);
   const ref = useRef<any>(null);
 
   // useEffect(() => {
@@ -56,9 +57,9 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
       <PostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PostNew>
       {popUpPostNew && <PopupPostNew SetPopUpPostNew={SetPopUpPostNew}></PopupPostNew>}
       {result_1?.map((item: any) => (
-        <News key={item.id} data={item}></News>
+        <News key={item.id} data={item} setIdNews={setIdNews}></News>
       ))}
-      <Comment id={0}></Comment>
+      {idNews !== 0 && <Comment id={idNews} dataUser={data} setIdNews={setIdNews}></Comment>}
     </div>
   );
 }

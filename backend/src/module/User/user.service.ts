@@ -239,4 +239,13 @@ export class UserService {
         }
 
     }
+
+    // update thời gian online
+    public async LastOnline(id: number): Promise<void> {
+        try {
+            await this.UsersModel.findOneAndUpdate({ id: id }, { lastLogin: new Date().getTime() })
+        } catch (error) {
+            throw new BadRequestException(error.message)
+        }
+    }
 }

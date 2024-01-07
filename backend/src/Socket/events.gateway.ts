@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   MessageBody,
@@ -24,19 +25,24 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     private readonly messageService: MessageService,
     private readonly UserService: UserService,
     private readonly NotificationService: NotificationService,
-  ) {}
+  ) { }
   handleConnection(client: any) {
-    console.log(`${client.id} connected`);
+    // console.log(`${client.id} connected`);
     // this.arrUserOnline.set(27, client.id);
   }
   @WebSocketServer()
   public server: Server;
 
   handleDisconnect(client: Socket) {
-    const id = Array.from(this.arrUserOnline.values()).find(
-      (item) => item == client.id,
-    );
-    this.arrUserOnline.delete(id);
+    this.arrUserOnline.forEach(async (value, key) => {
+      if (value === client.id) {
+        await this.UserService.LastOnline(key);
+        this.arrUserOnline.delete(key);
+        this.server.emit('userOffline', { id: key, time: new Date().getTime() });
+        const values = Array.from(this.arrUserOnline.keys());
+        this.server.emit('listOnline', values);
+      }
+    });
   }
 
   @SubscribeMessage('login')
@@ -44,7 +50,9 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     @MessageBody() data: { id: number },
     @ConnectedSocket() client: Socket,
   ): void {
-    console.log(this.arrUserOnline.set(data.id, client.id));
+    this.arrUserOnline.set(data.id, client.id);
+    const values = Array.from(this.arrUserOnline.keys());
+    this.server.emit('listOnline', values);
   }
 
   @SubscribeMessage('getOnline')
@@ -117,5 +125,20 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
         },
       });
     }
+  }
+
+  @SubscribeMessage('typingMessage')
+  async typePingMessage(
+    @MessageBody()
+    data: {
+      sender_id: number;
+      receiver_id: number;
+      type: number;
+    },
+  ): Promise<any> {
+    const id_chat = this.arrUserOnline.get(data.receiver_id);
+    return this.server
+      .to(id_chat)
+      .emit('typing', { sender_id: data.sender_id, type: data.type });
   }
 }

@@ -22,13 +22,17 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   const func = new functions();
 
   const [data, setData] = useState<any>([]);
-  const [Typing, SetTyping] = useState(false);
-
+  const [Typing, SetTyping] = useState(0);
+  const [checkTyping, setCheckTyping] = useState(0);
   const { DeleteArrMessage, socket } = useMyContext();
+  const [arrOnline, setArrOnline] = useState([]);
+  const [timeOffline, setTimeOffline] = useState();
   const contentRef = useRef<any>();
   const DivRef = useRef<any>();
-
   const user = func.getInfoFromToken();
+  const handleUserOffLine = async () => {
+    // const response = await
+  }
   const handleKeyDown = (event: any) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -39,6 +43,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
           receiver_id: item.id,
           content: DivRef.current.innerHTML.trim(),
         });
+        handleChange(0)
         setTimeout(() => {
           socket.emit("getMessage", {
             sender_id: user.id,
@@ -55,7 +60,23 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       }
     }
   };
-  const handleChange = () => { };
+  const handleChange = (type: number) => {
+    if (type === 1 && checkTyping != 1) {
+      socket.emit("typingMessage", {
+        sender_id: user.id,
+        receiver_id: item.id,
+        type: 1
+      })
+      setCheckTyping(1)
+    } else if (type === 0) {
+      socket.emit("typingMessage", {
+        sender_id: user.id,
+        receiver_id: item.id,
+        type: 0
+      })
+      setCheckTyping(0)
+    }
+  };
   useEffect(() => {
     const content = contentRef.current;
     if (content) {
@@ -64,6 +85,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
     SocketConnect();
     return () => {
       socket.off("PushMessage");
+      handleChange(0)
     };
   }, []);
   const SocketConnect = () => {
@@ -94,10 +116,26 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
 
     // Đăng ký sự kiện "Message" khi component được mount
     socket.on("Message", handleNewMessage);
-
+    socket.on("typing", (data: any) => {
+      if (item.id == data.sender_id) {
+        SetTyping(data.type)
+      }
+    });
+    socket.emit('getOnline');
+    socket.on('listOnline', (data: any) => {
+      setArrOnline(data)
+    })
+    socket.on('userOffline', (data: any) => {
+      if (data.id == item.id) {
+        setTimeOffline(data.time)
+      }
+    })
     // Hủy đăng ký sự kiện khi component bị unmount
     return () => {
       socket.off("Message", handleNewMessage);
+      socket.off("typing");
+      socket.off("listOnline");
+      socket.off("userOffline");
     };
   }, [socket]);
   useEffect(() => {
@@ -106,11 +144,11 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       // Cuộn xuống cuối khi component được mount
       content.scrollTop = content.scrollHeight;
     }
-  }, [data]);
+  }, [data, Typing]);
   return (
     <>
       <div className="block rounded-xl bg-white shadow-md">
-        <div className="flex justify-between items-center w-[350px] border-b-0 border-top-1 rounded-t-xl shadow-md border-white bg-white px-1 py-1">
+        <div className="flex justify-between items-center w-[350px] border-b-0 border-top-1 rounded-t-xl shadow-md border-white bg-white px-1 py-1 max-sm:w-screen">
           <div className="flex items-center gap-1">
             <div className="w-9 h-9 relative">
               <Image
@@ -118,19 +156,18 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
                 alt="avatar"
                 className="w-full h-full border rounded-full"
                 objectFit="cover"
-                width={30}
-                height={30}
+                fill
                 onError={(e: any) => {
                   e.target.onerror = null;
                   e.target.setsrc = "/images/user.png";
                 }}
               ></Image>
 
-              <div className="bg-green-600 absolute right-0 bottom-0 p-1 border rounded-full"></div>
+              {arrOnline.includes(item.id) && <div className="bg-green-600 absolute right-0 bottom-0 p-1 border rounded-full"></div>}
             </div>
             <div className="name">
               <p className="font-semibold">{item.name}</p>
-              <p className="text-sm mt-[-5px]">Đang hoạt động</p>
+              <p className="text-sm mt-[-5px]">{arrOnline.includes(item.id) ? "Đang hoạt động" : func.TimeAgo(timeOffline)}</p>
             </div>
           </div>
           <div className="h-6 w-6 flex justify-center items-center">
@@ -142,7 +179,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
         </div>
 
         <div
-          className="max-w-[350px] h-[350px] min-w-[100px] overflow-auto no-scrollbar"
+          className="w-[350px] h-[350px] min-w-[100px] overflow-auto no-scrollbar  max-sm:w-screen max-sm:h-[480px]"
           ref={contentRef}
         >
           {data?.map((itemMap, key) => (
@@ -156,21 +193,22 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
               show={itemMap.receiver_id == item.id || itemMap.sender_id == item.id}
             ></ChatMessage>
           ))}
-          {Typing && (
-            <div className="flex w-9 h-9 ml-1 gap-2">
-              <Image
-                src={item.avatar}
-                alt="avatar"
-                className="w-full h-full border rounded-full"
-                objectFit="cover"
-                width={30}
-                height={30}
-              ></Image>
+          {Typing == 1 && (
+            <div className="flex gap-2 mt-2 ml-1">
+              <div className="w-10 h-10 relative">
+                <Image
+                  src={item.avatar}
+                  alt="avatar"
+                  className="w-full h-full border rounded-full"
+                  objectFit="cover"
+                  fill
+                ></Image>
+              </div>
               <AnimationTyping></AnimationTyping>
             </div>
           )}
         </div>
-        <div className="w-[350px] h-max flex justify-between items-center">
+        <div className="w-[350px] h-max flex justify-between items-center max-sm:w-screen">
           <div className="p-3 w-[15%]">
             <IoImagesOutline className="h-full w-full text-blue-500"></IoImagesOutline>
           </div>
@@ -179,11 +217,11 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
             contentEditable="true"
             role="textbox"
             data-lexical-editor="true"
-            className="w-[70%] outline-none bg-BGICon p-1 border rounded-2xl max-h-20 overflow-auto "
+            className="w-[70%] outline-none bg-BGICon p-1 border rounded-2xl max-h-20 overflow-auto pl-3"
             onKeyDown={handleKeyDown}
             tabIndex={0}
             ref={DivRef}
-            onInput={handleChange}
+            onInput={() => handleChange(1)}
           ></div>
 
           <div className="p-3 w-[15%]">

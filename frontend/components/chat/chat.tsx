@@ -34,8 +34,8 @@ export const ChatMessage: React.FC<ChatMessage> = ({
     <>{show && <div>
       {own ? (
         <div className="w-full flex items-end mt-1">
-          <div className="flex items-end w-full">
-            <div className="p-2 w-[15%]">
+          <div className="flex items-end w-full ml-1">
+            <div className="w-10 h-10 relative mr-2">
               {data[index]?.sender_id != data[index + 1]?.sender_id && (
                 <Image
                   src={item.avatar}
@@ -47,8 +47,7 @@ export const ChatMessage: React.FC<ChatMessage> = ({
           rounded-full
           cursor-pointer
           "
-                  width={30}
-                  height={30}
+                  fill
                   objectFit="cover"
                 ></Image>
               )}
@@ -57,7 +56,7 @@ export const ChatMessage: React.FC<ChatMessage> = ({
               {data[index]?.sender_id != data[index - 1]?.sender_id && (
                 <div className="text-sm">{item.name}</div>
               )}
-              <div className="bg-BGICon p-2 text-base w-max border rounded-xl max-w-[300px]">
+              <div className="bg-BGICon p-2 text-base w-max border rounded-xl max-w-[250px] break-words">
                 {message.content}
               </div>
             </div>
@@ -65,14 +64,14 @@ export const ChatMessage: React.FC<ChatMessage> = ({
         </div>
       ) : (
         <div className="w-full flex justify-end items-end mt-1 ">
-          <div className=" p-2 text-base w-max border rounded-xl max-w-[300px] bg-BGMessages mr-4 text-white">
+          <div className=" p-2 text-base w-max border rounded-xl max-w-[250px] bg-BGMessages mr-4 text-white break-words">
             {message.content}
           </div>
         </div>
       )}
       {message.seen == 1 && message.messageLastSeen && (
         <div className="w-full flex justify-end">
-          <div className="w-4 h-4">
+          <div className="w-4 h-4 relative">
             <Image
               src={"/images/avatarChat.jpg"}
               alt="avatar"
@@ -82,9 +81,8 @@ export const ChatMessage: React.FC<ChatMessage> = ({
         border 
         rounded-full
         "
-              width={20}
-              height={20}
-              objectFit="cover"
+              fill
+              objectFit="contain"
             ></Image>
           </div>
         </div>
