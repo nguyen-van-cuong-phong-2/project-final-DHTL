@@ -11,6 +11,7 @@ import {
   UploadedFile,
   UseInterceptors,
   NotAcceptableException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
@@ -153,6 +154,21 @@ export class UserController {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  @Post('getOfflineUser')
+  @UsePipes(new ValidationPipe())
+  async getOfflineUser(@Body() data: { id: number }): Promise<object> {
+    try {
+      const response = await this.userService.GetOffline(data.id);
+      return {
+        status: 200,
+        result: true,
+        data: response,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 }

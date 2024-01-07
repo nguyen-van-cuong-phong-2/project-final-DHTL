@@ -239,4 +239,24 @@ export class UserService {
         }
 
     }
+
+    // update thời gian online
+    public async LastOnline(id: number): Promise<void> {
+        try {
+            await this.UsersModel.findOneAndUpdate({ id: id }, { lastLogin: new Date().getTime() })
+        } catch (error) {
+            throw new BadRequestException(error.message)
+        }
+    }
+
+    // lấy thời gian online
+    public async GetOffline(id: number): Promise<number> {
+        try {
+            const response = await this.UsersModel.findOne({ id: id }, { lastLogin: 1 }).lean();
+            if (response) return response?.lastLogin
+            else throw new NotFoundException("Không tìm thấy user")
+        } catch (error) {
+            throw new BadRequestException(error.message)
+        }
+    }
 }

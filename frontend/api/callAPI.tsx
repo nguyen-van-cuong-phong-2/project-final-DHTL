@@ -132,3 +132,13 @@ export const callApi_GetDetailNews = async (data: object, token?: string) => {
     const response = await callApiPost_Json('news/GetDetailNews', data, token)
     return response;
 }
+
+export const callApi_GetMessage = async () => {
+    const response = await callApiPost_Json('message/getMessage', {})
+    return response;
+}
+
+export const callApi_GetOfflineUser = async (data: object) => {
+    const response = await callApiPost_Json('user/getOfflineUser', data)
+    return response;
+}

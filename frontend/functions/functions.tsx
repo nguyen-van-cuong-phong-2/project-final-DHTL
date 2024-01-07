@@ -61,23 +61,24 @@ export class functions {
         }
     }
 
-    public TimeAgo = (time: number) => {
+    public TimeAgo = (time: number, type?: number) => {
         try {
             const currentTime = Date.now() / 1000;
             const inputTime = time / 1000;
             const tg = currentTime - inputTime;
+            
             if (tg < 60) {
-                return `${Math.floor(tg)} giây trước`;
+                return `${Math.floor(tg)} giây ${type == 1 ? '':"trước"}`;
             } else if (tg >= 60 && tg < 3600) {
-                return `${Math.floor(tg / 60)} phút trước`;
+                return `${Math.floor(tg / 60)} phút ${type == 1 ? '':"trước"}`;
             } else if (tg >= 3600 && tg < 86400) {
-                return `${Math.floor(tg / 3600)} giờ trước`;
+                return `${Math.floor(tg / 3600)} giờ ${type == 1 ? '':"trước"}`;
             } else if (tg >= 86400 && tg < 2592000) {
-                return `${Math.floor(tg / 86400)} ngày trước`;
+                return `${Math.floor(tg / 86400)} ngày ${type == 1 ? '':"trước"}`;
             } else if (tg >= 2592000 && tg < 77760000) {
-                return `${Math.floor(tg / 2592000)} tháng trước`;
+                return `${Math.floor(tg / 2592000)} tháng ${type == 1 ? '':"trước"}`;
             } else if (tg >= 77760000) {
-                return `${Math.floor(tg / 77760000)} năm trước`;
+                return `${Math.floor(tg / 77760000)} năm ${type == 1 ? '':"trước"}`;
             }
         } catch (error) {
             return ''

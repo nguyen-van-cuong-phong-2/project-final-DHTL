@@ -16,20 +16,19 @@ type Inputs = {
 }
 
 interface Comment {
-    setCallAPI: any
+    setCallAPI: any;
+    id: number;
+    data: any;
 }
 
 
-const WriteComment: React.FC<Comment> = ({ setCallAPI }) => {
+const WriteComment: React.FC<Comment> = ({ setCallAPI, id, data }) => {
     const ref_content = useRef<any>();
+
     const { SetContentNotifi, comment } = useMyContext()
 
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors },
-    } = useForm<Inputs>();
+    const { register, handleSubmit, watch, formState: { errors }, } = useForm<Inputs>();
+
     const [file, setFile] = useState<any>([]);
 
     const handleChange = ({ fileList }) => {
@@ -47,7 +46,7 @@ const WriteComment: React.FC<Comment> = ({ setCallAPI }) => {
             const formData = new FormData();
             formData.append('content', ref_content.current.innerHTML)
             formData.append('parent_id', comment.parent_id)
-            formData.append('news_id', '6')
+            formData.append('news_id', id.toString())
             if (file[0]) formData.append('file', file[0].originFileObj)
             const token = Cookies.get('token')
             await axios({
@@ -72,9 +71,14 @@ const WriteComment: React.FC<Comment> = ({ setCallAPI }) => {
                     <div className="w-10 h-10 relative">
                         <Image
                             alt="avatart"
-                            src={'/images/avatar.jpg'}
+                            src={data?.avatar ? data?.avatar : "/images/user.png"}
+                            objectFit="cover"
                             className="rounded-full"
                             fill
+                            onError={(e: any) => {
+                                e.target.onerror = null;
+                                e.target.setsrc = "/images/user.png";
+                            }}
                         ></Image>
                     </div>
                     <div className="bg-BGICon rounded-2xl w-[90%] max-w-[90%] py-1 relative ">

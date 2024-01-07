@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   MessageBody,
@@ -24,19 +25,24 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     private readonly messageService: MessageService,
     private readonly UserService: UserService,
     private readonly NotificationService: NotificationService,
-  ) {}
+  ) { }
   handleConnection(client: any) {
-    console.log(`${client.id} connected`);
+    // console.log(`${client.id} connected`);
     // this.arrUserOnline.set(27, client.id);
   }
   @WebSocketServer()
   public server: Server;
 
   handleDisconnect(client: Socket) {
-    const id = Array.from(this.arrUserOnline.values()).find(
-      (item) => item == client.id,
-    );
-    this.arrUserOnline.delete(id);
+    this.arrUserOnline.forEach(async (value, key) => {
+      if (value === client.id) {
+        await this.UserService.LastOnline(key);
+        this.arrUserOnline.delete(key);
+        this.server.emit('userOffline', { id: key, time: new Date().getTime() });
+        const values = Array.from(this.arrUserOnline.keys());
+        this.server.emit('listOnline', values);
+      }
+    });
   }
 
   @SubscribeMessage('login')
@@ -44,7 +50,9 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     @MessageBody() data: { id: number },
     @ConnectedSocket() client: Socket,
   ): void {
-    console.log(this.arrUserOnline.set(data.id, client.id));
+    this.arrUserOnline.set(data.id, client.id);
+    const values = Array.from(this.arrUserOnline.keys());
+    this.server.emit('listOnline', values);
   }
 
   @SubscribeMessage('getOnline')
@@ -63,9 +71,11 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
       receiver_id: number;
       content: string;
     },
+    @ConnectedSocket() client: Socket,
   ): Promise<any> {
+    const find = this.arrUserOnline.get(data.receiver_id);
     const result = await this.messageService.createMessage(data);
-    return this.server.emit('Message', result);
+    return this.server.to(client.id).to(find).emit('Message', result);
   }
 
   // lấy tin nhắn
@@ -80,10 +90,9 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   ): Promise<any> {
     if (data.sender_id && data.receiver_id) {
       const response = await this.messageService.getMessage(data);
-      this.server.socketsJoin(client.id);
       return this.server.to(client.id).emit('PushMessage', { data: response });
     }
-    return this.server.emit('Message', `Missing data`);
+    return this.server.to(client.id).emit('Message', `Missing data`);
   }
 
   // send friend request
@@ -99,7 +108,6 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   ): Promise<any> {
     const find = this.arrUserOnline.get(data.receiver_id);
     if (find) {
-      this.server.socketsJoin(find);
       const response_Promise = this.UserService.getInfoUser(data.sender_id);
       const totalNotifi_Promise = this.NotificationService.getTotalNotification(
         data.receiver_id,
@@ -117,5 +125,20 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
         },
       });
     }
+  }
+
+  @SubscribeMessage('typingMessage')
+  async typePingMessage(
+    @MessageBody()
+    data: {
+      sender_id: number;
+      receiver_id: number;
+      type: number;
+    },
+  ): Promise<any> {
+    const id_chat = this.arrUserOnline.get(data.receiver_id);
+    return this.server
+      .to(id_chat)
+      .emit('typing', { sender_id: data.sender_id, type: data.type });
   }
 }

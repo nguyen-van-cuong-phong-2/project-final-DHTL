@@ -5,7 +5,6 @@ import { callApi_getInforUser } from '../../api/callAPI';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { functions } from '../../functions/functions';
-import Error from 'next/error';
 
 async function LoadingData(id: number, token: string): Promise<any> {
     const data = await callApi_getInforUser({ id: Number(id) }, token)

@@ -36,9 +36,9 @@ export default function Login() {
       userName: e.username,
       password: e.password
     });
-    if (response.statusCode === 404) {
+    if (response?.statusCode === 404) {
       SetContentNotifi('Tài khoản hoặc mật khẩu không chính xác');
-    } else if (response.result === true) {
+    } else if (response?.result === true) {
       SetContentNotifi('Đăng nhập thành công');
       Cookies.set('token', response.data.token);
       // setLoading(true);

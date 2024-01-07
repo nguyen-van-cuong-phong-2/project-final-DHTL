@@ -32,7 +32,7 @@ const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search }
   const containerRef = useRef(null);
 
   const handleClickOutside = (event: any) => {
-    if (containerRef.current && !containerRef.current.contains(event.target) && !event.target.className.includes('search')) {
+    if (containerRef.current && !containerRef.current.contains(event.target) && !event?.target?.className?.includes('search')) {
       tatPopup();
     }
   };

@@ -14,7 +14,7 @@ const App = () => {
         fetchAPi()
     }, [])
     return (
-        <div className={`absolute right-0 border rounded-md overflow-auto bg-white h-[500px] md:w-[320px] mt-2 z-50 p-2 shadow-lg max-sm:w-[200px]`} >
+        <div className={`absolute right-0 border rounded-md overflow-auto bg-white h-[500px] md:w-[320px] mt-2 z-50 p-2 shadow-lg max-sm:w-[360px] max-sm:right-[-50px]`} >
             <h1 className="font-bold text-2xl">Thông báo</h1>
             {data?.map(item => (
                 <div className="w-full h-20  flex items-start p-2 gap-2 cursor-pointer hover:bg-slate-200" key={1}

@@ -7,6 +7,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { callApi_SearchUser } from "../../api/callAPI";
 import Noti from '../header/notification';
+import Chat from "./chat";
 
 interface Header {
   data: {
@@ -20,9 +21,10 @@ const Header: React.FC<Header> = ({ data }) => {
   const { setLoading, totalNoti, SetTotalNoti, socket } = useMyContext()
   const [popUpSearch, setpopUpSearch] = useState(false);
   const [popUpNoti, setpopUpNoti] = useState(false);
+  const [popUpChat, setpopUpChat] = useState(false);
   const [fetchData, SetfetchData] = useState<any>([]);
   const router = useRouter();
-  
+
   const [key, SetKey] = useState('');
   useEffect(() => {
     const fetchAPi = async () => {
@@ -62,20 +64,32 @@ const Header: React.FC<Header> = ({ data }) => {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="border rounded-full h-max w-max p-3 bg-BGICon hover:cursor-pointer hover:bg-slate-400">
-              <svg
-                viewBox="0 0 24 24"
-                width="20px"
-                height="20px"
-                fill="currentColor"
-                className="x1lliihq x1k90msu x2h7rmj x1qfuztq x198g3q0 x1qx5ct2 xw4jnvo"
-              >
-                <path d="M.5 12C.5 5.649 5.649.5 12 .5S23.5 5.649 23.5 12 18.351 23.5 12 23.5c-1.922 0-3.736-.472-5.33-1.308a.63.63 0 0 0-.447-.069l-3.4.882a1.5 1.5 0 0 1-1.828-1.829l.882-3.4a.63.63 0 0 0-.07-.445A11.454 11.454 0 0 1 .5 12zm17.56-1.43a.819.819 0 0 0-1.125-1.167L14 11.499l-3.077-2.171a1.5 1.5 0 0 0-2.052.308l-2.93 3.793a.819.819 0 0 0 1.123 1.167L10 12.5l3.076 2.172a1.5 1.5 0 0 0 2.052-.308l2.931-3.793z"></path>
-              </svg>
-            </div>
             <div className="relative">
               <div className="border rounded-full h-max w-max p-3 bg-BGICon hover:cursor-pointer hover:bg-slate-400"
-                onClick={() => { setpopUpNoti(!popUpNoti), SetTotalNoti(0) }}
+                onClick={() => { setpopUpChat(!popUpChat),
+                  !popUpChat && setpopUpNoti(false)
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20px"
+                  height="20px"
+                  fill="currentColor"
+                  className="x1lliihq x1k90msu x2h7rmj x1qfuztq x198g3q0 x1qx5ct2 xw4jnvo"
+                >
+                  <path d="M.5 12C.5 5.649 5.649.5 12 .5S23.5 5.649 23.5 12 18.351 23.5 12 23.5c-1.922 0-3.736-.472-5.33-1.308a.63.63 0 0 0-.447-.069l-3.4.882a1.5 1.5 0 0 1-1.828-1.829l.882-3.4a.63.63 0 0 0-.07-.445A11.454 11.454 0 0 1 .5 12zm17.56-1.43a.819.819 0 0 0-1.125-1.167L14 11.499l-3.077-2.171a1.5 1.5 0 0 0-2.052.308l-2.93 3.793a.819.819 0 0 0 1.123 1.167L10 12.5l3.076 2.172a1.5 1.5 0 0 0 2.052-.308l2.931-3.793z"></path>
+                </svg>
+              </div>
+              {popUpChat && <Chat setpopUpChat={setpopUpChat}/>}
+              {totalNoti > 0 &&
+                <div className="border rounded-full bg-red-700 w-6 h-6 absolute right-0 bottom-[-3px] text-white flex justify-center items-center text-sm">{totalNoti}</div>
+              }
+            </div>
+
+            <div className="relative">
+              <div className="border rounded-full h-max w-max p-3 bg-BGICon hover:cursor-pointer hover:bg-slate-400"
+                onClick={() => { setpopUpNoti(!popUpNoti), SetTotalNoti(0),
+                  !popUpNoti && setpopUpChat(false) }}
               >
                 <svg
                   viewBox="0 0 24 24"

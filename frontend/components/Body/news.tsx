@@ -8,13 +8,11 @@ import { FaRegComment } from "react-icons/fa";
 import { CiShare2 } from "react-icons/ci";
 import { functions } from "../../functions/functions";
 import { Images } from "../Image/Images";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaEarthAsia } from "react-icons/fa6";
 import { IoMdLock } from "react-icons/io";
 import { FaUserFriends } from "react-icons/fa";
 import { callApi_LikeNews } from "../../api/callAPI";
-import Comment from "../popup/comment";
 
 interface News {
     data: {
@@ -28,17 +26,19 @@ interface News {
         updated_at: number;
         type_like: number;
         total_like: number;
-    }
+        total_comment: number;
+    },
+    setIdNews: any;
+
 }
 
 
-const News: React.FC<News> = ({ data }) => {
+const News: React.FC<News> = ({ data, setIdNews }) => {
     const myFunction = new functions();
     const router = useRouter();
     const [type_like, setType_like] = useState(data?.type_like);
     const [total_like, setTotal_like] = useState(data?.total_like);
     const handleLikeNews = async (id: number, type: number) => {
-        console.log("🚀 ~ file: news.tsx:41 ~ handleLikeNews ~ id:", id)
         if (type_like != 10 && type == 0) {
             setType_like(10)
             setTotal_like(prev => prev - 1)
@@ -113,14 +113,19 @@ const News: React.FC<News> = ({ data }) => {
                     </div>
                 </div>
             }
-            <div className="flex justify-start items-center mt-2">
-                {total_like > 0 && <>
-                    <div>{total_like}</div>
-                    <FcLike className="h-5 w-5"></FcLike>
-                    <AiFillLike className="h-5 w-5 text-blue-500"></AiFillLike>
-                </>}
-
+            <div className="flex justify-between items-center">
+                <div className="flex justify-start items-center mt-2">
+                    {total_like > 0 && <>
+                        <div>{total_like}</div>
+                        <FcLike className="h-5 w-5"></FcLike>
+                        <AiFillLike className="h-5 w-5 text-blue-500"></AiFillLike>
+                    </>}
+                </div>
+                {data?.total_comment && <div className="text-gray-600 font-medium text-base">
+                    {data.total_comment} bình luận
+                </div>}
             </div>
+
 
             <div className="flex w-full border-t-2 justify-between px-10 max-lg:px-0">
                 <div className="w-1/3 group relative">
@@ -174,7 +179,7 @@ const News: React.FC<News> = ({ data }) => {
                         </div>
 
                     </div>
-                    <div onClick={() => { handleLikeNews(data.id, 0) }} className="flex h-10 hover:bg-slate-200 border-0 rounded-xl py-2 cursor-pointer w-full min-w-max justify-center items-center gap-2 text-[#6a7079] relative z-[50]">
+                    <div onClick={() => { handleLikeNews(data.id, 0) }} className="flex h-10 hover:bg-slate-200 border-0 rounded-xl py-2 cursor-pointer w-full min-w-max justify-center items-center gap-2 text-[#6a7079] relative z-[20]">
                         {
                             type_like == 10 && <>
                                 <AiOutlineLike className="h-6 w-6 text-[#6a7079]"></AiOutlineLike>
@@ -201,7 +206,9 @@ const News: React.FC<News> = ({ data }) => {
                         }
                     </div>
                 </div>
-                <div className="relative z-50 flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]">
+                <div className="relative z-20 flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]"
+                    onClick={() => setIdNews(data.id)}
+                >
                     <FaRegComment className="h-6 w-6 text-[#6a7079]"></FaRegComment>
                     <div className="text-lg min-w-max">Bình luận</div>
                 </div>
@@ -210,7 +217,7 @@ const News: React.FC<News> = ({ data }) => {
                     <div className="text-lg min-w-max">Chia sẻ</div>
                 </div>
             </div>
-            
+
         </div>
     );
 }

@@ -20,10 +20,12 @@ import LoadComment from "../comment/LoadComment";
 import WriteComment from "../comment/writeComment";
 import { useMyContext } from "../context/context";
 interface Comment {
-    id: number
+    id: number,
+    dataUser: any;
+    setIdNews: any
 }
 
-const Comment: React.FC<Comment> = ({ id }) => {
+const Comment: React.FC<Comment> = ({ id, dataUser, setIdNews }) => {
     const [data, setData] = useState<{
         comment: any;
         id: number;
@@ -36,13 +38,13 @@ const Comment: React.FC<Comment> = ({ id }) => {
         updated_at: number;
         type_like: number;
         total_like: number;
-        
+        total_comment: number;
     }>();
     const [callAPI, setCallAPI] = useState(false)
     const { setComment } = useMyContext()
     useEffect(() => {
         const fetchAPI = async () => {
-            const response = await callApi_GetDetailNews({ id: 6 });
+            const response = await callApi_GetDetailNews({ id: id });
             setData(response?.data)
             setType_like(response?.data?.type_like)
             setTotal_like(response?.data?.total_like)
@@ -80,7 +82,7 @@ const Comment: React.FC<Comment> = ({ id }) => {
              border 
              rounded-full 
              cursor-pointer bottom-5">
-                                <ImCancelCircle className="w-full h-full text-gray-400" />
+                                <ImCancelCircle className="w-full h-full text-gray-400" onClick={() => setIdNews(0)} />
                             </div>
                         </div>
                         <div className="flex gap-2 mt-2">
@@ -145,14 +147,20 @@ const Comment: React.FC<Comment> = ({ id }) => {
                                 </div>
                             </div>
                         }
-                        <div className="flex justify-start items-center mt-2">
-                            {total_like > 0 && <>
-                                <div>{total_like}</div>
-                                <FcLike className="h-5 w-5"></FcLike>
-                                <AiFillLike className="h-5 w-5 text-blue-500"></AiFillLike>
-                            </>}
+                        <div className="flex justify-between items-center">
+                            <div className="flex justify-start items-center mt-2">
+                                {total_like > 0 && <>
+                                    <div>{total_like}</div>
+                                    <FcLike className="h-5 w-5"></FcLike>
+                                    <AiFillLike className="h-5 w-5 text-blue-500"></AiFillLike>
+                                </>}
 
+                            </div>
+                            {data?.total_comment && <div className="text-gray-600 font-medium text-base">
+                                {data.total_comment} bình luận
+                            </div>}
                         </div>
+
 
                         <div className="flex w-full border-t-2 border-b-2 justify-between px-10 max-lg:px-0">
                             <div className="w-1/3 group relative">
@@ -255,7 +263,7 @@ const Comment: React.FC<Comment> = ({ id }) => {
 
                     </div>
                     <div className="border bg-white px-2 absolute bottom-5 w-1/2 max-md:w-full rounded-b-xl flex justify-center items-center">
-                        <WriteComment setCallAPI={setCallAPI}></WriteComment>
+                        <WriteComment setCallAPI={setCallAPI} id={id} data={dataUser}></WriteComment>
                     </div>
                 </div>
             </div>
