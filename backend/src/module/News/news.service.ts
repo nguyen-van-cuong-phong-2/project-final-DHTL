@@ -315,7 +315,7 @@ export class NewsService {
         comment_promise,
         this.CommentModel.countDocuments({ news_id: id })
       ]);
-
+      
       const comment_child = await Promise.all(
         comment?.map((item: any) => (
           this.CommentModel.aggregate([

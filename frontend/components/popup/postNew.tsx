@@ -84,7 +84,7 @@ const PopupPostNew: React.FC<Popup> = ({ SetPopUpPostNew }) => {
 
   return (
     <>
-      <div className="absolute w-full h-screen bg-BGRegister top-[75px] left-0 z-50  ">
+      <div className="absolute w-full h-screen bg-BGRegister top-[75px] left-0 z-[10000]  ">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full flex justify-center">
           <div className="
         border

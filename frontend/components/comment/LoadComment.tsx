@@ -63,7 +63,7 @@ const LoadComment: React.FC<Comment> = ({ data, setCallAPI }) => {
                             <div className="relative w-10 h-10">
                                 <Image
                                     alt="avatar"
-                                    src={data?.avatar ? data?.avatar : "/images/user.png"}
+                                    src={item?.avatar ? item?.avatar : "/images/user.png"}
                                     className="rounded-full"
                                     fill
                                     onError={(e: any) => {

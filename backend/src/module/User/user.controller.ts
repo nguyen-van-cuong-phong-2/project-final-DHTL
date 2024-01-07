@@ -161,7 +161,7 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   async getOfflineUser(@Body() data: { id: number }): Promise<object> {
     try {
-      const response = await this.userService.LastOnline(data.id);
+      const response = await this.userService.GetOffline(data.id);
       return {
         status: 200,
         result: true,

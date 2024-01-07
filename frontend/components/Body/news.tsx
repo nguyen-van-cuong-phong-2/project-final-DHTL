@@ -179,7 +179,7 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
                         </div>
 
                     </div>
-                    <div onClick={() => { handleLikeNews(data.id, 0) }} className="flex h-10 hover:bg-slate-200 border-0 rounded-xl py-2 cursor-pointer w-full min-w-max justify-center items-center gap-2 text-[#6a7079] relative z-[50]">
+                    <div onClick={() => { handleLikeNews(data.id, 0) }} className="flex h-10 hover:bg-slate-200 border-0 rounded-xl py-2 cursor-pointer w-full min-w-max justify-center items-center gap-2 text-[#6a7079] relative z-[20]">
                         {
                             type_like == 10 && <>
                                 <AiOutlineLike className="h-6 w-6 text-[#6a7079]"></AiOutlineLike>
@@ -206,7 +206,7 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
                         }
                     </div>
                 </div>
-                <div className="relative z-50 flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]"
+                <div className="relative z-20 flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]"
                     onClick={() => setIdNews(data.id)}
                 >
                     <FaRegComment className="h-6 w-6 text-[#6a7079]"></FaRegComment>

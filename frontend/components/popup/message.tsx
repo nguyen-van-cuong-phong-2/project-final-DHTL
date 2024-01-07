@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import Image from "next/image";
 import { ImCancelCircle } from "react-icons/im";
@@ -8,6 +9,10 @@ import { ChatMessage } from "../chat/chat";
 import { useEffect, useRef, useState } from "react";
 import { AnimationTyping } from "../popup/typingAnimation";
 import { functions } from "../../functions/functions";
+import { callApi_GetOfflineUser } from "../../api/callAPI";
+import { CiFaceSmile } from "react-icons/ci";
+import EmojiPicker from 'emoji-picker-react';
+import { EmojiClickData } from "emoji-picker-react";
 
 interface PopUpMessage {
   item: {
@@ -20,6 +25,7 @@ interface PopUpMessage {
 export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
 
   const func = new functions();
+  const user = func.getInfoFromToken();
 
   const [data, setData] = useState<any>([]);
   const [Typing, SetTyping] = useState(0);
@@ -29,37 +35,45 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   const [timeOffline, setTimeOffline] = useState();
   const contentRef = useRef<any>();
   const DivRef = useRef<any>();
-  const user = func.getInfoFromToken();
+  const [showEmoji, setShowEmoji] = useState(false)
+
   const handleUserOffLine = async () => {
-    // const response = await
+    const response = await callApi_GetOfflineUser({ id: item.id })
+    setTimeOffline(response.data)
   }
+
   const handleKeyDown = (event: any) => {
     if (event.key === "Enter") {
       event.preventDefault();
-
-      if (DivRef.current && DivRef.current.innerHTML != "") {
-        socket.emit("sendMessage", {
-          sender_id: user.id,
-          receiver_id: item.id,
-          content: DivRef.current.innerHTML.trim(),
-        });
-        handleChange(0)
-        setTimeout(() => {
-          socket.emit("getMessage", {
-            sender_id: user.id,
-            receiver_id: item.id,
-          });
-
-          socket.on("PushMessage", (data: any) => {
-            setData(data?.data);
-          });
-
-        }, 2000);
-        DivRef.current.innerHTML = "";
-        return socket.off("PushMessage");
-      }
+      handleSendMessage()
     }
   };
+
+  const handleSendMessage = () => {
+    if (DivRef.current && DivRef.current.innerHTML != "") {
+      socket.emit("sendMessage", {
+        sender_id: user.id,
+        receiver_id: item.id,
+        content: DivRef.current.innerHTML.trim(),
+      });
+      handleChange(0)
+      setTimeout(() => {
+        socket.emit("getMessage", {
+          sender_id: user.id,
+          receiver_id: item.id,
+        });
+
+        socket.on("PushMessage", (data: any) => {
+          setData(data?.data);
+        });
+
+      }, 2000);
+      setShowEmoji(false)
+      DivRef.current.innerHTML = "";
+      return socket.off("PushMessage");
+    }
+  }
+
   const handleChange = (type: number) => {
     if (type === 1 && checkTyping != 1) {
       socket.emit("typingMessage", {
@@ -77,17 +91,20 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       setCheckTyping(0)
     }
   };
+
   useEffect(() => {
     const content = contentRef.current;
     if (content) {
       content.scrollTop = content.scrollHeight;
     }
     SocketConnect();
+    handleUserOffLine();
     return () => {
       socket.off("PushMessage");
       handleChange(0)
     };
   }, []);
+
   const SocketConnect = () => {
     socket.emit("getMessage", {
       sender_id: user.id,
@@ -99,6 +116,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
     });
 
   };
+
   useEffect(() => {
     const handleNewMessage = (item: any) => {
       setData((prevData: any) => [
@@ -113,7 +131,6 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
         },
       ]);
     };
-
     // Đăng ký sự kiện "Message" khi component được mount
     socket.on("Message", handleNewMessage);
     socket.on("typing", (data: any) => {
@@ -127,7 +144,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
     })
     socket.on('userOffline', (data: any) => {
       if (data.id == item.id) {
-        setTimeOffline(data.time)
+        handleUserOffLine()
       }
     })
     // Hủy đăng ký sự kiện khi component bị unmount
@@ -138,6 +155,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       socket.off("userOffline");
     };
   }, [socket]);
+
   useEffect(() => {
     const content = contentRef.current;
     if (content) {
@@ -145,6 +163,10 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       content.scrollTop = content.scrollHeight;
     }
   }, [data, Typing]);
+
+  const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
+    DivRef.current.innerHTML += emojiData.emoji
+  };
   return (
     <>
       <div className="block rounded-xl bg-white shadow-md">
@@ -208,16 +230,18 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
             </div>
           )}
         </div>
-        <div className="w-[350px] h-max flex justify-between items-center max-sm:w-screen">
+        <div className="w-[350px] h-max flex justify-between items-center max-sm:w-screen relative">
           <div className="p-3 w-[15%]">
-            <IoImagesOutline className="h-full w-full text-blue-500"></IoImagesOutline>
+            {showEmoji && <EmojiPicker onEmojiClick={onEmojiClick} searchDisabled={true} style={{ position: "absolute", bottom: "50px", height: "400px", right: "50px" }} />}
+
+            <CiFaceSmile className="h-full w-full text-blue-500 cursor-pointer" onClick={() => setShowEmoji((prev) => (!prev))}></CiFaceSmile>
           </div>
           <div
             autoFocus
             contentEditable="true"
             role="textbox"
             data-lexical-editor="true"
-            className="w-[70%] outline-none bg-BGICon p-1 border rounded-2xl max-h-20 overflow-auto pl-3"
+            className="w-[70%] outline-none bg-BGICon p-1 border rounded-2xl max-h-20 overflow-auto pl-3 whitespace-pre-wrap"
             onKeyDown={handleKeyDown}
             tabIndex={0}
             ref={DivRef}

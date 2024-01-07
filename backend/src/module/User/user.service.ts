@@ -248,4 +248,15 @@ export class UserService {
             throw new BadRequestException(error.message)
         }
     }
+
+    // lấy thời gian online
+    public async GetOffline(id: number): Promise<number> {
+        try {
+            const response = await this.UsersModel.findOne({ id: id }, { lastLogin: 1 }).lean();
+            if (response) return response?.lastLogin
+            else throw new NotFoundException("Không tìm thấy user")
+        } catch (error) {
+            throw new BadRequestException(error.message)
+        }
+    }
 }

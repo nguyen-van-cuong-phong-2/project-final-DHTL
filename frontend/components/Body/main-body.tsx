@@ -4,6 +4,7 @@ import PostNew from "./layout/post_new";
 import PopupPostNew from "../popup/postNew";
 import News from "./news";
 import Comment from "../popup/comment";
+import { useMyContext } from "../context/context";
 
 interface BettwenBody {
   data: {
@@ -20,7 +21,7 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
   const [result_1, setResult] = useState<any>(result);
   const [idNews, setIdNews] = useState<number>(0);
   const ref = useRef<any>(null);
-
+  const { } = useMyContext()
   // useEffect(() => {
   //   const fetchAPI = async () => {
   //     const response = await callApi_GetNews({ page: 1 });

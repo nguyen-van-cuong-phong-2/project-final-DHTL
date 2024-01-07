@@ -4,7 +4,7 @@ import { useMyContext } from "../context/context"
 import { useEffect, useState } from "react"
 import { callApi_GetMessage } from "../../api/callAPI"
 import { functions } from "../../functions/functions"
-const Chat = () => {
+const Chat = ({ setpopUpChat }) => {
     const [data, setData] = useState([]);
     const myFunction = new functions();
     const [arrOnline, setArrOnline] = useState([]);
@@ -26,7 +26,7 @@ const Chat = () => {
             })
             return () => {
                 socket.off("listOnline");
-              };
+            };
         }
     }, [socket])
 
@@ -37,11 +37,14 @@ const Chat = () => {
                     <div className="font-bold text-2xl ml-2 mt-2"> Đoạn chat</div>
                     {data?.map(item => (
                         <div className="flex gap-2 items-center mt-2 cursor-pointer hover:bg-slate-100 hover:rounded-2xl p-2"
-                            onClick={() => updateArrMessage({
-                                id: item.userId,
-                                avatar: item.avatar,
-                                name: item.name
-                            })}
+                            onClick={() => {
+                                updateArrMessage({
+                                    id: item.userId,
+                                    avatar: item.avatar,
+                                    name: item.name
+                                });
+                                setpopUpChat(false)
+                            }}
                         >
                             <div className="relative">
                                 <div className="relative w-12 h-12">
@@ -60,18 +63,17 @@ const Chat = () => {
                                 </div>}
 
                             </div>
-                            <div>
+                            <div className="">
                                 <div className="text-base font-medium">{item.name}</div>
-                                <div className="text-xs font-normal text-gray-600 max-w-[300px] overflow-ellipsis">
+                                <div className="text-xs font-normal text-gray-600 max-w-[200px] overflow-hidden">
                                     {item.myMessage == 1 ? "Bạn:" : `${item.name}:`}
                                     &nbsp;
                                     {item.content}
-                                    &nbsp; &nbsp;&nbsp;&nbsp; {myFunction.TimeAgo(item.created_at, 1)}</div>
+                                    &nbsp; &nbsp;&nbsp;&nbsp; {myFunction.TimeAgo(item.created_at, 1)}
+                                </div>
                             </div>
                         </div>
                     ))}
-
-
                 </div>
             </div >
         </>

@@ -87,7 +87,6 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
     }
     if (arrMessage.length == 3 && !findItem) {
       arrMessage.shift();
-
       setArrMessage((prevArr) => [...prevArr, newMessage]);
     }
   };
