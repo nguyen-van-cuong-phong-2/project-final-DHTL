@@ -27,7 +27,7 @@ export class Users {
   @Prop({ required: true })
   birthDay: number;
 
-  @Prop({ required: true })
+  @Prop({ default: 0 })
   lastLogin: number;
 }
 
