@@ -2,7 +2,7 @@ import Image from "next/image";
 import avatar from "../../public/images/avatar.jpg";
 import { ImCancelCircle } from "react-icons/im";
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Upload, message } from 'antd';
+import { Button, Upload } from 'antd';
 import { useState } from "react";
 import { callApi_PostNews } from "../../api/callAPI";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -13,7 +13,8 @@ import Cookies from "js-cookie";
 import axios from "axios";
 
 interface Popup {
-  SetPopUpPostNew: any
+  SetPopUpPostNew: any,
+  data: any
 }
 
 type Inputs = {
@@ -22,7 +23,7 @@ type Inputs = {
   type_seen: number
 }
 
-const PopupPostNew: React.FC<Popup> = ({ SetPopUpPostNew }) => {
+const PopupPostNew: React.FC<Popup> = ({ data, SetPopUpPostNew }) => {
   const [fileList, setFileList] = useState([]);
   const { SetContentNotifi } = useMyContext()
   const ref_content = useRef<any>();
@@ -74,7 +75,7 @@ const PopupPostNew: React.FC<Popup> = ({ SetPopUpPostNew }) => {
       if (response.data.result == true) {
         SetContentNotifi("Đăng tin thành công!")
         SetPopUpPostNew(false)
-      }{
+      } {
         SetContentNotifi("Đăng bài thất bại, vui lòng đợi chúng tôi kiểm tra")
       }
     } else {
@@ -125,15 +126,19 @@ const PopupPostNew: React.FC<Popup> = ({ SetPopUpPostNew }) => {
               <div className="
             w-12 
             h-12
+            relative
             ">
                 <Image
+                  className="border rounded-full box-border items-center w-full h-full"
+                  src={data?.avatar ? data.avatar : "/images/user.png"}
+                  fill
+                  objectFit="cover"
+                  quality={100}
                   alt="avatar"
-                  src={avatar}
-                  className="w-full h-full border rounded-full"
                 ></Image>
               </div>
               <div>
-                <span className="block">Nguyễn Cường</span>
+                <span className="block">{data.name}</span>
                 <select className="text-xs border rounded-2xl bg-BGICon outline-none" {...register("type_seen")}>
                   <option className="text-xs border rounded-2xl" value={1}>Bạn bè</option>
                   <option className="text-xs border rounded-2xl" value={2}>

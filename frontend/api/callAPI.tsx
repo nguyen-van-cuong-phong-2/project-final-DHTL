@@ -142,3 +142,8 @@ export const callApi_GetOfflineUser = async (data: object) => {
     const response = await callApiPost_Json('user/getOfflineUser', data)
     return response;
 }
+
+export const callApi_GetReels = async (data: object) => {
+    const response = await callApiPost_Json('reels/GetReels', data)
+    return response;
+}

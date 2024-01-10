@@ -1,36 +1,80 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import dynamic from "next/dynamic";
-import { useState } from "react"
+import { useEffect, useState } from "react"
 const DynamicReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 import { SlArrowLeft } from "react-icons/sl";
 import { SlArrowRight } from "react-icons/sl";
-const Clip = () => {
-    const [mute, setMute] = useState(true)
+import { callApi_GetReels } from "../../api/callAPI";
+const Clip = ({ setDataUser }) => {
+    const [mute, setMute] = useState(true);
+    const [video, setVideo] = useState<any>({ key: 0 });
+    const [page, setPage] = useState(1);
+    const [data, setData] = useState<any>([]);
+    useEffect(() => {
+        const callAPI = async () => {
+            const response = await callApi_GetReels({ page });
+            if (data) {
+                if (page == 0) setData(response.data)
+                else setData((prev: any) => [...prev, ...response.data])
+            }
+            if (video.key == 0) {
+                setVideo({ key: 0, video: response.data[0].video })
+                setDataUser({
+                    name: response.data[0].name,
+                    avatar: response.data[0].avatar,
+                    created_at: response.data[0].created_at
+                })
+            }
+        }
+        callAPI();
+    }, [page])
+    const handleNextClick = () => {
+        const key = video.key + 1;
+        if (key < data.length) {
+            setVideo({ key, video: data[key]?.video })
+            setDataUser({
+                name: data[key].name,
+                avatar: data[key].avatar,
+                created_at: data[key].created_at
+            })
+        } else if (key + 10 == data.length) {
+            setPage(prev => prev + 1)
+        }
+    }
+
+    const handlePreviousClick = () => {
+        const key = video.key - 1;
+        if (key >= 0) {
+            setVideo({ key, video: data[key]?.video })
+            setDataUser({
+                name: data[key].name,
+                avatar: data[key].avatar,
+                created_at: data[key].created_at
+            })
+        }
+    }
     return (
         <>
-            {/* <div className=' cursor-pointer w-20 h-20 border ' onClick={() => setMute(false)}>bat loa</div> */}
-            <div className='w-full h-full relative mt-2 flex items-center gap-10 '>
-                {/* <DynamicReactPlayer
-                    url='http://104.199.238.144/pictures/video/d97ffa6ff0cb6030afc1134f137fd86a.mp4'
-                    controls={false}
-                    playing={true}
-                    loop={true}
-                    width="100%"
-                    height="100%"
-                    style={{ position: 'absolute', top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
-                    muted={mute}
-                /> */}
-                <SlArrowLeft className=' mb-20 rounded-full p-5 bg-white'></SlArrowLeft>
-                <div className="w-[450px]">
-                    <video className="w-full object-cover" autoPlay muted>
-                        <source src="http://104.199.238.144/pictures/video/1a6a1c5274e747404a9712bfd7ec2544.mp4" type="video/mp4" />
-                    </video>
+            <div className='w-full lg:h-[700px] mt-2 flex items-center gap-10 max-md:gap-1'>
+                <div className="border rounded-full p-2 mb-32 cursor-pointer" onClick={handlePreviousClick}>
+                    <SlArrowLeft className='max-md:text-base text-4xl text-white'></SlArrowLeft>
                 </div>
-                <SlArrowRight className='text-white mb-20'></SlArrowRight>
-
+                <div className="w-[450px] max-lg:w-[80%] rounded-2xl overflow-hidden">
+                    <DynamicReactPlayer
+                        url={video?.video}
+                        controls={false}
+                        playing={true}
+                        loop={true}
+                        width="100%"
+                        height="100%"
+                        muted={false}
+                    />
+                </div>
+                <div className="border rounded-full p-2 mb-32 cursor-pointer" onClick={handleNextClick}>
+                    <SlArrowRight className='max-md:text-base text-white  text-4xl'></SlArrowRight>
+                </div>
             </div>
-
-
         </>
     )
 }

@@ -10,6 +10,7 @@ import { NewsModule } from './module/News/news.module';
 import { FriendModule } from './module/Friend/friend.module';
 import { NotificationModule } from './module/notification/notification.module';
 import { MessageModule } from './module/Message/message.module';
+import { ReelsModule } from './module/Reels/reels.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MessageModule } from './module/Message/message.module';
     FriendModule,
     NotificationModule,
     MessageModule,
+    ReelsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

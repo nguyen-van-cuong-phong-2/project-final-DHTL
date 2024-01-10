@@ -6,6 +6,7 @@ import {
     Injectable,
     InternalServerErrorException,
     NotFoundException,
+    PayloadTooLargeException,
 } from '@nestjs/common';
 import * as fs from 'node:fs';
 import { Users } from 'src/Schemas/user.schema';
@@ -116,18 +117,33 @@ export class UserService {
     }
 
     // upload file 
-    public async uploadFile(file: any, time: number, pathFolder: string) {
+    public async uploadFile(file: any, time: number, pathFolder: string, type?: number) {
+       try {
+        console.log("🚀 ~ UserService ~ uploadFile ~ file:", file)
         const path1 = `./storage/pictures/${pathFolder}/`;
         const filePath = `./storage/pictures/${pathFolder}/${time}_${file.originalname}`;
         const fileCheck = path.extname(filePath);
-        if (['.jpg', '.png'].includes(fileCheck.toLocaleLowerCase()) === false) {
-            return false;
-        }
+
+        if (type === 1) {
+            const size = file.size / 1000000;
+            if (size > 100) {
+                throw new PayloadTooLargeException('File quá lớn')
+            } else if (['.mp4'].includes(fileCheck.toLocaleLowerCase()) === false) {
+                return false
+            }
+        } else if (['.jpg', '.png'].includes(fileCheck.toLocaleLowerCase()) === false) {
+                return false;
+            }
+        
         if (!fs.existsSync(path1)) {
             fs.mkdirSync(path1, { recursive: true });
         }
         fs.writeFileSync(filePath, file.buffer);
         return `/pictures/${pathFolder}/${time}_${file.originalname}`;
+       } catch (error) {
+        console.log("🚀 ~ UserService ~ uploadFile ~ error:", error)
+        
+       }
     }
 
     // lưu file đã upload vào base

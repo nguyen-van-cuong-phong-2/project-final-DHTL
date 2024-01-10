@@ -5,35 +5,20 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-export type UsersDocument = HydratedDocument<Users>;
+export type ReelsDocument = HydratedDocument<Reels>;
 @Schema()
-export class Users {
+export class Reels {
   @Prop({ required: true, unique: true, index: true })
   id: number;
 
   @Prop({ required: true })
-  name: string;
+  userId: number;
 
   @Prop({ required: true })
-  userName: string;
-
-  @Prop({ required: true })
-  password: string;
+  video: string;
 
   @Prop({ required: true })
   created_at: number;
-
-  @Prop({ default: null })
-  avatar: string;
-
-  @Prop({ default: null })
-  coverImage: string;
-
-  @Prop({ required: true })
-  birthDay: number;
-
-  @Prop({ required: true })
-  lastLogin: number;
 }
 
-export const UserSchema = SchemaFactory.createForClass(Users);
+export const ReelsSchema = SchemaFactory.createForClass(Reels);
