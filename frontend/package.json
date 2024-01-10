@@ -21,6 +21,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.49.2",
     "react-icons": "^4.11.0",
+    "react-player": "^2.14.1",
     "socket.io-client": "^4.7.2",
     "webpack-node-externals": "^3.0.0"
   },
