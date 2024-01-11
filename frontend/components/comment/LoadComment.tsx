@@ -4,6 +4,9 @@ import { functions } from "../../functions/functions";
 import WriteComment from "./writeComment";
 import { useMyContext } from "../context/context";
 import React from "react";
+import { BiSolidLike } from "react-icons/bi";
+import { callApi_LikeComment } from "../../api/callAPI";
+
 interface Comment {
     data: any,
     setCallAPI: any
@@ -11,6 +14,12 @@ interface Comment {
 const LoadComment: React.FC<Comment> = ({ data, setCallAPI }) => {
     const myFunction = new functions();
     const { comment, setComment } = useMyContext();
+    const handleLikeComment = async (id: number) => {
+        const response = await callApi_LikeComment({ news_id: data.news_id, type: 0, comment_id: id });
+        if (response.result == true) {
+            setCallAPI((prev: boolean) => (!prev))
+        }
+    }
     return (
         <>
             <div className="w-full h-full flex gap-2 items-start mt-10 flex-wrap relative">
@@ -30,8 +39,8 @@ const LoadComment: React.FC<Comment> = ({ data, setCallAPI }) => {
                     <div className="text-base font-semibold">{data?.name}</div>
                     <div className="text-base w-full break-words">{data?.content}</div>
                     <div className="flex gap-2 w-60 absolute bottom-[-20px]">
-                        <div className="text-sm font-semibold cursor-pointer hover:underline">
-                            Thích
+                        <div className="text-sm font-semibold cursor-pointer hover:underline" onClick={() => handleLikeComment(data.id)}>
+                            {data.my_like == 1 ? <span className="text-blue">Đã thích</span> : <span>Thích</span>}
                         </div>
                         <div className="text-sm font-semibold cursor-pointer hover:underline" onClick={() => setComment({
                             parent_id: data.id,
@@ -42,6 +51,10 @@ const LoadComment: React.FC<Comment> = ({ data, setCallAPI }) => {
                         <div className="text-xs mt-[2px] font-normal">
                             {myFunction.TimeAgo(data?.created_at)}
                         </div>
+                        {data.total_like > 0 && <div className="flex justify-center items-center gap-1">
+                            <div>{data.total_like}</div>
+                            <BiSolidLike className="text-blue-600"></BiSolidLike>
+                        </div>}
                     </div>
                     {
                         data.image && <div>
@@ -76,8 +89,8 @@ const LoadComment: React.FC<Comment> = ({ data, setCallAPI }) => {
                                 <div className="text-base font-semibold">{item.name}</div>
                                 <div className="text-base break-words">{item.content}</div>
                                 <div className="flex gap-2 w-60 absolute bottom-[-20px]">
-                                    <div className="text-sm font-semibold cursor-pointer hover:underline">
-                                        Thích
+                                    <div className="text-sm font-semibold cursor-pointer hover:underline" onClick={() => handleLikeComment(item.id)}>
+                                        {item.my_like == 1 ? <span className="text-blue">Đã thích</span> : <span>Thích</span>}
                                     </div>
                                     <div className="text-sm font-semibold cursor-pointer hover:underline"
                                         onClick={() => setComment({
@@ -89,6 +102,10 @@ const LoadComment: React.FC<Comment> = ({ data, setCallAPI }) => {
                                     <div className="text-xs mt-[2px] font-normal">
                                         {myFunction.TimeAgo(item?.created_at)}
                                     </div>
+                                    {item.total_like > 0 && <div className="flex justify-center items-center gap-1">
+                                        <div>{item.total_like}</div>
+                                        <BiSolidLike className="text-blue-600"></BiSolidLike>
+                                    </div>}
                                 </div>
                                 {
                                     item?.images && <div>

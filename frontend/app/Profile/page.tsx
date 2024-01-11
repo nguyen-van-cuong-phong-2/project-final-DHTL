@@ -5,6 +5,7 @@ import { callApi_getInforUser } from '../../api/callAPI';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { functions } from '../../functions/functions';
+import Main from "../../components/profile/main";
 
 async function LoadingData(id: number, token: string): Promise<any> {
     const data = await callApi_getInforUser({ id: Number(id) }, token)
@@ -38,10 +39,10 @@ export default async function Profile({
         <>
             <Header data={data_infoSelf.data}></Header>
             <div className="block border">
-                <AnhBia data={data.data}></AnhBia>
-                <Body data={data.data}></Body>
+                <AnhBia data={data.data} check={data_infoSelf.data.id == searchParams.id}></AnhBia>
+                <Body data={data.data} check={data_infoSelf.data.id == searchParams.id}></Body>
+                <Main></Main>
             </div>
-
         </>
     )
 }

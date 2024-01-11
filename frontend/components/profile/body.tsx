@@ -24,10 +24,12 @@ interface Body {
         name: string,
         makefriend: number,
         totalFriend: number
-    }
+    };
+    check: boolean
 }
 
-const Body: React.FC<Body> = ({ data }) => {
+const Body: React.FC<Body> = ({ data, check }) => {
+    console.log("🚀 ~ check:", check)
     const [menu, SetMenu] = useState(false);
     const [dataResult, SetDataResult] = useState(data);
     const user = new functions().getInfoFromToken();
@@ -106,10 +108,10 @@ const Body: React.FC<Body> = ({ data }) => {
                                     e.target.setsrc = "/images/user.png";
                                 }}
                             />
-                            <div className="absolute right-0 top-32 p-1 border rounded-full bg-BGICon cursor-pointer">
+                            {check && <div className="absolute right-0 top-32 p-1 border rounded-full bg-BGICon cursor-pointer">
                                 <IoCamera className="w-7 h-7 cursor-pointer"></IoCamera>
                                 <input type="file" className="opacity-0 w-7 h-7 absolute top-0 cursor-pointer"></input>
-                            </div>
+                            </div>}
                         </div>
                         <div className="mt-10 max-sm:mt-0">
                             <div className="font-semibold text-4xl ">{dataResult?.name}</div>
@@ -117,17 +119,17 @@ const Body: React.FC<Body> = ({ data }) => {
                         </div>
                     </div>
                     {
-                        dataResult?.makefriend == 0 && <div className="border rounded-xl bg-blue-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer"
+                        !check && dataResult?.makefriend == 0 && <div className="border rounded-xl bg-blue-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer"
                             onClick={() => them_ban_be(dataResult?.id)}
                         >thêm bạn bè</div>
                     }
                     {
-                        dataResult?.makefriend == 1 && <div className="border rounded-xl bg-gray-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer"
+                        !check && dataResult?.makefriend == 1 && <div className="border rounded-xl bg-gray-600 py-2 px-5 text-white mt-10 max-sm:mt-2 cursor-pointer"
                             onClick={() => huy_loi_moi(dataResult?.id)}
                         >Huỷ lời mời</div>
                     }
 
-                    {dataResult?.makefriend == 3 && <div className="flex flex-col items-end">
+                    {!check && dataResult?.makefriend == 3 && <div className="flex flex-col items-end">
                         <div className="flex items-center mt-10 max-sm:mt-2 gap-2">
                             <div onClick={() => handleOnClick({
                                 id: dataResult.id,
@@ -141,13 +143,13 @@ const Body: React.FC<Body> = ({ data }) => {
                                 <CiMenuBurger></CiMenuBurger>
                             </div>
                         </div>
-                        {menu && <div className="absolute border top-32 max-sm:top-60 px-3 py-1 bg-white flex justify-center items-center gap-2 mt-2 rounded-xl hover:bg-slate-100 cursor-pointer">
+                        {!check && menu && <div className="absolute border top-32 max-sm:top-60 px-3 py-1 bg-white flex justify-center items-center gap-2 mt-2 rounded-xl hover:bg-slate-100 cursor-pointer">
                             <div><SlUserUnfollow></SlUserUnfollow></div>
                             <div>Huỷ kết bạn</div>
                         </div>}
                     </div>}
                     {
-                        dataResult?.makefriend == 2 && <div className="flex justify-center items-center gap-2 mt-7">
+                     !check &&   dataResult?.makefriend == 2 && <div className="flex justify-center items-center gap-2 mt-7">
                             <div className="border rounded-xl bg-blue-600 text-white px-3 py-2 cursor-pointer hover:bg-slate-300"
                                 onClick={() => handleAccept(dataResult.id)}
                             >Chấp nhận lời mời</div>

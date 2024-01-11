@@ -5,6 +5,7 @@ import PopupPostNew from "../popup/postNew";
 import News from "./news";
 import Comment from "../popup/comment";
 import { useMyContext } from "../context/context";
+import { callApi_GetNews } from "../../api/callAPI";
 
 interface BettwenBody {
   data: {
@@ -21,14 +22,13 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
   const [result_1, setResult] = useState<any>(result);
   const [idNews, setIdNews] = useState<number>(0);
   const ref = useRef<any>(null);
-  const { } = useMyContext()
-  // useEffect(() => {
-  //   const fetchAPI = async () => {
-  //     const response = await callApi_GetNews({ page: 1 });
-  //     setResult(response.data)
-  //   }
-  //   fetchAPI()
-  // }, []);
+  useEffect(() => {
+    const fetchAPI = async () => {
+      const response = await callApi_GetNews({ page: 1 });
+      setResult(response.data)
+    }
+    fetchAPI()
+  }, [popUpPostNew]);
   useEffect(() => {
     if (ref.current.scrollHeight > ref.current.innerHeight) {
       console.log('2222222222')

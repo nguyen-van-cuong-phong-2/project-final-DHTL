@@ -87,6 +87,7 @@ export class NotificationService {
   public async getTotalNotification(id: number): Promise<number> {
     const number = await this.NotificationModel.countDocuments({
       receiver_id: id,
+      seen: 0,
     });
     return number;
   }

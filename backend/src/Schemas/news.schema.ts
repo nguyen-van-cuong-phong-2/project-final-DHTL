@@ -24,6 +24,15 @@ export class News {
 
     @Prop({ required: true })
     type_seen: number;
+
+    @Prop({ default: 0 })
+    share: number;
+
+    @Prop({ default: 0 })
+    id_user_be_shared: number;
+
+    @Prop({ default: null })
+    name_user_be_shared: string;
 }
 
 export const NewsSchema = SchemaFactory.createForClass(News);

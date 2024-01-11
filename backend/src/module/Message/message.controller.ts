@@ -26,6 +26,7 @@ export class MessageController {
     private readonly friendService: FriendService
   ) { }
 
+  // lấy danh sách cuộc trò chuyện
   @Post('getMessage')
   @UsePipes(new ValidationPipe())
   async getMessage(

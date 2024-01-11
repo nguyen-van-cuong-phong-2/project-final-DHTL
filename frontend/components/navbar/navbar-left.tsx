@@ -2,6 +2,7 @@
 import { FaUserFriends } from "react-icons/fa";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { RxVideo } from "react-icons/rx";
 
 
 
@@ -40,6 +41,12 @@ const LeftBody: React.FC<LeftBody> = ({ data }) => {
         <div className="flex gap-4 items-center  mt-5 hover:bg-gray-300 p-2 box-border cursor-pointer rounded-md">
           <FaUserFriends className="w-[40px] h-8 text-blue-400"></FaUserFriends>
           <span className="text-xl font-medium">Bạn bè</span>
+        </div>
+        <div className="flex gap-4 items-center  mt-5 hover:bg-gray-300 p-2 box-border cursor-pointer rounded-md"
+          onClick={() => router.push('/Reels')}
+        >
+          <RxVideo className="w-[40px] h-8 text-red-400"></RxVideo>
+          <span className="text-xl font-medium">Reels</span>
         </div>
       </div>
     </>

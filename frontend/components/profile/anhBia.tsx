@@ -8,10 +8,11 @@ interface AnhBia {
         avatar: string,
         name: string,
         coverImage: string,
-    }
+    };
+    check: boolean
 }
 
-const AnhBia: React.FC<AnhBia> = ({ data }) => {
+const AnhBia: React.FC<AnhBia> = ({ data, check }) => {
     return (
         <>
             <div className=" w-full flex justify-center items-center">
@@ -28,13 +29,13 @@ const AnhBia: React.FC<AnhBia> = ({ data }) => {
                             e.target.setsrc = "/images/anhbia.jpg";
                         }}
                     ></Image>
-                    <div className="absolute right-4 bottom-2 px-4 cursor-pointer hover:bg-slate-50 py-1 border-none z-0 text-white rounded-full bg-slate-600 opacity-80 flex gap-2">
+                    {check && <div className="absolute right-4 bottom-2 px-4 cursor-pointer hover:bg-slate-50 py-1 border-none z-0 text-white rounded-full bg-slate-600 opacity-80 flex gap-2">
                         <IoCamera className="w-7 h-7 cursor-pointer"></IoCamera>
                         <div>Chỉnh sửa ảnh bìa</div>
-                    </div>
+                    </div>}
                     <input type="file" className="opacity-0 z-50 w-80 h-20 absolute bottom-0 right-0 cursor-pointer"></input>
                 </div>
-            </div>
+            </div >
         </>
     )
 }

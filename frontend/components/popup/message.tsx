@@ -26,8 +26,8 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
 
   const func = new functions();
   const user = func.getInfoFromToken();
-
   const [data, setData] = useState<any>([]);
+  // console.log("🚀 ~ data:", data)
   const [Typing, SetTyping] = useState(0);
   const [checkTyping, setCheckTyping] = useState(0);
   const { DeleteArrMessage, socket } = useMyContext();
@@ -122,7 +122,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
       setData((prevData: any) => [
         ...prevData,
         {
-          ...item,
+          ...item.result,
           id: item.id,
           seen: 0,
           _id: "6566f58cb341441c876c6031",

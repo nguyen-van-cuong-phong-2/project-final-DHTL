@@ -14,12 +14,14 @@ interface Header {
     id: number,
     avatar: string,
     name: string,
+    totalNoti: number,
+    total_message: number,
   },
   reels?: boolean
 }
 
 const Header: React.FC<Header> = ({ data, reels }) => {
-  const { setLoading, totalNoti, SetTotalNoti, socket } = useMyContext()
+  const { totalNoti, SetTotalNoti, totalMessage, SetTotalMessage } = useMyContext()
   const [popUpSearch, setpopUpSearch] = useState(false);
   const [popUpNoti, setpopUpNoti] = useState(false);
   const [popUpChat, setpopUpChat] = useState(false);
@@ -30,7 +32,7 @@ const Header: React.FC<Header> = ({ data, reels }) => {
   useEffect(() => {
     const fetchAPi = async () => {
       const response = await callApi_SearchUser({ key: key });
-      SetfetchData(response.data)
+      SetfetchData(response?.data)
     }
     fetchAPi();
   }, [key]);
@@ -44,6 +46,12 @@ const Header: React.FC<Header> = ({ data, reels }) => {
     SetfetchData(response.data)
   }
 
+  useEffect(() => {
+    if (data) {
+      SetTotalMessage(data.total_message)
+      SetTotalNoti(data.totalNoti)
+    }
+  }, []);
   return (
     <>
       <div className={`fixed w-full  top-0 z-50 ${reels ? 'bg-black' : 'bg-white'}`}>
@@ -70,7 +78,8 @@ const Header: React.FC<Header> = ({ data, reels }) => {
                 onClick={() => {
                   setpopUpChat(!popUpChat),
                     !popUpChat && setpopUpNoti(false)
-                }}
+                }
+                }
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -83,8 +92,8 @@ const Header: React.FC<Header> = ({ data, reels }) => {
                 </svg>
               </div>
               {popUpChat && <Chat setpopUpChat={setpopUpChat} />}
-              {totalNoti > 0 &&
-                <div className="border rounded-full bg-red-700 w-6 h-6 absolute right-0 bottom-[-3px] text-white flex justify-center items-center text-sm">{totalNoti}</div>
+              {totalMessage > 0 &&
+                <div className="border rounded-full bg-red-700 w-6 h-6 absolute right-0 bottom-[-3px] text-white flex justify-center items-center text-sm">{totalMessage}</div>
               }
             </div>
 

@@ -37,8 +37,11 @@ const App = () => {
                     <div className="w-[80%]">
                         <span className="font-bold text-sm">{item.name}</span>
                         {item.type == 1 && <span> &nbsp;đã gửi cho bạn lời mời kết bạn</span>}
-                        {item.type == 2 && <span> &nbsp;đã thả cảm xúc bài viết của bạn</span>}
-                        {item.type == 3 && <span> &nbsp;đã bình luận bài viết của bạn</span>}
+                        {item.type == 2 && <span> &nbsp;đã chấp nhận kết bạn</span>}
+                        {item.type == 3 && <span> &nbsp;đã thích bài viết của bạn</span>}
+                        {item.type == 4 && <span> &nbsp;đã bình luận về bài viết của bạn</span>}
+                        {item.type == 5 && <span> &nbsp;đã trả lời bình luận của bạn trong 1 bài viết</span>}
+                        {item.type == 6 && <span> &nbsp;đã thích bình luận của bạn trong 1 bài viết</span>}
                     </div>
                 </div>
             ))

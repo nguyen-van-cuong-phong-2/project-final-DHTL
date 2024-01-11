@@ -45,7 +45,7 @@ export class ReelsController {
     @Post('GetReels')
     async GetReels(@Body() data: { page: number }, @Req() req: ExtendedRequest): Promise<object> {
         try {
-            if (req.user && req.user.id) {
+            if (req.user && req.user.id && data.page) {
                 const response = await this.reelsService.GetReels({ page: data.page, userID: Number(req.user.id), });
                 return {
                     status: 200,

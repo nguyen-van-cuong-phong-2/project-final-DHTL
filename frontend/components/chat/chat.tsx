@@ -73,7 +73,7 @@ export const ChatMessage: React.FC<ChatMessage> = ({
         <div className="w-full flex justify-end">
           <div className="w-4 h-4 relative">
             <Image
-              src={"/images/avatarChat.jpg"}
+              src={item.avatar}
               alt="avatar"
               className="
         w-full

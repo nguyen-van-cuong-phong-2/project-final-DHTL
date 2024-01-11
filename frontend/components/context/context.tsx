@@ -8,8 +8,7 @@ import React, {
 } from "react";
 import { io } from "socket.io-client";
 import { functions } from "../../functions/functions";
-import { callApi_getInforUser } from "../../api/callAPI";
-import { useRouter } from "next/navigation";
+
 
 // Define the interface for the object contained in the array
 interface Message {
@@ -38,13 +37,13 @@ interface MyContextType {
   totalNoti: number;
   SetTotalNoti: any;
   comment: any;
-  setComment: any
+  setComment: any;
+  totalMessage: number;
+  SetTotalMessage: any;
 }
 
-// Create the context with an initial value
 const MyContext = createContext<MyContextType | undefined>(undefined);
 
-// Define the provider component
 export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
@@ -54,13 +53,18 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   const [contentNotifi, SetContentNotifi] = useState('');
   const [user, SetUser] = useState<Users>();
   const [totalNoti, SetTotalNoti] = useState<number>(0);
+  const [totalMessage, SetTotalMessage] = useState<number>(0);
   const [comment, setComment] = useState<any>({
     content: "Viết bình luận...",
     parent_id: 0
   });
   useEffect(() => {
-    const socketIO = io(`${process.env.NEXT_PUBLIC_DOMAIN_SOCKET}`);
+    const user = new functions().getInfoFromToken();
 
+    const socketIO = io(`${process.env.NEXT_PUBLIC_DOMAIN_SOCKET}`);
+    if (user) {
+      socketIO.emit('login', { id: user.id })
+    }
     if (socketIO) SetSocket(socketIO);
     socketIO.on('notification', (data) => {
       SetTotalNoti(data.data.totalNotifi)
@@ -68,12 +72,26 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
         SetContentNotifi(`${data.data.sender_id.name} đã gửi lời mời kết bạn!`)
       } else if (data?.data?.type == 2) {
         SetContentNotifi(`${data.data.sender_id.name} đã chấp nhận kết bạn!`)
+      } else if (data?.data?.type == 3 && data.data.type_enmoji == 0) {
+        SetContentNotifi(`${data.data.sender_id.name} đã thích bài viết của bạn!`)
+      } else if (data?.data?.type == 3 && data.data.type_enmoji != 0) {
+        SetContentNotifi(`${data.data.sender_id.name} đã thả cảm xúc về bài viết của bạn!`)
+      } else if (data?.data?.type == 4) {
+        SetContentNotifi(`${data.data.sender_id.name} đã bình luận về bài viết của bạn!`)
+      } else if (data?.data?.type == 5) {
+        SetContentNotifi(`${data.data.sender_id.name} đã trả lời bình luận của bạn trong 1 bài viết!`)
+      } else if (data?.data?.type == 6) {
+        SetContentNotifi(`${data.data.sender_id.name} đã thích bình luận của bạn trong 1 bài viết!`)
       }
     });
-    const user = new functions().getInfoFromToken();
     if (user) {
-      socketIO.emit('login', { id: user.id })
+      socketIO.on("Message", (data) => {
+        if (data.id == user.id) {
+          SetTotalMessage(data.total)
+        }
+      })
     }
+
     return () => {
       socketIO.disconnect();
     };
@@ -115,7 +133,9 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
         totalNoti,
         SetTotalNoti,
         comment,
-        setComment
+        setComment,
+        totalMessage,
+        SetTotalMessage
       }}
     >
       {children}

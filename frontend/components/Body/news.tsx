@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation";
 import { FaEarthAsia } from "react-icons/fa6";
 import { IoMdLock } from "react-icons/io";
 import { FaUserFriends } from "react-icons/fa";
-import { callApi_LikeNews } from "../../api/callAPI";
+import { callApi_LikeNews, callApi_ShareNews } from "../../api/callAPI";
+import { useMyContext } from "../context/context";
 
 interface News {
     data: {
@@ -27,6 +28,9 @@ interface News {
         type_like: number;
         total_like: number;
         total_comment: number;
+        share: number,
+        id_user_be_shared: number,
+        name_user_be_shared: string
     },
     setIdNews: any;
 
@@ -38,6 +42,7 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
     const router = useRouter();
     const [type_like, setType_like] = useState(data?.type_like);
     const [total_like, setTotal_like] = useState(data?.total_like);
+    // const [popupShare, setPopupShare] = useState(data?.total_like);
     const handleLikeNews = async (id: number, type: number) => {
         if (type_like != 10 && type == 0) {
             setType_like(10)
@@ -48,9 +53,22 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
         }
         await callApi_LikeNews({ news_id: id, type });
     }
+
+    const { SetContentNotifi } = useMyContext()
+    const handleShareNews = async (type: number) => {
+        const response = await callApi_ShareNews({
+            news_id: data.id,
+            type_seen: type
+        });
+        if (response.result === true) {
+            SetContentNotifi("Share bài viết thành công!")
+        } else {
+            SetContentNotifi("Có lỗi xảy ra!")
+        }
+    }
     return (
         <div className="w-4/5 border rounded-xl h-max bg-white mt-5 pt-5 px-5 max-lg:w-full
-        max-lg:m-0  max-lg:mt-5">
+        max-lg:m-0 max-lg:mt-5">
             <div className="flex gap-2">
                 <div className="w-12 h-12 relative">
                     <Image
@@ -76,6 +94,11 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
                         {data.type_seen == 2 && <FaUserFriends className="w-3 h-3"></FaUserFriends>}
                     </div>
                 </div>
+                {
+                    data.share != 0 && <div className="text-base text-[#8f8a8a]">
+                        đã chia sẻ bài viết của <div className="inline-block font-bold text-base cursor-pointer hover:underline text-slate-600" onClick={() => router.push(`/Profile?id=${data.id_user_be_shared}`)}>{data.name_user_be_shared}</div>
+                    </div>
+                }
             </div>
             <div className="content mt-2">
                 {data.content}
@@ -129,7 +152,7 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
 
             <div className="flex w-full border-t-2 justify-between px-10 max-lg:px-0">
                 <div className="w-1/3 group relative">
-                    <div className="flex group-hover:opacity-100 delay-500 opacity-0 z-50 absolute rounded-3xl max-w-[350px] bg-white border shadow-lg duration-200 ease-in-out translate-y-[0px] group-hover:translate-y-[-50px] max-h-12 items-center">
+                    <div className=" group-hover:opacity-100 hidden group-hover:flex delay-500 opacity-0 group-hover:z-50 absolute rounded-3xl max-w-[350px] bg-white border shadow-lg duration-200 ease-in-out translate-y-[0px] group-hover:translate-y-[-50px] max-h-12 items-center">
                         <div onClick={() => { handleLikeNews(data.id, 0) }} className="relative w-14 h-14 rounded-full border-0 hover:w-20 hover:h-20 hover:duration-300 hover:translate-y-[-20px] cursor-pointer">
                             <Image
                                 alt="emotion"
@@ -209,16 +232,22 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
                 <div className="relative z-20 flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]"
                     onClick={() => setIdNews(data.id)}
                 >
-                    <FaRegComment className="h-6 w-6 text-[#6a7079]"></FaRegComment>
+                    <FaRegComment className="h-6 w-6 text-[#6a7079] z-50"></FaRegComment>
                     <div className="text-lg min-w-max">Bình luận</div>
                 </div>
-                <div className="flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]">
+                <div className="flex justify-center min-w-max items-center  w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079] relative group">
                     <CiShare2 className="h-6 w-6"></CiShare2>
                     <div className="text-lg min-w-max">Chia sẻ</div>
+                    <div className="absolute bottom-[-70px]  rounded-2xl bg-white z-50 right-0 py-2 border shadow-2xl">
+                        <div className=" flex-col gap-2 justify-center rounded-2xl hidden group-hover:flex">
+                            <div className="p-1 hover:bg-slate-200" onClick={() => handleShareNews(2)}>Chia sẻ lên trang cá nhân</div>
+                            <div className="p-1 border-t-2 hover:bg-slate-200" onClick={() => handleShareNews(3)}>Chia sẻ chỉ mình tôi</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-        </div>
+        </div >
     );
 }
 

@@ -6,8 +6,8 @@ const DynamicReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 import { SlArrowLeft } from "react-icons/sl";
 import { SlArrowRight } from "react-icons/sl";
 import { callApi_GetReels } from "../../api/callAPI";
-const Clip = ({ setDataUser }) => {
-    const [mute, setMute] = useState(true);
+
+const Clip = ({ setDataUser, mute }) => {
     const [video, setVideo] = useState<any>({ key: 0 });
     const [page, setPage] = useState(1);
     const [data, setData] = useState<any>([]);
@@ -64,15 +64,17 @@ const Clip = ({ setDataUser }) => {
                     <DynamicReactPlayer
                         url={video?.video}
                         controls={false}
-                        playing={true}
                         loop={true}
                         width="100%"
                         height="100%"
-                        muted={false}
+                        muted={mute}
+                        playing={true}
+                        autoPlay={true}
+
                     />
                 </div>
                 <div className="border rounded-full p-2 mb-32 cursor-pointer" onClick={handleNextClick}>
-                    <SlArrowRight className='max-md:text-base text-white  text-4xl'></SlArrowRight>
+                    <SlArrowRight className='max-md:text-base text-white text-4xl'></SlArrowRight>
                 </div>
             </div>
         </>

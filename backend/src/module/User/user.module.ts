@@ -12,6 +12,7 @@ import { Middleware } from 'src/middleware/middleware.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { Friend, FriendSchema } from 'src/Schemas/friend.schema';
 import { NotificationModule } from '../notification/notification.module';
+import { MessageModule } from '../Message/message.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { NotificationModule } from '../notification/notification.module';
       signOptions: { expiresIn: '1d' },
     }),
     NotificationModule,
+    MessageModule,
   ],
   providers: [UserService],
   controllers: [UserController],

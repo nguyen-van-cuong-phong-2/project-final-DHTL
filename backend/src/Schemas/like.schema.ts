@@ -19,6 +19,9 @@ export class Like {
 
   @Prop({ required: true })
   type: number;
+
+  @Prop({ default: 0 })
+  comment_id: number;
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);

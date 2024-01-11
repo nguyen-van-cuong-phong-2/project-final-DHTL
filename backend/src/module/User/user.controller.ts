@@ -157,6 +157,7 @@ export class UserController {
     }
   }
 
+  // lấy thời gian offline người dùng
   @Post('getOfflineUser')
   @UsePipes(new ValidationPipe())
   async getOfflineUser(@Body() data: { id: number }): Promise<object> {
