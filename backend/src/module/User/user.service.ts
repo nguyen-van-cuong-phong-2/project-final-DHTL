@@ -19,6 +19,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as path from 'path';
 import { Friend } from 'src/Schemas/friend.schema';
 import { NotificationService } from '../notification/notification.service';
+import { MessageService } from '../Message/message.service';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,7 @@ export class UserService {
         @InjectModel(Friend.name) private FriendsModel: Model<Friend>,
         private readonly jwtService: JwtService,
         private readonly NotificationService: NotificationService,
+        private readonly MessageService: MessageService,
     ) { }
 
     // Đăng kí tài khoản
@@ -118,32 +120,32 @@ export class UserService {
 
     // upload file 
     public async uploadFile(file: any, time: number, pathFolder: string, type?: number) {
-       try {
-        console.log("🚀 ~ UserService ~ uploadFile ~ file:", file)
-        const path1 = `./storage/pictures/${pathFolder}/`;
-        const filePath = `./storage/pictures/${pathFolder}/${time}_${file.originalname}`;
-        const fileCheck = path.extname(filePath);
+        try {
+            console.log("🚀 ~ UserService ~ uploadFile ~ file:", file)
+            const path1 = `./storage/pictures/${pathFolder}/`;
+            const filePath = `./storage/pictures/${pathFolder}/${time}_${file.originalname}`;
+            const fileCheck = path.extname(filePath);
 
-        if (type === 1) {
-            const size = file.size / 1000000;
-            if (size > 100) {
-                throw new PayloadTooLargeException('File quá lớn')
-            } else if (['.mp4'].includes(fileCheck.toLocaleLowerCase()) === false) {
-                return false
-            }
-        } else if (['.jpg', '.png'].includes(fileCheck.toLocaleLowerCase()) === false) {
+            if (type === 1) {
+                const size = file.size / 1000000;
+                if (size > 100) {
+                    throw new PayloadTooLargeException('File quá lớn')
+                } else if (['.mp4'].includes(fileCheck.toLocaleLowerCase()) === false) {
+                    return false
+                }
+            } else if (['.jpg', '.png'].includes(fileCheck.toLocaleLowerCase()) === false) {
                 return false;
             }
-        
-        if (!fs.existsSync(path1)) {
-            fs.mkdirSync(path1, { recursive: true });
+
+            if (!fs.existsSync(path1)) {
+                fs.mkdirSync(path1, { recursive: true });
+            }
+            fs.writeFileSync(filePath, file.buffer);
+            return `/pictures/${pathFolder}/${time}_${file.originalname}`;
+        } catch (error) {
+            console.log("🚀 ~ UserService ~ uploadFile ~ error:", error)
+
         }
-        fs.writeFileSync(filePath, file.buffer);
-        return `/pictures/${pathFolder}/${time}_${file.originalname}`;
-       } catch (error) {
-        console.log("🚀 ~ UserService ~ uploadFile ~ error:", error)
-        
-       }
     }
 
     // lưu file đã upload vào base
@@ -156,7 +158,7 @@ export class UserService {
     }
 
     // lấy thông tin người dùng (thiếu lấy danh sách bạn bè online và offline)
-    public async getInfoUser(id: number, id_token?: number): Promise<object> {
+    public async getInfoUser(id: number, id_token: number): Promise<object> {
         try {
             const response_Promise = this.UsersModel.findOne({ id }, { password: 0 }).lean();
             const totalNoti_Promise = this.NotificationService.getTotalNotification(id);
@@ -167,10 +169,12 @@ export class UserService {
                 ],
                 status: 1
             })
-            const [response, totalNoti, totalFriend] = await Promise.all([
-                response_Promise, totalNoti_Promise, totalFriend_Promise
+            const [response, totalNoti, totalFriend, total_message] = await Promise.all([
+                response_Promise, totalNoti_Promise, totalFriend_Promise, this.MessageService.getTotalMessage(id_token)
             ])
+
             if (response) {
+
                 response.avatar = `${process.env.DOMAIN}${response.avatar}`;
                 if (id && id_token && id !== id_token) {
                     const checkFriend = await this.FriendsModel.findOne({
@@ -196,12 +200,14 @@ export class UserService {
                         makefriend: number,
                         totalNoti: number,
                         totalFriend: number,
+                        total_message: number,
                     }
                     const object: Objectt = {
                         ...response,
                         makefriend: 0,
                         totalNoti,
-                        totalFriend
+                        totalFriend,
+                        total_message
                     }
                     if (!checkFriend) object.makefriend = 0;
                     else if (checkFriend.status == 0 && id_token === checkFriend.sender_id) object.makefriend = 1;
@@ -209,7 +215,7 @@ export class UserService {
                     else if (checkFriend.status == 1) object.makefriend = 3;
                     return object
                 }
-                return { totalNoti, totalFriend, ...response }
+                return { totalNoti, totalFriend, ...response, total_message }
             }
             throw new NotFoundException('Không tìm thấy người dùng')
         } catch (error) {
@@ -220,6 +226,9 @@ export class UserService {
     // tìm kiếm người dùng
     public async SearchUser(key: string, id: number): Promise<object> {
         try {
+            if (key == '') {
+                return []
+            }
             const response = await this.UsersModel.aggregate([
                 { $match: { name: new RegExp(key, 'i') } },
             ]);

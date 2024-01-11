@@ -6,7 +6,7 @@ import { callApi_getInforUser } from "../../api/callAPI";
 import { functions } from "../../functions/functions";
 export default function ArrMessage() {
     const { arrMessage, socket, updateArrMessage } = useMyContext();
-    const [user, setUser] = useState<any>({})
+    const [user, setUser] = useState<any>()
     const func = new functions();
     const userr = func.getInfoFromToken();
     useEffect(() => {
@@ -19,20 +19,22 @@ export default function ArrMessage() {
     }, [socket])
 
     useEffect(() => {
-        const call = async () => {
-            const find = arrMessage.find(item => item.id == user?.sender_id)
-            if (!find && userr.id !== user?.sender_id) {
-                const response = await callApi_getInforUser({ id: user?.sender_id })
-                if (response?.data) {
-                    updateArrMessage({
-                        id: user?.sender_id,
-                        name: response.data.name,
-                        avatar: response.data.avatar,
-                    })
+        if (user) {
+            const call = async () => {
+                const find = arrMessage.find(item => item.id == user?.sender_id)
+                if (!find && userr.id !== user?.sender_id) {
+                    const response = await callApi_getInforUser({ id: user.sender_id })
+                    if (response?.data) {
+                        updateArrMessage({
+                            id: user?.sender_id,
+                            name: response.data.name,
+                            avatar: response.data.avatar,
+                        })
+                    }
                 }
             }
+            call()
         }
-        call()
     }, [user])
     return (
         <>

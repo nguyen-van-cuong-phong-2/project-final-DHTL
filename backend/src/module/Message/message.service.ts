@@ -36,27 +36,35 @@ export class MessageService {
     return maxID;
   }
 
+  // lấy tin nhắn cuộc trò chuyện
   async getMessage(getMessageDto: GetMessageDto): Promise<CreateMessageDto[]> {
-    const arr = await this.messageModel
-      .find({
-        $or: [
-          {
-            sender_id: getMessageDto.sender_id,
-            receiver_id: getMessageDto.receiver_id,
-          },
-          {
-            receiver_id: getMessageDto.sender_id,
-            sender_id: getMessageDto.receiver_id,
-          },
-        ],
-      })
-      .sort({ created_at: -1 })
-      .limit(50)
-      .lean();
-    const responseArr = arr.reverse();
-    const lengArr = responseArr.length;
+    const [arr] = await Promise.all([
+      this.messageModel
+        .find({
+          $or: [
+            {
+              sender_id: getMessageDto.sender_id,
+              receiver_id: getMessageDto.receiver_id,
+            },
+            {
+              receiver_id: getMessageDto.sender_id,
+              sender_id: getMessageDto.receiver_id,
+            },
+          ],
+        })
+        .sort({ created_at: -1 })
+        .limit(50)
+        .lean(),
+      this.messageModel.updateMany({
+        receiver_id: getMessageDto.sender_id,
+        sender_id: getMessageDto.receiver_id,
+        seen: 0
+      }, { seen: 1 })
+    ])
+    arr.reverse();
+    const lengArr = arr.length;
     for (let i = lengArr - 1; i >= 0; i--) {
-      const element: any = responseArr[i];
+      const element: any = arr[i];
       if (element.seen === 1) {
         element.messageLastSeen = true;
         break;
@@ -65,6 +73,7 @@ export class MessageService {
     return arr;
   }
 
+  // lấy danh sách cuộc trò chuyện
   async getChat(id: number, arrFriends: any[]): Promise<object[]> {
     try {
       const response = await Promise.all(
@@ -118,6 +127,19 @@ export class MessageService {
       return arr
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  // lấy số lượng tin nhắn chưa đọc
+  async getTotalMessage(id: number): Promise<number> {
+    try {
+      const result = await this.messageModel.countDocuments({
+        receiver_id: id,
+        seen: 0
+      })
+      return result
+    } catch (error) {
+      throw new BadRequestException(error.message)
     }
   }
 }

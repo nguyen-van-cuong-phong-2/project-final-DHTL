@@ -147,3 +147,13 @@ export const callApi_GetReels = async (data: object) => {
     const response = await callApiPost_Json('reels/GetReels', data)
     return response;
 }
+
+export const callApi_ShareNews = async (data: object) => {
+    const response = await callApiPost_Json('news/ShareNews', data)
+    return response;
+}
+
+export const callApi_LikeComment = async (data: object) => {
+    const response = await callApiPost_Json('news/LikeComment', data)
+    return response;
+}

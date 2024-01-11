@@ -124,7 +124,6 @@ export class FriendService {
                     }
                 ]
             });
-            console.log("🚀 ~ file: friend.service.ts:117 ~ FriendService ~ DeleteMakeFriend ~ response:", response)
         } catch (error) {
             throw new BadRequestException('Bad request', error.message);
         }

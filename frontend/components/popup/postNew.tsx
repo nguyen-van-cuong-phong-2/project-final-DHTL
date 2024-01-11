@@ -75,8 +75,9 @@ const PopupPostNew: React.FC<Popup> = ({ data, SetPopUpPostNew }) => {
       if (response.data.result == true) {
         SetContentNotifi("Đăng tin thành công!")
         SetPopUpPostNew(false)
-      } {
+      } else {
         SetContentNotifi("Đăng bài thất bại, vui lòng đợi chúng tôi kiểm tra")
+        SetPopUpPostNew(false)
       }
     } else {
       SetContentNotifi("Bạn cần điền nội dung cho bài viết!")
@@ -85,7 +86,7 @@ const PopupPostNew: React.FC<Popup> = ({ data, SetPopUpPostNew }) => {
 
   return (
     <>
-      <div className="absolute w-full h-screen bg-BGRegister top-[75px] left-0 z-[10000]  ">
+      <div className="absolute w-full h-screen bg-BGRegister top-[75px] left-0 z-[100]  ">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full flex justify-center">
           <div className="
         border

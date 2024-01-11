@@ -13,6 +13,8 @@ interface ExtendedRequest extends Request {
 @Controller('notification')
 export class NotificationController {
   constructor(private readonly NotificationService: NotificationService) {}
+
+  // lấy thông báo
   @Post('getNotification')
   async getNotification(@Req() req: ExtendedRequest): Promise<object> {
     if (req.user && req.user.id) {

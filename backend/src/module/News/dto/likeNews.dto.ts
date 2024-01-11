@@ -13,7 +13,7 @@ export class likeNews {
     @IsNumber()
     @IsNotEmpty()
     news_id: number;
-    
+
     @IsNumber()
     @IsNotEmpty()
     created_at: number;
@@ -21,4 +21,8 @@ export class likeNews {
     @IsNumber()
     @IsNotEmpty()
     type: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    comment_id: number;
 }

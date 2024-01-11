@@ -42,6 +42,7 @@ const App: React.FC<App> = ({ showModal, setShowModal }) => {
         if (response.data.result == true) {
             SetContentNotifi("Đăng video thành công!")
             setFileList({})
+            setShowModal(false)
         } else {
             SetContentNotifi("Kích thước video quá lớn hoặc định dạng không cho phép!")
         }

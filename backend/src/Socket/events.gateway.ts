@@ -74,8 +74,11 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     @ConnectedSocket() client: Socket,
   ): Promise<any> {
     const find = this.arrUserOnline.get(data.receiver_id);
-    const result = await this.messageService.createMessage(data);
-    return this.server.to(client.id).to(find).emit('Message', result);
+    const [result, total] = await Promise.all([
+      this.messageService.createMessage(data),
+      this.messageService.getTotalMessage(data.receiver_id)
+    ])
+    return this.server.to(client.id).to(find).emit('Message', { result, id: data.receiver_id, total });
   }
 
   // lấy tin nhắn
@@ -108,7 +111,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   ): Promise<any> {
     const find = this.arrUserOnline.get(data.receiver_id);
     if (find) {
-      const response_Promise = this.UserService.getInfoUser(data.sender_id);
+      const response_Promise = this.UserService.getInfoUser(data.sender_id, 11);
       const totalNotifi_Promise = this.NotificationService.getTotalNotification(
         data.receiver_id,
       );

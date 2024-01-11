@@ -33,6 +33,8 @@ export class NewsController {
     private readonly newsService: NewsService,
     private readonly friendService: FriendService,
   ) { }
+
+  // Đăng tin
   @Post('PostNews')
   @UsePipes(new ValidationPipe())
   @UseInterceptors(FilesInterceptor('files'))
@@ -77,6 +79,7 @@ export class NewsController {
     }
   }
 
+  // lấy tin trang chủ
   @Post('GetNews')
   @UsePipes(new ValidationPipe())
   async GetNews(
@@ -107,6 +110,7 @@ export class NewsController {
     }
   }
 
+  // thích tin
   @Post('LikeNews')
   @UsePipes(new ValidationPipe())
   async LikeNews(
@@ -118,7 +122,7 @@ export class NewsController {
     @Req() req: ExtendedRequest,
   ): Promise<any> {
     try {
-      if (req.user && req.user.id) {
+      if (req.user && req.user.id && data.news_id) {
         const id = await this.newsService.GetMaxID_Like();
         const created_at = new Date().getTime();
         await this.newsService.LikeNews({
@@ -126,6 +130,7 @@ export class NewsController {
           created_at,
           ...data,
           userId: Number(req.user.id),
+          comment_id: 0
         });
         return {
           status: 200,
@@ -138,6 +143,7 @@ export class NewsController {
     }
   }
 
+  // lấy chi tiết tin
   @Post('GetDetailNews')
   @UsePipes(new ValidationPipe())
   async GetDetailNews(
@@ -148,7 +154,7 @@ export class NewsController {
     @Req() req: ExtendedRequest,
   ): Promise<object> {
     try {
-      if (req.user && req.user.id) {
+      if (req.user && req.user.id && data.id) {
         const response = await this.newsService.GetDetailNews(
           data.id,
           Number(req.user.id),
@@ -165,17 +171,18 @@ export class NewsController {
     }
   }
 
+  // bình luận bài viết
   @Post('Comment')
   @UsePipes(new ValidationPipe())
   @UseInterceptors(FileInterceptor('file'))
   async Comment(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: ExtendedRequest,
-    @Body() data: { content: string, parent_id: number,news_id:number }
+    @Body() data: { content: string, parent_id: number, news_id: number }
   ): Promise<object> {
     try {
       let Image = null;
-      if (req.user && req.user.id) {
+      if (req.user && req.user.id && data.content && data.parent_id && data.news_id) {
         const time = Math.round(new Date().getTime());
         if (file) {
           const upload = await this.userService.uploadFile(
@@ -195,16 +202,82 @@ export class NewsController {
           data.content,
           data.parent_id,
           Image,
-          
+
         );
-      return {
-        result: true,
-        status: 200,
-      };
-    }
+        return {
+          result: true,
+          status: 200,
+        };
+      }
       throw new ForbiddenException('missing token');
-  } catch(error) {
-    throw new BadRequestException(error.message)
+    } catch (error) {
+      throw new BadRequestException(error.message)
+    }
   }
-}
+
+  // thích bình luận bài viết
+  @Post('LikeComment')
+  @UsePipes(new ValidationPipe())
+  async LikeComment(
+    @Body()
+    data: {
+      news_id: number;
+      type: number;
+      comment_id: number;
+    },
+    @Req() req: ExtendedRequest,
+  ): Promise<any> {
+    try {
+      if (req.user && req.user.id && data.news_id && data.comment_id) {
+        const id = await this.newsService.GetMaxID_Like();
+        const created_at = new Date().getTime();
+        await this.newsService.LikeComment({
+          id,
+          created_at,
+          news_id: data.news_id,
+          userId: Number(req.user.id),
+          comment_id: data.comment_id,
+          type: data.type
+        });
+        return {
+          status: 200,
+          result: true,
+        };
+      }
+      throw new ForbiddenException('missing data');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // share bài viết
+  @Post('ShareNews')
+  @UsePipes(new ValidationPipe())
+  async ShareNews(
+    @Body()
+    data: {
+      news_id: number;
+      type_seen: number;
+    },
+    @Req() req: ExtendedRequest,
+  ): Promise<any> {
+    try {
+      if (req.user && req.user.id && data.news_id && data.type_seen) {
+        const id = await this.newsService.GetMaxID();
+        await this.newsService.ShareNews({
+          id,
+          news_id: data.news_id,
+          userId: Number(req.user.id),
+          type_seen: data.type_seen
+        });
+        return {
+          status: 200,
+          result: true,
+        };
+      }
+      throw new ForbiddenException('missing token');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }

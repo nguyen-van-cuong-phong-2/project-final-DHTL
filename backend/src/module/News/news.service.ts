@@ -108,12 +108,15 @@ export class NewsService {
             name: '$user.name',
             updated_at: 1,
             type_like: '$like.type',
+            share: 1,
+            id_user_be_shared: 1,
+            name_user_be_shared: 1
           },
         },
       ]);
       const total_like = await Promise.all(
         data.map((item: any) =>
-          this.LikeModel.countDocuments({ news_id: item.id }),
+          this.LikeModel.countDocuments({ news_id: item.id, comment_id: 0 }),
         ),
       );
       const total_comment = await Promise.all(
@@ -168,7 +171,7 @@ export class NewsService {
             this.appGateway.sendNotification({
               sender_id: Number(data.userId),
               receiver_id: new_userId.userId,
-              type: 2,
+              type: 3,
               type_enmoji: data.type,
             }),
             this.LikeModel.create(data),
@@ -178,7 +181,7 @@ export class NewsService {
               receiver_id: new_userId.userId,
               created_at: new Date().getTime(),
               type: 3,
-              link: '#',
+              link: `/News?id=${data.news_id}`,
               type_enmoji: data.type,
             }),
           ]);
@@ -266,6 +269,9 @@ export class NewsService {
             updated_at: 1,
             type_like: '$like.type',
             comment: 1,
+            share: 1,
+            id_user_be_shared: 1,
+            name_user_be_shared: 1
           },
         },
       ]);
@@ -279,8 +285,25 @@ export class NewsService {
             as: 'user',
           }
         },
+        {
+          $lookup: {
+            from: 'likes',
+            localField: 'id',
+            foreignField: 'comment_id',
+            as: 'like',
+          },
+        },
         { $sort: { created_at: -1 } },
         { $unwind: '$user' },
+        {
+          $lookup: {
+            from: 'likes',
+            localField: 'id',
+            foreignField: 'comment_id',
+            pipeline: [{ $match: { userId: userId } }],
+            as: 'my_like',
+          },
+        },
         {
           $project: {
             name: "$user.name",
@@ -288,6 +311,7 @@ export class NewsService {
             content: 1,
             image: 1,
             id: 1,
+            news_id: 1,
             avatar: {
               $concat: [
                 {
@@ -305,17 +329,25 @@ export class NewsService {
                   }
                 }
               ]
+            },
+            total_like: { $size: "$like" },
+            my_like: {
+              $cond: {
+                if: { $ne: ["$my_like", []] },
+                then: 1,
+                else: 0
+              }
             }
           }
         }
       ])
       const [data, total_like, comment, total_comment] = await Promise.all([
         data_promise,
-        this.LikeModel.countDocuments({ news_id: id }),
+        this.LikeModel.countDocuments({ news_id: id, comment_id: 0 }),
         comment_promise,
         this.CommentModel.countDocuments({ news_id: id })
       ]);
-      
+
       const comment_child = await Promise.all(
         comment?.map((item: any) => (
           this.CommentModel.aggregate([
@@ -327,6 +359,23 @@ export class NewsService {
                 foreignField: 'id',
                 as: 'user',
               }
+            },
+            {
+              $lookup: {
+                from: 'likes',
+                localField: 'id',
+                foreignField: 'comment_id',
+                as: 'like',
+              },
+            },
+            {
+              $lookup: {
+                from: 'likes',
+                localField: 'id',
+                foreignField: 'comment_id',
+                pipeline: [{ $match: { userId: userId } }],
+                as: 'my_like',
+              },
             },
             { $sort: { created_at: 1 } },
             { $unwind: '$user' },
@@ -351,6 +400,7 @@ export class NewsService {
                     }
                   ]
                 },
+                id: 1,
                 created_at: 1,
                 content: 1,
                 image: 1,
@@ -371,6 +421,15 @@ export class NewsService {
                       }
                     }
                   ]
+                },
+                total_like: { $size: "$like" },
+                // my_like: 1
+                my_like: {
+                  $cond: {
+                    if: { $ne: ["$my_like", []] },
+                    then: 1,
+                    else: 0
+                  }
                 }
               }
             }
@@ -417,17 +476,132 @@ export class NewsService {
     image?: any,
   ): Promise<void> {
     try {
-      await this.CommentModel.create({
-        id,
-        userId,
-        news_id,
-        created_at,
-        content,
-        parent_id,
-        image: image ? image : null,
-      });
+      const [maxId_noti, new_userId] = await Promise.all([
+        this.notificationService.GetMaxID(),
+        this.NewsModel.findOne(
+          { id: news_id },
+          { userId: 1 },
+        ).lean()
+      ])
+      if (new_userId) {
+        await Promise.all([
+          this.notificationService.createNotifi({
+            id: maxId_noti,
+            sender_id: Number(userId),
+            receiver_id: new_userId.userId,
+            created_at: new Date().getTime(),
+            type: parent_id == 0 ? 4 : 5,
+            link: `/News?id=${news_id}`,
+          }),
+          this.CommentModel.create({
+            id,
+            userId,
+            news_id,
+            created_at,
+            content,
+            parent_id,
+            image: image ? image : null,
+          }),
+          this.appGateway.sendNotification({
+            sender_id: Number(userId),
+            receiver_id: new_userId.userId,
+            type: parent_id == 0 ? 4 : 5,
+          })
+        ])
+      } else {
+        throw new NotFoundException('Không tìm thấy bài viết');
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
+    }
+  }
+
+  // like comment
+  public async LikeComment(data: likeNews): Promise<void> {
+    try {
+      const [maxId_noti, new_userId, check] = await Promise.all([
+        this.notificationService.GetMaxID(),
+        this.NewsModel.findOne(
+          { id: data.news_id },
+          { userId: 1 },
+        ).lean(),
+        this.LikeModel.findOne({
+          comment_id: data.comment_id,
+          userId: data.userId
+        })
+      ])
+      const update = check ? (this.LikeModel.findOneAndUpdate({ comment_id: data.comment_id, userId: data.userId }, { type: data.type })) : (
+        this.LikeModel.create(data)
+      )
+      if (new_userId) {
+        Promise.all([
+          !check && this.appGateway.sendNotification({
+            sender_id: Number(data.userId),
+            receiver_id: new_userId.userId,
+            type: 6,
+            type_enmoji: data.type,
+          }),
+          update,
+          !check && this.notificationService.createNotifi({
+            id: maxId_noti,
+            sender_id: Number(data.userId),
+            receiver_id: new_userId.userId,
+            created_at: new Date().getTime(),
+            type: 6,
+            link: `/News?id=${data.news_id}`,
+            type_enmoji: data.type,
+          }),
+        ]);
+      } else {
+        throw new NotFoundException('Không tìm thấy bài viết');
+      }
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // lấy bài viết trang cá nhân
+  // public async GetNewsProfile(id)
+
+  // share bài viết
+  public async ShareNews(data: { id: number, news_id: number, userId: number, type_seen: number }): Promise<void> {
+    try {
+      const news = await this.NewsModel.aggregate([
+        { $match: { id: data.news_id } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" },
+        {
+          $project: {
+            content: 1,
+            image: 1,
+            name: "$user.name",
+            id: "$user.id",
+          }
+        }
+      ]);
+      if (!news[0]) throw new NotFoundException("Không tìm thấy bài viết")
+
+      await this.NewsModel.create({
+        id: data.id,
+        userId: data.userId,
+        content: news[0].content,
+        created_at: new Date().getTime(),
+        updated_at: new Date().getTime(),
+        image: news[0].image,
+        type_seen: data.type_seen,
+        share: 1,
+        id_user_be_shared: news[0].id,
+        name_user_be_shared: news[0].name,
+      })
+    } catch (error) {
+      throw new BadRequestException(error.message)
     }
   }
 }
