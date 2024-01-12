@@ -121,14 +121,13 @@ export class UserService {
     // upload file 
     public async uploadFile(file: any, time: number, pathFolder: string, type?: number) {
         try {
-            console.log("🚀 ~ UserService ~ uploadFile ~ file:", file)
             const path1 = `./storage/pictures/${pathFolder}/`;
             const filePath = `./storage/pictures/${pathFolder}/${time}_${file.originalname}`;
             const fileCheck = path.extname(filePath);
 
             if (type === 1) {
                 const size = file.size / 1000000;
-                if (size > 100) {
+                if (size > 20) {
                     throw new PayloadTooLargeException('File quá lớn')
                 } else if (['.mp4'].includes(fileCheck.toLocaleLowerCase()) === false) {
                     return false
@@ -136,7 +135,6 @@ export class UserService {
             } else if (['.jpg', '.png'].includes(fileCheck.toLocaleLowerCase()) === false) {
                 return false;
             }
-
             if (!fs.existsSync(path1)) {
                 fs.mkdirSync(path1, { recursive: true });
             }
@@ -144,14 +142,22 @@ export class UserService {
             return `/pictures/${pathFolder}/${time}_${file.originalname}`;
         } catch (error) {
             console.log("🚀 ~ UserService ~ uploadFile ~ error:", error)
-
         }
     }
 
-    // lưu file đã upload vào base
+    // lưu file avatar đã upload vào base
     public async saveFileOnBase(id: number, path: string): Promise<void> {
         try {
             await this.UsersModel.findOneAndUpdate({ id }, { avatar: path });
+        } catch (error) {
+            throw new BadRequestException(error.message, 'Bad request');
+        }
+    }
+
+    // lưu file ảnh bìa đã upload vào base
+    public async saveFileCoverImageOnBase(id: number, path: string): Promise<void> {
+        try {
+            await this.UsersModel.findOneAndUpdate({ id }, { coverImage: path });
         } catch (error) {
             throw new BadRequestException(error.message, 'Bad request');
         }
@@ -176,6 +182,7 @@ export class UserService {
             if (response) {
 
                 response.avatar = `${process.env.DOMAIN}${response.avatar}`;
+                response.coverImage = `${process.env.DOMAIN}${response.coverImage}`;
                 if (id && id_token && id !== id_token) {
                     const checkFriend = await this.FriendsModel.findOne({
                         $or: [
@@ -219,6 +226,7 @@ export class UserService {
             }
             throw new NotFoundException('Không tìm thấy người dùng')
         } catch (error) {
+            console.log("🚀 ~ UserService ~ getInfoUser ~ error:", error)
             throw new BadRequestException(error.message)
         }
     }

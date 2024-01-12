@@ -133,11 +133,20 @@ export class MessageService {
   // lấy số lượng tin nhắn chưa đọc
   async getTotalMessage(id: number): Promise<number> {
     try {
-      const result = await this.messageModel.countDocuments({
-        receiver_id: id,
-        seen: 0
-      })
-      return result
+      const result = await this.messageModel.aggregate([
+        { $match: { receiver_id: id, seen: 0 } },
+        {
+          $group: {
+            _id: { sender_id: "$sender_id", receiver_id: "$receiver_id" },
+            firstDoc: { $first: "$$ROOT" }
+          }
+        },
+        { $replaceRoot: { newRoot: "$firstDoc" } },
+        {
+            $count: "total"
+        }
+      ])
+      return result[0] ? result[0].total : 0
     } catch (error) {
       throw new BadRequestException(error.message)
     }

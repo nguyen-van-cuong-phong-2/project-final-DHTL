@@ -14,7 +14,9 @@ import {
     callApi_acceptMakeFriend,
     callApi_cancelMakeFriend,
     callApi_getInforUser,
-    callApi_DeleteMakeFriend
+    callApi_DeleteMakeFriend,
+    callApi_uploadAvatar,
+    
 } from "../../api/callAPI";
 
 interface Body {
@@ -29,12 +31,12 @@ interface Body {
 }
 
 const Body: React.FC<Body> = ({ data, check }) => {
-    console.log("🚀 ~ check:", check)
     const [menu, SetMenu] = useState(false);
     const [dataResult, SetDataResult] = useState(data);
+    const [avatar, SetAvatar] = useState(dataResult?.avatar);
+    const { arrMessage, updateArrMessage, SetContentNotifi, socket } = useMyContext();
     const user = new functions().getInfoFromToken();
 
-    const { arrMessage, updateArrMessage, SetContentNotifi, socket } = useMyContext();
     const handleOnClick = (data: any) => {
         updateArrMessage(data);
     };
@@ -75,7 +77,7 @@ const Body: React.FC<Body> = ({ data, check }) => {
             socket.emit('sendNotification', {
                 sender_id: user.id,
                 receiver_id: id,
-                type: 1
+                type: 2
             })
             ReloadInfoUser();
             SetContentNotifi(`Từ giờ bạn và ${data.name} sẽ trở thành bạn bè của nhau!`);
@@ -89,16 +91,31 @@ const Body: React.FC<Body> = ({ data, check }) => {
             SetContentNotifi(`Từ chối kết bạn thành công!`);
         }
     }
+
+    const handleChangeFile = async (e: any) => {
+        const file = e.target.files[0];
+        const response = await callApi_uploadAvatar({ file: e.target.files[0] })
+        if(response.result == true){
+            SetContentNotifi("Cập nhật avatar thành công")
+        }
+        if (file) {
+            const reader: any = new FileReader();
+            reader.onload = () => {
+                SetAvatar(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
     return (
         <>
-            <div className="h-screen w-full flex justify-center items-center  bg-white">
-                <div className="absolute lg:top-[430px] flex justify-between items-center max-sm:flex-col xl:w-[60%] lg:w-[80%] max-sm:w-[80%] max-sm:top-[230px] md:w-[90%] md:top-[300px]">
+            <div className="w-full flex justify-center items-center  bg-white">
+                <div className="absolute top-[230px] left-10 lg:top-[330px] flex justify-between items-center max-sm:flex-col xl:w-[60%] lg:w-[80%] max-sm:w-[80%] max-sm:top-[130px] md:w-[90%] md:top-[200px] z-10">
                     <div className="flex justify-center items-center gap-3 max-sm:flex-col">
                         <div className="relative">
                             <Image
                                 alt="avatar"
                                 className="border rounded-full w-[180px] h-[180px] max-md:w-[120px] max-md:h-[120px] max-sm:w-[140px] max-sm:h-[140px] hover:bg-white"
-                                src={dataResult?.avatar}
+                                src={avatar}
                                 width={180}
                                 height={180}
                                 loading="lazy"
@@ -110,7 +127,7 @@ const Body: React.FC<Body> = ({ data, check }) => {
                             />
                             {check && <div className="absolute right-0 top-32 p-1 border rounded-full bg-BGICon cursor-pointer">
                                 <IoCamera className="w-7 h-7 cursor-pointer"></IoCamera>
-                                <input type="file" className="opacity-0 w-7 h-7 absolute top-0 cursor-pointer"></input>
+                                <input type="file" className="opacity-0 w-7 h-7 absolute top-0 cursor-pointer" onChange={handleChangeFile}></input>
                             </div>}
                         </div>
                         <div className="mt-10 max-sm:mt-0">
@@ -149,7 +166,7 @@ const Body: React.FC<Body> = ({ data, check }) => {
                         </div>}
                     </div>}
                     {
-                     !check &&   dataResult?.makefriend == 2 && <div className="flex justify-center items-center gap-2 mt-7">
+                        !check && dataResult?.makefriend == 2 && <div className="flex justify-center items-center gap-2 mt-7">
                             <div className="border rounded-xl bg-blue-600 text-white px-3 py-2 cursor-pointer hover:bg-slate-300"
                                 onClick={() => handleAccept(dataResult.id)}
                             >Chấp nhận lời mời</div>
@@ -164,6 +181,7 @@ const Body: React.FC<Body> = ({ data, check }) => {
                             <PopUpMessage key={item.id} item={item} />
                         ))}
                     </div>
+                    
                 </div>
             </div >
 

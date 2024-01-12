@@ -41,6 +41,7 @@ const callApiPost_Json = async (url: string, conditions: object, token_server?: 
 const callApiPost_formdata = async (url: string, conditions: object, token_server?: string) => {
     try {
         const token = Cookies.get("token")
+        console.log("🚀 ~ constcallApiPost_formdata= ~ token:", token)
         if (!conditions) conditions = {};
         return await axios({
             method: "post",
@@ -155,5 +156,11 @@ export const callApi_ShareNews = async (data: object) => {
 
 export const callApi_LikeComment = async (data: object) => {
     const response = await callApiPost_Json('news/LikeComment', data)
+    return response;
+}
+
+export const callApi_UploadFileCoverImage = async (data: object) => {
+    console.log("🚀 ~ constcallApi_UploadFileCoverImage= ~ data:", data)
+    const response = await callApiPost_formdata('user/uploadFileCoverImage', data)
     return response;
 }

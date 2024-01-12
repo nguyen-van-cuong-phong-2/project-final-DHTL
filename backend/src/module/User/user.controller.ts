@@ -107,6 +107,41 @@ export class UserController {
     }
   }
 
+  // Cập nhật ảnh bìa
+  @Post('uploadFileCoverImage')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFileCoverImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: ExtendedRequest,
+  ) {
+    if (!file) throw new NotFoundException('Không tìm thấy file tải lên');
+    const checkUpload = await this.userService.uploadFile(
+      file,
+      new Date().getTime(),
+      'anh_bia',
+    );
+    if (!checkUpload) {
+      throw new NotAcceptableException('Định dạng file không hợp lệ');
+    }
+    if (req.user && req.user.id) {
+      await this.userService.saveFileCoverImageOnBase(
+        Number(req.user.id),
+        checkUpload,
+      );
+      return {
+        status: 200,
+        result: true,
+        message: 'Upload file thành công',
+      };
+    } else {
+      return {
+        status: 400,
+        result: true,
+        message: 'Upload file thất bại',
+      };
+    }
+  }
+
   // lấy thông tin user
   @Post('getInforUser')
   @UsePipes(new ValidationPipe())
