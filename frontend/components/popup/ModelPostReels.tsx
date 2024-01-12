@@ -14,7 +14,7 @@ interface App {
 
 
 const App: React.FC<App> = ({ showModal, setShowModal }) => {
-    const { SetContentNotifi } = useMyContext()
+    const { SetContentNotifi, setLoading } = useMyContext()
     const [fileList, setFileList] = useState<any>({});
 
     const handleChange = ({ file }) => {
@@ -31,6 +31,7 @@ const App: React.FC<App> = ({ showModal, setShowModal }) => {
         const formData = new FormData();
         formData.append('file', fileList)
         const token = Cookies.get('token')
+        setLoading(true)
         const response: any = await axios({
             method: 'post',
             url: `${process.env.NEXT_PUBLIC_DOMAIN_API}/reels/PostReels`,
@@ -39,6 +40,7 @@ const App: React.FC<App> = ({ showModal, setShowModal }) => {
                 Authorization: `Bearer ${token}`,
             },
         })
+        setLoading(false)
         if (response.data.result == true) {
             SetContentNotifi("Đăng video thành công!")
             setFileList({})

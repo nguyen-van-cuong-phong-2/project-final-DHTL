@@ -11,6 +11,7 @@ import { FriendModule } from './module/Friend/friend.module';
 import { NotificationModule } from './module/notification/notification.module';
 import { MessageModule } from './module/Message/message.module';
 import { ReelsModule } from './module/Reels/reels.module';
+// 'mongodb://nguyencuong:nguyencuong@localhost:27017',
 
 @Module({
   imports: [

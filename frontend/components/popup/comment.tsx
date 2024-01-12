@@ -156,7 +156,7 @@ const Comment: React.FC<Comment> = ({ id, dataUser, setIdNews }) => {
                                 </>}
 
                             </div>
-                            {data?.total_comment && <div className="text-gray-600 font-medium text-base">
+                            {data?.total_comment > 0 && <div className="text-gray-600 font-medium text-base">
                                 {data.total_comment} bình luận
                             </div>}
                         </div>

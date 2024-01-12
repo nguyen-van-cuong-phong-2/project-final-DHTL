@@ -33,11 +33,11 @@ interface News {
         name_user_be_shared: string
     },
     setIdNews: any;
-
+    profile?: boolean;
 }
 
 
-const News: React.FC<News> = ({ data, setIdNews }) => {
+const News: React.FC<News> = ({ data, setIdNews, profile }) => {
     const myFunction = new functions();
     const router = useRouter();
     const [type_like, setType_like] = useState(data?.type_like);
@@ -67,9 +67,9 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
         }
     }
     return (
-        <div className="w-4/5 border rounded-xl h-max bg-white mt-5 pt-5 px-5 max-lg:w-full
-        max-lg:m-0 max-lg:mt-5">
-            <div className="flex gap-2">
+        <div className={`${profile ? 'w-full':'w-4/5 '} mt-5 border rounded-xl h-max bg-white  pt-5 px-5 max-lg:w-full
+        max-lg:m-0 max-lg:mt-5`}>
+            <div className="flex gap-2 flex-wrap">
                 <div className="w-12 h-12 relative">
                     <Image
                         className="w-full h-full border rounded-full box-border"
@@ -144,7 +144,10 @@ const News: React.FC<News> = ({ data, setIdNews }) => {
                         <AiFillLike className="h-5 w-5 text-blue-500"></AiFillLike>
                     </>}
                 </div>
-                {data?.total_comment && <div className="text-gray-600 font-medium text-base">
+                {/* {data?.total_comment && data?.total_comment != 0 && <div className="text-gray-600 font-medium text-base">
+                    {data.total_comment} bình luận
+                </div>} */}
+                {data?.total_comment > 0 && <div className="text-gray-600 font-medium text-base hover:underline cursor-pointer" onClick={() => setIdNews(data.id)}>
                     {data.total_comment} bình luận
                 </div>}
             </div>

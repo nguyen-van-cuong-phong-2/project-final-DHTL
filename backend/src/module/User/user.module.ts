@@ -40,6 +40,7 @@ export class UserModule implements NestModule {
       .apply(Middleware)
       .forRoutes(
         { path: '/user/uploadAvatar', method: RequestMethod.POST },
+        { path: '/user/uploadFileCoverImage', method: RequestMethod.POST },
         { path: '/user/SearchUser', method: RequestMethod.POST },
         { path: '/user/getInforUser', method: RequestMethod.POST },
       );

@@ -1,7 +1,7 @@
 import AnhBia from "../../components/profile/anhBia";
 import Header from "../../components/header/header";
 import Body from "../../components/profile/body";
-import { callApi_getInforUser } from '../../api/callAPI';
+import { callApi_GetNews, callApi_getInforUser } from '../../api/callAPI';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { functions } from '../../functions/functions';
@@ -18,6 +18,11 @@ async function LoadingDataToken(token: string): Promise<any> {
     return playlists
 }
 
+const GetNews = async (token: string) => {
+    const response = await callApi_GetNews({ page: 1 }, token);
+    return response
+}
+
 export default async function Profile({
     searchParams,
 }: {
@@ -29,7 +34,7 @@ export default async function Profile({
     if (!token) redirect('/Login');
     const data_promise = LoadingData(Number(searchParams.id), token.value);
     const data_infoSelf_promise = LoadingDataToken(token.value);
-    const [data, data_infoSelf] = await Promise.all([data_promise, data_infoSelf_promise]);
+    const [data, data_infoSelf, news] = await Promise.all([data_promise, data_infoSelf_promise, GetNews(token.value)]);
 
     if (!data?.data) {
         return redirect('/');
@@ -38,10 +43,9 @@ export default async function Profile({
     return (
         <>
             <Header data={data_infoSelf.data}></Header>
-            <div className="block border">
-                <AnhBia data={data.data} check={data_infoSelf.data.id == searchParams.id}></AnhBia>
-                <Body data={data.data} check={data_infoSelf.data.id == searchParams.id}></Body>
-                <Main></Main>
+            <AnhBia data={data.data} check={data_infoSelf.data.id == searchParams.id}></AnhBia>
+            <div className="mt-32 flex justify-center w-full">
+                <Main news={news}></Main>
             </div>
         </>
     )

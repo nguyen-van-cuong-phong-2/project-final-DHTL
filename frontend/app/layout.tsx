@@ -12,7 +12,7 @@ export default function RootLayout({
   const token = new functions().getTokenFromClientSide();
   return (
     <html lang="en">
-      <body className="h-screen mx-auto bg-BGICon overflow-hidden">
+      <body className=" bg-BGICon no-scrollbar">
         <MyContextProvider>
           <Loading></Loading>
           {children}
