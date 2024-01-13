@@ -16,7 +16,7 @@ export default function ArrMessage() {
             })
             return () => socket.off("Message")
         }
-    }, [socket])
+    }, [])
 
     useEffect(() => {
         if (user) {

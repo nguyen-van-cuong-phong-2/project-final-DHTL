@@ -2,6 +2,7 @@
 import Image from "next/image";
 import News from "../Body/news"
 import Anh from "./anh";
+import BanBe from "./banbe";
 
 const Main = ({ news }) => {
     const setIdNews = 'faf';
@@ -91,7 +92,8 @@ const Main = ({ news }) => {
                     </div>
                 </div>
             </div> */}
-            <Anh></Anh>
+            {/* <Anh></Anh> */}
+            <BanBe></BanBe>
         </div>
     </>)
 }

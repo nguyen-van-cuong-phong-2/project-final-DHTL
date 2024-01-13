@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { Friend, FriendSchema } from 'src/Schemas/friend.schema';
 import { NotificationModule } from '../notification/notification.module';
 import { MessageModule } from '../Message/message.module';
+import { FriendModule } from '../Friend/friend.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MessageModule } from '../Message/message.module';
     }),
     NotificationModule,
     MessageModule,
+    FriendModule,
   ],
   providers: [UserService],
   controllers: [UserController],
@@ -43,6 +45,7 @@ export class UserModule implements NestModule {
         { path: '/user/uploadFileCoverImage', method: RequestMethod.POST },
         { path: '/user/SearchUser', method: RequestMethod.POST },
         { path: '/user/getInforUser', method: RequestMethod.POST },
+        { path: '/user/SuggestFriends', method: RequestMethod.POST },
       );
   }
 }

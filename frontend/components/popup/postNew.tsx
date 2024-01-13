@@ -153,8 +153,8 @@ const PopupPostNew: React.FC<Popup> = ({ data, SetPopUpPostNew }) => {
             </div>
             <div className="h-[40%] w-full overflow-y-auto mt-2">
               <div
-                aria-label="Cường ơi, bạn đang nghĩ gì thế?"
-                data-text="Cường ơi, bạn đang nghĩ gì thế?"
+                aria-label={`${data.name} ơi, bạn đang nghĩ gì thế?`}
+                data-text={`${data.name} ơi, bạn đang nghĩ gì thế?`}
                 className="w-full h-1/6 px-5 text-2xl outline-none empty:before:content-[attr(data-text)] text-gray-500 "
                 autoFocus
                 contentEditable="true"

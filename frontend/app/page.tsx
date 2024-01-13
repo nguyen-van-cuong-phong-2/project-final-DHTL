@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { callApi_getInforUser } from "../api/callAPI";
 import { functions } from '../functions/functions'
-import { callApi_GetNews } from "../api/callAPI";
+import { callApi_GetNews, callApi_SuggestFriends } from "../api/callAPI";
 
 async function LoadingData(token: string): Promise<any> {
   const user = await new functions().getInfoFromTokenServerSide(token);
@@ -20,6 +20,10 @@ const GetNews = async (token: string) => {
   return response
 }
 
+const SuggestFriends = async (token: string) => {
+  const response = await callApi_SuggestFriends(token);
+  return response
+}
 
 export default async function Home() {
   const cookieStore = cookies()
@@ -27,15 +31,16 @@ export default async function Home() {
   if (!token) redirect('/Login');
   const data_promise = LoadingData(token.value);
   const result_promise = GetNews(token.value);
-  const [data, result] = await Promise.all([
-    data_promise, result_promise
+  const SuggestFriend_promise = SuggestFriends(token.value)
+  const [data, result, friend_goiy] = await Promise.all([
+    data_promise, result_promise, SuggestFriend_promise
   ])
   return (
     <div className="w-full">
       <Header data={data?.data}></Header>
       <div className="flex justify-between w-full">
         <LeftBody data={data?.data} />
-        <BettwenBody data={data?.data} result={result?.data} />
+        <BettwenBody data={data?.data} result={result?.data} friend_goiy={friend_goiy.data} />
         <RightBody />
         <ArrMessage></ArrMessage>
       </div>

@@ -79,9 +79,13 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
       } else if (data?.data?.type == 4) {
         SetContentNotifi(`${data.data.sender_id.name} đã bình luận về bài viết của bạn!`)
       } else if (data?.data?.type == 5) {
-        SetContentNotifi(`${data.data.sender_id.name} đã trả lời bình luận của bạn trong 1 bài viết!`)
+        SetContentNotifi(`${data.data.sender_id.name} đã trả lời 1 bình luận trong bài viết của bạn!`)
       } else if (data?.data?.type == 6) {
+        SetContentNotifi(`${data.data.sender_id.name} đã thích 1 bình luận của trong bài viết của bạn!`)
+      } else if (data?.data?.type == 7) {
         SetContentNotifi(`${data.data.sender_id.name} đã thích bình luận của bạn trong 1 bài viết!`)
+      } else if (data?.data?.type == 8) {
+        SetContentNotifi(`${data.data.sender_id.name} đã trả lời bình luận của bạn trong 1 bài viết!`)
       }
     });
     if (user) {

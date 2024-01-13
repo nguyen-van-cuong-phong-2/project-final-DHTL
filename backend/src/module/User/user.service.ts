@@ -20,6 +20,7 @@ import * as path from 'path';
 import { Friend } from 'src/Schemas/friend.schema';
 import { NotificationService } from '../notification/notification.service';
 import { MessageService } from '../Message/message.service';
+import { FriendService } from '../Friend/friend.service';
 
 @Injectable()
 export class UserService {
@@ -234,9 +235,7 @@ export class UserService {
     // tìm kiếm người dùng
     public async SearchUser(key: string, id: number): Promise<object> {
         try {
-            if (key == '') {
-                return []
-            }
+
             const response = await this.UsersModel.aggregate([
                 { $match: { name: new RegExp(key, 'i') } },
             ]);
@@ -290,6 +289,107 @@ export class UserService {
             else throw new NotFoundException("Không tìm thấy user")
         } catch (error) {
             throw new BadRequestException(error.message)
+        }
+    }
+
+    // Gợi ý bạn bè
+    public async SuggestFriends(arr: number[], id: number): Promise<object> {
+        try {
+            const response = await this.UsersModel.aggregate([
+                { $match: { id: { $nin: arr } } },
+                { $sort: { id: -1 } },
+                { $limit: 10 },
+                {
+                    $project: {
+                        name: 1,
+                        avatar: {
+                            $concat: [
+                                {
+                                    $cond: {
+                                        if: { $ne: ["$avatar", null] },
+                                        then: `${process.env.DOMAIN}`,
+                                        else: "$$REMOVE"
+                                    }
+                                },
+                                {
+                                    $cond: {
+                                        if: { $ne: ["$avatar", null] },
+                                        then: "$avatar",
+                                        else: "$$REMOVE"
+                                    }
+                                }
+                            ]
+                        },
+                        id: 1,
+                    }
+                }
+            ]);
+            const Friend_mutual = await Promise.all(
+                response.map(item => (
+                    this.FriendsModel.aggregate([
+                        {
+                            $match: {
+                                $or: [
+                                    {
+                                        sender_id: item.id,
+                                        receiver_id: { $in: arr },
+                                        status: 1
+                                    },
+                                    {
+                                        receiver_id: item.id,
+                                        sender_id: { $in: arr },
+                                        status: 1
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "sender_id",
+                                foreignField: "id",
+                                as: "user1"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "receiver_id",
+                                foreignField: "id",
+                                as: "user2"
+                            }
+                        },
+                        { $unwind: { path: "$user1", preserveNullAndEmptyArrays: true } },
+                        { $unwind: { path: "$user2", preserveNullAndEmptyArrays: true } },
+                        {
+                            $project: {
+                                avatar: {
+                                    $concat: [
+                                        `${process.env.DOMAIN}`,
+                                        {
+                                            $cond: {
+                                                if: { $ne: ["$user1.avatar", item.id] },
+                                                then: '$user1.avatar',
+                                                else: '$user2.avatar',
+                                            },
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ])
+                ))
+            );
+
+            for (let i = 0; i < response.length; i++) {
+                const element = response[i];
+                element.total = Friend_mutual[i].length;
+                element.avatar = [];
+                Friend_mutual[i].map(item => element.avatar.push(item.avatar))
+            }
+            return response
+        } catch (error) {
+            throw new BadRequestException()
         }
     }
 }

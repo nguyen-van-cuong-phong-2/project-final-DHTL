@@ -476,13 +476,15 @@ export class NewsService {
     image?: any,
   ): Promise<void> {
     try {
-      const [maxId_noti, new_userId] = await Promise.all([
+      const [maxId_noti, new_userId, user_comment] = await Promise.all([
         this.notificationService.GetMaxID(),
         this.NewsModel.findOne(
           { id: news_id },
           { userId: 1 },
-        ).lean()
-      ])
+        ).lean(),
+        parent_id != 0 && this.CommentModel.findOne({ id: parent_id }, { userId: 1 }).lean()
+      ]);
+
       if (new_userId) {
         await Promise.all([
           this.notificationService.createNotifi({
@@ -506,7 +508,20 @@ export class NewsService {
             sender_id: Number(userId),
             receiver_id: new_userId.userId,
             type: parent_id == 0 ? 4 : 5,
-          })
+          }),
+          user_comment && this.appGateway.sendNotification({
+            sender_id: Number(userId),
+            receiver_id: user_comment.userId,
+            type: 8
+          }),
+          user_comment && this.notificationService.createNotifi({
+            id: maxId_noti + 1,
+            sender_id: Number(userId),
+            receiver_id: user_comment.userId,
+            created_at: new Date().getTime(),
+            type: 8,
+            link: `/News?id=${news_id}`,
+          }),
         ])
       } else {
         throw new NotFoundException('Không tìm thấy bài viết');
@@ -519,7 +534,7 @@ export class NewsService {
   // like comment
   public async LikeComment(data: likeNews): Promise<void> {
     try {
-      const [maxId_noti, new_userId, check] = await Promise.all([
+      const [maxId_noti, new_userId, check, user_comment] = await Promise.all([
         this.notificationService.GetMaxID(),
         this.NewsModel.findOne(
           { id: data.news_id },
@@ -528,17 +543,24 @@ export class NewsService {
         this.LikeModel.findOne({
           comment_id: data.comment_id,
           userId: data.userId
-        })
+        }),
+        this.CommentModel.findOne({ id: data.comment_id }, { userId: 1 }).lean()
       ])
       const update = check ? (this.LikeModel.findOneAndUpdate({ comment_id: data.comment_id, userId: data.userId }, { type: data.type })) : (
         this.LikeModel.create(data)
       )
-      if (new_userId) {
+      if (new_userId && user_comment) {
         Promise.all([
           !check && this.appGateway.sendNotification({
             sender_id: Number(data.userId),
             receiver_id: new_userId.userId,
             type: 6,
+            type_enmoji: data.type,
+          }),
+          !check && this.appGateway.sendNotification({
+            sender_id: Number(data.userId),
+            receiver_id: user_comment.userId,
+            type: 7,
             type_enmoji: data.type,
           }),
           update,
@@ -548,6 +570,15 @@ export class NewsService {
             receiver_id: new_userId.userId,
             created_at: new Date().getTime(),
             type: 6,
+            link: `/News?id=${data.news_id}`,
+            type_enmoji: data.type,
+          }),
+          !check && this.notificationService.createNotifi({
+            id: maxId_noti + 1,
+            sender_id: Number(data.userId),
+            receiver_id: user_comment.userId,
+            created_at: new Date().getTime(),
+            type: 7,
             link: `/News?id=${data.news_id}`,
             type_enmoji: data.type,
           }),

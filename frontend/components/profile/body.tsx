@@ -16,7 +16,7 @@ import {
     callApi_getInforUser,
     callApi_DeleteMakeFriend,
     callApi_uploadAvatar,
-    
+
 } from "../../api/callAPI";
 
 interface Body {
@@ -95,7 +95,7 @@ const Body: React.FC<Body> = ({ data, check }) => {
     const handleChangeFile = async (e: any) => {
         const file = e.target.files[0];
         const response = await callApi_uploadAvatar({ file: e.target.files[0] })
-        if(response.result == true){
+        if (response.result == true) {
             SetContentNotifi("Cập nhật avatar thành công")
         }
         if (file) {
@@ -108,7 +108,7 @@ const Body: React.FC<Body> = ({ data, check }) => {
     };
     return (
         <>
-            <div className="w-full flex justify-center items-center  bg-white">
+            <div className="w-full flex justify-center items-center  bg-white h-max">
                 <div className="absolute top-[230px] left-10 lg:top-[330px] flex justify-between items-center max-sm:flex-col xl:w-[60%] lg:w-[80%] max-sm:w-[80%] max-sm:top-[130px] md:w-[90%] md:top-[200px] z-10">
                     <div className="flex justify-center items-center gap-3 max-sm:flex-col">
                         <div className="relative">
@@ -181,8 +181,9 @@ const Body: React.FC<Body> = ({ data, check }) => {
                             <PopUpMessage key={item.id} item={item} />
                         ))}
                     </div>
-                    
                 </div>
+                <div> gà</div>
+
             </div >
 
         </>

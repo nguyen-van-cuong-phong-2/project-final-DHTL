@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   NotAcceptableException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
@@ -20,6 +21,7 @@ import { Login } from './dto/login.dto';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getInfor } from './dto/getInfo.dto';
+import { FriendService } from '../Friend/friend.service';
 
 interface UserPayload {
   id: string;
@@ -32,7 +34,9 @@ interface ExtendedRequest extends Request {
 @Controller('user')
 export class UserController {
   // eslint-disable-next-line prettier/prettier
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService,
+    private readonly friendSerivce: FriendService,
+  ) {}
 
   // Đăng kí tài khoản
   @Post('register')
@@ -203,6 +207,34 @@ export class UserController {
         result: true,
         data: response,
       };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // gợi ý người dùng
+  @Post('SuggestFriends')
+  @UsePipes(new ValidationPipe())
+  async SuggestFriends(@Req() req: ExtendedRequest): Promise<object> {
+    try {
+      if (req.user && req.user.id) {
+        const arrFriend = await this.friendSerivce.getListFriend(
+          Number(req.user.id),
+        );
+        const arr: any[] = [];
+        arrFriend.map((item: any) => arr.push(item.id));
+        const response = await this.userService.SuggestFriends(
+          arr,
+          Number(req.user.id),
+        );
+        return {
+          status: 200,
+          result: true,
+          data: response,
+        };
+      } else {
+        throw new ForbiddenException('forbiden');
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
     }
