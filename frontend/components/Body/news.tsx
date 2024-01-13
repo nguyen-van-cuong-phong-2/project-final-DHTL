@@ -67,7 +67,7 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
         }
     }
     return (
-        <div className={`${profile ? 'w-full':'w-4/5 '} mt-5 border rounded-xl h-max bg-white  pt-5 px-5 max-lg:w-full
+        <div className={`${profile ? 'w-full' : 'w-4/5 '} mt-5 border rounded-xl h-max bg-white pt-5 px-5 max-lg:w-full
         max-lg:m-0 max-lg:mt-5`}>
             <div className="flex gap-2 flex-wrap">
                 <div className="w-12 h-12 relative">
@@ -89,9 +89,9 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
                         {data.name}
                     </div>
                     <div className="text-xs mt-[-2px] text-[#8f8a8a] flex  items-center gap-2">{myFunction.TimeAgo(data?.updated_at)}
-                        {data.type_seen == 1 && <FaEarthAsia className="w-3 h-3"></FaEarthAsia>}
+                        {data.type_seen == 2 && <FaEarthAsia className="w-3 h-3"></FaEarthAsia>}
                         {data.type_seen == 3 && <IoMdLock className="w-3 h-3"></IoMdLock>}
-                        {data.type_seen == 2 && <FaUserFriends className="w-3 h-3"></FaUserFriends>}
+                        {data.type_seen == 1 && <FaUserFriends className="w-3 h-3"></FaUserFriends>}
                     </div>
                 </div>
                 {
@@ -147,7 +147,7 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
                 {/* {data?.total_comment && data?.total_comment != 0 && <div className="text-gray-600 font-medium text-base">
                     {data.total_comment} bình luận
                 </div>} */}
-                {data?.total_comment > 0 && <div className="text-gray-600 font-medium text-base hover:underline cursor-pointer" onClick={() => setIdNews(data.id)}>
+                {data?.total_comment && data?.total_comment > 0 && <div className="text-gray-600 font-medium text-base hover:underline cursor-pointer" onClick={() => setIdNews(data.id)}>
                     {data.total_comment} bình luận
                 </div>}
             </div>
@@ -213,7 +213,7 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
                             </>
                         }
                         {
-                            type_like != 10 && <div className="flex justify-center items-center">
+                            type_like && type_like != 10 && <div className="flex justify-center items-center">
                                 <div className="relative w-10 h-10">
                                     <Image
                                         alt="emotion"
@@ -249,7 +249,6 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
                     </div>
                 </div>
             </div>
-
         </div >
     );
 }

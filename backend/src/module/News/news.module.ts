@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  forwardRef,
+} from '@nestjs/common';
 import { NewsController } from './news.controller';
 import { NewsService } from './news.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -23,13 +28,14 @@ import { NotificationModule } from '../notification/notification.module';
       secret: 'reqr2141!@321321*!!@$%',
       signOptions: { expiresIn: '1d' },
     }),
-    UserModule,
+    forwardRef(() => UserModule),
     FriendModule,
-    EventsModule,
+    forwardRef(() => EventsModule),
     NotificationModule,
   ],
   controllers: [NewsController],
   providers: [NewsService],
+  exports: [NewsService],
 })
 export class NewsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -6,6 +6,7 @@ import News from "./news";
 import Comment from "../popup/comment";
 import { useMyContext } from "../context/context";
 import { callApi_GetNews } from "../../api/callAPI";
+import GoiYBanBe from "../goi-y-ban-be/GoiYBanBe";
 
 interface BettwenBody {
   data: {
@@ -14,10 +15,11 @@ interface BettwenBody {
     name: string,
   },
 
-  result: any
+  result: any,
+  friend_goiy: any
 }
 
-const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
+const BettwenBody: React.FC<BettwenBody> = ({ data, result, friend_goiy }) => {
   const [popUpPostNew, SetPopUpPostNew] = useState(false);
   const [result_1, setResult] = useState<any>(result);
   const [idNews, setIdNews] = useState<number>(0);
@@ -57,9 +59,12 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result }) => {
     >
       <PostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PostNew>
       {popUpPostNew && <PopupPostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PopupPostNew>}
-      {result_1?.map((item: any) => (
-        <News key={item.id} data={item} setIdNews={setIdNews}></News>
-      ))}
+      {result_1?.map((item: any, index: number) =>
+        <>
+          <News key={item.id} data={item} setIdNews={setIdNews}></News>
+          {index == 0 && <GoiYBanBe friend_goiy={friend_goiy}></GoiYBanBe>}
+        </>
+      )}
       {idNews !== 0 && <Comment id={idNews} dataUser={data} setIdNews={setIdNews}></Comment>}
     </div>
   );

@@ -38,10 +38,17 @@ const App = () => {
                         <span className="font-bold text-sm">{item.name}</span>
                         {item.type == 1 && <span> &nbsp;đã gửi cho bạn lời mời kết bạn</span>}
                         {item.type == 2 && <span> &nbsp;đã chấp nhận kết bạn</span>}
-                        {item.type == 3 && <span> &nbsp;đã thích bài viết của bạn</span>}
+                        {item.type == 3 && item.type_enmoji != 0 && <span> &nbsp;đã thả <div className="inline-block w-10 h-10 relative"><Image
+                            alt="emotion"
+                            src={`/images/${item.type_enmoji}.gif`}
+                            fill
+                        ></Image></div>cho bài viết của bạn</span>}
+                        {item.type == 3 && item.type_enmoji == 0 && <span> &nbsp;đã thích bài viết của bạn</span>}
                         {item.type == 4 && <span> &nbsp;đã bình luận về bài viết của bạn</span>}
-                        {item.type == 5 && <span> &nbsp;đã trả lời bình luận của bạn trong 1 bài viết</span>}
-                        {item.type == 6 && <span> &nbsp;đã thích bình luận của bạn trong 1 bài viết</span>}
+                        {item.type == 5 && <span> &nbsp;đã trả lời 1 bình luận trong bài viết của bạn</span>}
+                        {item.type == 6 && <span> &nbsp;đã thích 1 bình luận của trong bài viết của bạn</span>}
+                        {item.type == 7 && <span> &nbsp;đã thích bình luận của bạn trong 1 bài viết</span>}
+                        {item.type == 8 && <span> &nbsp;đã trả lời bình luận của bạn trong 1 bài viết</span>}
                     </div>
                 </div>
             ))

@@ -64,7 +64,8 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
         });
 
         socket.on("PushMessage", (data: any) => {
-          setData(data?.data);
+          if (data.sender_id == item.id || data.receiver_id == item.id)
+            setData(data?.data);
         });
 
       }, 2000);
@@ -112,7 +113,8 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
     });
 
     socket.on("PushMessage", (data: any) => {
-      setData(data?.data);
+      if (data.sender_id == item.id || data.receiver_id == item.id)
+        setData(data?.data);
     });
 
   };
@@ -147,7 +149,6 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
         handleUserOffLine()
       }
     })
-    // Hủy đăng ký sự kiện khi component bị unmount
     return () => {
       socket.off("Message", handleNewMessage);
       socket.off("typing");
@@ -159,7 +160,6 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   useEffect(() => {
     const content = contentRef.current;
     if (content) {
-      // Cuộn xuống cuối khi component được mount
       content.scrollTop = content.scrollHeight;
     }
   }, [data, Typing]);

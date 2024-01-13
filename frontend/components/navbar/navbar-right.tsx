@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import { useMyContext } from "../context/context";
 import { useEffect, useState } from "react";
@@ -21,7 +20,7 @@ export default function RightBody() {
       getUserOnline();
       return () => socket.off("listOnline");
     }
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     const fecthAPI = async () => {
@@ -30,6 +29,7 @@ export default function RightBody() {
     }
     fecthAPI();
   }, [userOnline]);
+
   const handleOnClick = (e: number) => {
     const ItemFind = arrFriend.find((item) => item.id == e);
     if (ItemFind) {
@@ -49,6 +49,7 @@ export default function RightBody() {
       "
       >
         <div className="block mt-[1.5rem] overflow-auto no-scrollbar">
+          <div className="text-xl font-semibold text-gray-600">Người liên hệ</div>
           {arrFriend?.map((item) => (
             <div
               key={item.id}

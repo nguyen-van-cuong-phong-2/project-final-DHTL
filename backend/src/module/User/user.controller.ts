@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
@@ -12,6 +13,7 @@ import {
   UseInterceptors,
   NotAcceptableException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
@@ -20,6 +22,8 @@ import { Login } from './dto/login.dto';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { getInfor } from './dto/getInfo.dto';
+import { FriendService } from '../Friend/friend.service';
+import { NewsService } from '../News/news.service';
 
 interface UserPayload {
   id: string;
@@ -32,7 +36,10 @@ interface ExtendedRequest extends Request {
 @Controller('user')
 export class UserController {
   // eslint-disable-next-line prettier/prettier
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService,
+    private readonly friendSerivce: FriendService,
+    private readonly newsService: NewsService,
+  ) { }
 
   // Đăng kí tài khoản
   @Post('register')
@@ -203,6 +210,88 @@ export class UserController {
         result: true,
         data: response,
       };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // gợi ý người dùng
+  @Post('SuggestFriends')
+  @UsePipes(new ValidationPipe())
+  async SuggestFriends(@Req() req: ExtendedRequest): Promise<object> {
+    try {
+      if (req.user && req.user.id) {
+        const arrFriend = await this.friendSerivce.getListFriend(
+          Number(req.user.id),
+        );
+        const arr: any[] = [];
+        arrFriend.map((item: any) => arr.push(item.id));
+        const response = await this.userService.SuggestFriends(
+          arr,
+          Number(req.user.id),
+        );
+        return {
+          status: 200,
+          result: true,
+          data: response,
+        };
+      } else {
+        throw new ForbiddenException('forbiden');
+      }
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // lấy thông tin trang cá nhân
+  @Post('GetDataProfile')
+  @UsePipes(new ValidationPipe())
+  async GetDataProfile(
+    @Body()
+    data: {
+      id: number;
+    },
+    @Req() req: ExtendedRequest,
+  ): Promise<any> {
+    try {
+      if (req.user && req.user.id && data.id) {
+        const [list_friends, list_friend_self] = await Promise.all([
+          this.friendSerivce.getListFriend(
+            Number(data.id)
+          ),
+          this.friendSerivce.getListFriend(
+            Number(req.user.id)
+          )
+        ])
+        const arrID: any[] = [];
+        const arrID2: any[] = [];
+        list_friends.map((item: any) => arrID.push(item.id));
+        list_friend_self.map((item: any) => arrID2.push(item.id));
+        const [news, total] = await Promise.all([
+          this.newsService.GetNewsProfile(
+            data.id,
+            Number(req.user.id),
+            arrID,
+          ),
+          this.friendSerivce.getTotalFriendMutual(arrID, arrID2)
+        ])
+
+        const image = await this.newsService.GetImageNews(news)
+        for (let i = 0; i < list_friends.length; i++) {
+          const element = list_friends[i];
+          element.total_friend_Mutual = total[i]
+        }
+        return {
+          status: 200,
+          result: true,
+          data: {
+            news,
+            list_friends,
+            image
+          }
+        };
+      }
+      throw new ForbiddenException('missing token');
     } catch (error) {
       throw new BadRequestException(error.message);
     }

@@ -164,4 +164,31 @@ export class FriendService {
         }
         return arrUser;
     }
+
+    // hàm lấy số lượng bạn chung
+    public async getTotalFriendMutual(arrFriend: number[], arrFriendSelf: number[]): Promise<number[]> {
+        try {
+            const total = await Promise.all(
+                arrFriendSelf.map((item: any) => (
+                    this.FriendsModel.countDocuments({
+                        $or: [
+                            {
+                                sender_id: item.id,
+                                receiver_id: { $in: arrFriend },
+                                status: 1
+                            },
+                            {
+                                receiver_id: item.id,
+                                sender_id: { $in: arrFriend },
+                                status: 1
+                            },
+                        ]
+                    })
+                ))
+            )
+            return total
+        } catch (error) {
+            throw new BadRequestException(error.message)
+        }
+    }
 }
