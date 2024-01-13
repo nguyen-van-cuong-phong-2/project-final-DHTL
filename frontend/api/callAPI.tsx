@@ -167,3 +167,8 @@ export const callApi_SuggestFriends = async (token: string) => {
     const response = await callApiPost_Json('user/SuggestFriends', {}, token)
     return response;
 }
+
+export const callApi_GetDataProfile = async (data: object) => {
+    const response = await callApiPost_Json('user/GetDataProfile', data)
+    return response;
+}

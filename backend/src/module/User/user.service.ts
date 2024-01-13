@@ -181,7 +181,6 @@ export class UserService {
             ])
 
             if (response) {
-
                 response.avatar = `${process.env.DOMAIN}${response.avatar}`;
                 response.coverImage = `${process.env.DOMAIN}${response.coverImage}`;
                 if (id && id_token && id !== id_token) {
@@ -384,12 +383,28 @@ export class UserService {
             for (let i = 0; i < response.length; i++) {
                 const element = response[i];
                 element.total = Friend_mutual[i].length;
-                element.avatar = [];
-                Friend_mutual[i].map(item => element.avatar.push(item.avatar))
+                element.avatar2 = [];
+                Friend_mutual[i].map((item, index) => {
+                    if (index <= 1) {
+                        element.avatar2.push(item.avatar)
+                    } else {
+                        return
+                    }
+                })
             }
             return response
         } catch (error) {
             throw new BadRequestException()
         }
     }
+
+        // // Lấy data profile
+        // public async GetDataProfile(id: number, id_token: number): Promise<object> {
+        //     try {
+        //         const anh = await this.
+        //         return response
+        //     } catch (error) {
+        //         throw new BadRequestException()
+        //     }
+        // }
 }

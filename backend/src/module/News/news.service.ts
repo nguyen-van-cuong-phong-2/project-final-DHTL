@@ -63,6 +63,7 @@ export class NewsService {
     page: number,
     list_friends: Array<object>,
   ): Promise<Array<object>> {
+    console.log("🚀 ~ NewsService ~ list_friends:", list_friends)
     try {
       const skip = (page - 1) * 20;
       const data = await this.NewsModel.aggregate([
@@ -592,7 +593,88 @@ export class NewsService {
   }
 
   // lấy bài viết trang cá nhân
-  // public async GetNewsProfile(id)
+  public async GetNewsProfile(id: number, id_user: number, list_friends: Array<number>): Promise<object[]> {
+
+    try {
+      const conditions: any = { userId: Number(id) };
+      if (id !== id_user) {
+        conditions.type_seen = list_friends.includes(id_user) ? { $in: [1, 2] } : 2
+      } else {
+        delete conditions.type_seen
+      }
+
+      const response = await this.NewsModel.aggregate([
+        { $match: conditions },
+        { $sort: { created_at: -1 } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: 'id',
+            as: 'user',
+          },
+        },
+        {
+          $lookup: {
+            from: 'likes',
+            localField: 'id',
+            foreignField: 'news_id',
+            pipeline: [{ $match: { userId: id } }],
+            as: 'like',
+          },
+        },
+        { $unwind: '$user' },
+        { $unwind: { path: '$like', preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            id: 1,
+            userId: 1,
+            content: 1,
+            image: 1,
+            type_seen: 1,
+            avatar: '$user.avatar',
+            name: '$user.name',
+            updated_at: 1,
+            type_like: '$like.type',
+            share: 1,
+            id_user_be_shared: 1,
+            name_user_be_shared: 1
+          },
+        },
+      ]);
+      const total_like = await Promise.all(
+        response.map((item: any) =>
+          this.LikeModel.countDocuments({ news_id: item.id, comment_id: 0 }),
+        ),
+      );
+      const total_comment = await Promise.all(
+        response.map((item: any) =>
+          this.CommentModel.countDocuments({ news_id: item.id }),
+        ),
+      );
+      for (let i = 0; i < response.length; i++) {
+        const element = response[i];
+        if (element.image && element.image.length > 0) {
+          const arr = element.image.map(
+            (item: string) => `${process.env.DOMAIN}${item}`,
+          );
+          element.image = arr;
+        }
+        if (element.avatar)
+          element.avatar = `${process.env.DOMAIN}${element.avatar}`;
+        if (!element.type_like && element.type_like != 0) {
+          element.type_like = 10;
+        } else {
+          element.type_like = element.type_like + 2;
+        }
+        element.total_like = total_like[i];
+        element.total_comment = total_comment[i];
+      }
+      return response
+    } catch (error) {
+      throw new BadRequestException(error.message)
+    }
+  }
 
   // share bài viết
   public async ShareNews(data: { id: number, news_id: number, userId: number, type_seen: number }): Promise<void> {
@@ -631,6 +713,21 @@ export class NewsService {
         id_user_be_shared: news[0].id,
         name_user_be_shared: news[0].name,
       })
+    } catch (error) {
+      throw new BadRequestException(error.message)
+    }
+  }
+
+  // lấy ảnh của bài viết
+  public async GetImageNews(arrNews: any[]): Promise<string[]> {
+    console.log("🚀 ~ NewsService ~ GetImageNews ~ arrNews:", arrNews)
+    try {
+      const arr: string[] = [];
+      for (let i = 0; i < arrNews.length; i++) {
+        const element = arrNews[i];
+        element.image.map((item: any) => arr.push(item))
+      }
+      return arr
     } catch (error) {
       throw new BadRequestException(error.message)
     }

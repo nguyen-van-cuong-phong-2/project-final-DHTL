@@ -40,6 +40,8 @@ interface MyContextType {
   setComment: any;
   totalMessage: number;
   SetTotalMessage: any;
+  profileChoose: any;
+  setProfileChoose: any;
 }
 
 const MyContext = createContext<MyContextType | undefined>(undefined);
@@ -58,6 +60,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
     content: "Viết bình luận...",
     parent_id: 0
   });
+  const [profileChoose, setProfileChoose] = useState(1)
   useEffect(() => {
     const user = new functions().getInfoFromToken();
 
@@ -139,7 +142,9 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
         comment,
         setComment,
         totalMessage,
-        SetTotalMessage
+        SetTotalMessage,
+        profileChoose,
+        setProfileChoose
       }}
     >
       {children}

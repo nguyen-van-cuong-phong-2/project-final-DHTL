@@ -3,7 +3,6 @@ import { Carousel } from 'antd';
 import { useEffect } from "react";
 
 const GoiYBanBe = ({ friend_goiy }) => {
-    console.log("🚀 ~ GoiYBanBe ~ friend_goiy:", friend_goiy)
 
     return (<>
         <div className={`w-4/5 mt-5 border rounded-xl h-max bg-white pt-5 px-5 max-lg:w-full
@@ -30,11 +29,11 @@ const GoiYBanBe = ({ friend_goiy }) => {
                                 </div>
                                 <div className="text-lg font-semibold ml-2">{item.name}</div>
                                 <div className="flex gap-1 ml-2">
-                                    {friend_goiy.avatar.map((item: any) => (
-                                        <div key={item} className="w-5 h-5 relative">
+                                    {item?.avatar2?.map((itemm: any) => (
+                                        <div key={itemm} className="w-5 h-5 relative">
                                             <Image
                                                 alt="avatar"
-                                                src={item}
+                                                src={itemm}
                                                 fill
                                                 className="rounded-xl"
                                             >
@@ -42,7 +41,7 @@ const GoiYBanBe = ({ friend_goiy }) => {
                                         </div>
                                     ))}
 
-                                    <div className="text-sm text-gray-600 font-semibold">{item.total} bạn chung</div>
+                                    <div className="text-sm text-gray-600 font-semibold">{item?.total} bạn chung</div>
                                 </div>
                                 <div className="flex justify-center rounded-2xl mt-2 p-2 bg-blue-50 text-blue-600 font-semibold cursor-pointer hover:bg-slate-200">Gửi lời mời</div>
                             </div>

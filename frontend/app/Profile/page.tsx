@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { functions } from '../../functions/functions';
 import Main from "../../components/profile/main";
 import AnhBia1 from "../../components/profile/anhBia";
+import { useState } from "react";
 
 async function LoadingData(id: number, token: string): Promise<any> {
     const data = await callApi_getInforUser({ id: Number(id) }, token)
@@ -40,15 +41,13 @@ export default async function Profile({
     if (!data?.data) {
         return redirect('/');
     }
-
     return (
         <>
             <Header data={data_infoSelf.data}></Header>
-            {/* <AnhBia data={data.data} check={data_infoSelf.data.id == searchParams.id}></AnhBia>
-            <div className="mt-32 flex justify-center w-full">
-                <Main news={news}></Main>
-            </div> */}
             <AnhBia1 data={data.data} check={data_infoSelf.data.id == searchParams.id}></AnhBia1>
+            <div className="mt-3 flex justify-center w-full">
+                <Main news={news} data={data.data} id={searchParams.id}></Main>
+            </div>
         </>
     )
 }

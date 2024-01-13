@@ -89,9 +89,9 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
                         {data.name}
                     </div>
                     <div className="text-xs mt-[-2px] text-[#8f8a8a] flex  items-center gap-2">{myFunction.TimeAgo(data?.updated_at)}
-                        {data.type_seen == 1 && <FaEarthAsia className="w-3 h-3"></FaEarthAsia>}
+                        {data.type_seen == 2 && <FaEarthAsia className="w-3 h-3"></FaEarthAsia>}
                         {data.type_seen == 3 && <IoMdLock className="w-3 h-3"></IoMdLock>}
-                        {data.type_seen == 2 && <FaUserFriends className="w-3 h-3"></FaUserFriends>}
+                        {data.type_seen == 1 && <FaUserFriends className="w-3 h-3"></FaUserFriends>}
                     </div>
                 </div>
                 {
