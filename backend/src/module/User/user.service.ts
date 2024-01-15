@@ -226,7 +226,6 @@ export class UserService {
             }
             throw new NotFoundException('Không tìm thấy người dùng')
         } catch (error) {
-            console.log("🚀 ~ UserService ~ getInfoUser ~ error:", error)
             throw new BadRequestException(error.message)
         }
     }
@@ -379,7 +378,22 @@ export class UserService {
                     ])
                 ))
             );
-
+            const checkFriend = await Promise.all(
+                response.map(item => (
+                    this.FriendsModel.find({
+                        $or: [
+                            {
+                                sender_id: item.id,
+                                receiver_id: id,
+                            },
+                            {
+                                receiver_id: item.id,
+                                sender_id: id,
+                            },
+                        ]
+                    })
+                ))
+            );
             for (let i = 0; i < response.length; i++) {
                 const element = response[i];
                 element.total = Friend_mutual[i].length;
@@ -391,20 +405,14 @@ export class UserService {
                         return
                     }
                 })
+                element.check_send_make_friend = checkFriend[i].length != 0 ? 1 : 0;
+                if (checkFriend[i].length != 0) {
+                    element.check_send_make_friend = checkFriend[i][0].sender_id == id ? 3 : 2;
+                }
             }
             return response
         } catch (error) {
             throw new BadRequestException()
         }
     }
-
-        // // Lấy data profile
-        // public async GetDataProfile(id: number, id_token: number): Promise<object> {
-        //     try {
-        //         const anh = await this.
-        //         return response
-        //     } catch (error) {
-        //         throw new BadRequestException()
-        //     }
-        // }
 }

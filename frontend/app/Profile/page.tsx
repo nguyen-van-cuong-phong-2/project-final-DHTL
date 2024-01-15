@@ -8,6 +8,7 @@ import { functions } from '../../functions/functions';
 import Main from "../../components/profile/main";
 import AnhBia1 from "../../components/profile/anhBia";
 import { useState } from "react";
+import Comment from "../../components/popup/comment";
 
 async function LoadingData(id: number, token: string): Promise<any> {
     const data = await callApi_getInforUser({ id: Number(id) }, token)
@@ -42,12 +43,14 @@ export default async function Profile({
         return redirect('/');
     }
     return (
-        <>
+        <div className="w-screen h-screen relative">
             <Header data={data_infoSelf.data}></Header>
             <AnhBia1 data={data.data} check={data_infoSelf.data.id == searchParams.id}></AnhBia1>
             <div className="mt-3 flex justify-center w-full">
                 <Main news={news} data={data.data} id={searchParams.id}></Main>
             </div>
-        </>
+            {/* <Comment id={6} dataUser={data.data} setIdNews={321}></Comment> */}
+
+        </div>
     )
 }

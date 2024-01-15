@@ -71,7 +71,7 @@ const Comment: React.FC<Comment> = ({ id, dataUser, setIdNews }) => {
     }
     return (
         <>
-            <div className="absolute w-screen h-screen top-0 left-0 z-50 bg-BGRegister ">
+            <div className="fixed w-screen h-screen top-0 left-0 z-[50] bg-BGRegister ">
                 <div className="w-full h-full flex justify-center items-center flex-col relative">
                     <div className="w-1/2 lg:h-[90%] max-md:h-full h-full bg-white border rounded-2xl max-md:w-full shadow-xl px-5 overflow-y-auto overflow-x-hidden pb-40">
                         <div className="flex justify-center items-center font-bold text-2xl h-20 border-b-2 relative">

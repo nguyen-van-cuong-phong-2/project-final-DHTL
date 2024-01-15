@@ -114,6 +114,7 @@ export class MessageService {
             }
           ])
         )));
+      console.log("🚀 ~ MessageService ~ getChat ~ response:", response)
       const arrChat: any[] = [];
       response.map(item => {
         if (item.length > 0) {

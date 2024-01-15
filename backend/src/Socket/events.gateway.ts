@@ -96,7 +96,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   ): Promise<any> {
     if (data.sender_id && data.receiver_id) {
       const response = await this.messageService.getMessage(data);
-      return this.server.to(client.id).emit('PushMessage', { data: response });
+      return this.server.to(client.id).emit('PushMessage', { data: response, sender_id: data.sender_id, receiver_id: data.receiver_id });
     }
     return this.server.to(client.id).emit('Message', `Missing data`);
   }

@@ -23,6 +23,9 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result, friend_goiy }) => {
   const [popUpPostNew, SetPopUpPostNew] = useState(false);
   const [result_1, setResult] = useState<any>(result);
   const [idNews, setIdNews] = useState<number>(0);
+  const [isEndOfScroll, setIsEndOfScroll] = useState(false);
+  console.log("🚀 ~ isEndOfScroll:", isEndOfScroll)
+
   const ref = useRef<any>(null);
   useEffect(() => {
     const fetchAPI = async () => {
@@ -32,11 +35,32 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result, friend_goiy }) => {
     fetchAPI()
   }, [popUpPostNew]);
   useEffect(() => {
-    if (ref.current.scrollHeight > ref.current.innerHeight) {
-      console.log('2222222222')
+    const handleScroll = () => {
+      const component = ref.current;
+      if (component) {
+        const isAtEnd = 2 * component.scrollTop >= component.scrollHeight;
+        setIsEndOfScroll(isAtEnd);
+      }
+    };
+
+    const handleApiCall = () => {
+      if (isEndOfScroll) {
+        // Gọi API ở đây
+        setIsEndOfScroll(false)
+      }
+    };
+
+    const component = ref.current;
+    if (component) {
+      component.addEventListener('scroll', handleScroll);
     }
-    console.log(ref?.current?.innerHeight)
-  }, [ref?.current?.innerHeight])
+    handleApiCall()
+    return () => {
+      if (component) {
+        component.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [isEndOfScroll]);
   return (
     <div className="
       flex 

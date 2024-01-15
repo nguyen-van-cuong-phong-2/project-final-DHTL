@@ -63,7 +63,6 @@ export class NewsService {
     page: number,
     list_friends: Array<object>,
   ): Promise<Array<object>> {
-    console.log("🚀 ~ NewsService ~ list_friends:", list_friends)
     try {
       const skip = (page - 1) * 20;
       const data = await this.NewsModel.aggregate([
@@ -720,7 +719,6 @@ export class NewsService {
 
   // lấy ảnh của bài viết
   public async GetImageNews(arrNews: any[]): Promise<string[]> {
-    console.log("🚀 ~ NewsService ~ GetImageNews ~ arrNews:", arrNews)
     try {
       const arr: string[] = [];
       for (let i = 0; i < arrNews.length; i++) {
