@@ -114,7 +114,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   ): Promise<any> {
     const find = this.arrUserOnline.get(data.receiver_id);
     if (find) {
-      const response_Promise = this.UserService.getInfoUser(data.sender_id, 11);
+      const response_Promise = this.UserService.getInfoUser(data.sender_id, -1);
       const totalNotifi_Promise = this.NotificationService.getTotalNotification(
         data.receiver_id,
       );
@@ -133,6 +133,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     }
   }
 
+  // sự kiện người dùng gõ tin nhắn
   @SubscribeMessage('typingMessage')
   async typePingMessage(
     @MessageBody()
@@ -146,5 +147,42 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     return this.server
       .to(id_chat)
       .emit('typing', { sender_id: data.sender_id, type: data.type });
+  }
+
+  @SubscribeMessage('ice-candidate')
+  async iceCandidate(@MessageBody() data: any) {
+    const user = data.type == 1 ? data.userReceiveCall : data.userCall;
+    const find = this.arrUserOnline.get(Number(user));
+    this.server.to(find).emit('ice-candidate', data)
+  }
+  @SubscribeMessage('offer')
+  async offer(@MessageBody() data: any) {
+    const user = data.type == 1 ? data.userReceiveCall : data.userCall;
+    const find = this.arrUserOnline.get(Number(user));
+    this.server.to(find).emit('offer', data)
+
+  }
+
+  @SubscribeMessage('answer')
+  async answer(@MessageBody() data: any) {
+    const user = data.type == 1 ? data.userReceiveCall : data.userCall;
+    const find = this.arrUserOnline.get(Number(user));
+    this.server.to(find).emit('answer', data)
+  }
+
+  // thông báo cuộc gọi
+  @SubscribeMessage('call')
+  async CallVideo(@MessageBody() data: any) {
+    const find = this.arrUserOnline.get(data.userReceiveCall);
+    const userCall = this.UserService.getInfoUser(data.userCall, -1)
+    this.server.to(find).emit('notiCall', { type: 1, userCall })
+  }
+
+  // nghe hoặc tắt
+  @SubscribeMessage('answer_call_socket')
+  async AnswerCall(@MessageBody() data: any) {
+    const find = this.arrUserOnline.get(data.userCall);
+    // type:2 nghe điện, type:3 tắt
+    this.server.to(find).emit('answer_call', { type: data.type })
   }
 }

@@ -19,6 +19,8 @@ import { callApi_LikeNews, callApi_GetDetailNews } from "../../api/callAPI";
 import LoadComment from "../comment/LoadComment";
 import WriteComment from "../comment/writeComment";
 import { useMyContext } from "../context/context";
+import { FaRegComments } from "react-icons/fa6";
+
 interface Comment {
     id: number,
     dataUser: any;
@@ -150,9 +152,8 @@ const Comment: React.FC<Comment> = ({ id, dataUser, setIdNews }) => {
                         <div className="flex justify-between items-center">
                             <div className="flex justify-start items-center mt-2">
                                 {total_like > 0 && <>
-                                    <div>{total_like}</div>
-                                    <FcLike className="h-5 w-5"></FcLike>
                                     <AiFillLike className="h-5 w-5 text-blue-500"></AiFillLike>
+                                    <div>{total_like}</div>
                                 </>}
 
                             </div>
@@ -246,12 +247,12 @@ const Comment: React.FC<Comment> = ({ id, dataUser, setIdNews }) => {
                                     content: "Viết bình luận...",
                                     parent_id: 0
                                 })}>
-                                <FaRegComment className="h-6 w-6 text-[#6a7079]"></FaRegComment>
-                                <div className="text-lg min-w-max">Bình luận</div>
+                                <FaRegComments className="h-6 w-6 text-[#7a7e85]"></FaRegComments>
+                                <div className="text-base font-semibold min-w-max text-[#7a7e85]">Bình luận</div>
                             </div>
                             <div className="flex justify-center min-w-max items-center hover:bg-slate-200 w-1/3 border-0 rounded-xl py-2 cursor-pointer gap-2 text-[#6a7079]">
                                 <CiShare2 className="h-6 w-6"></CiShare2>
-                                <div className="text-lg min-w-max">Chia sẻ</div>
+                                <div className="text-base font-semibold min-w-max text-[#7a7e85]">Chia sẻ</div>
                             </div>
                         </div>
 
@@ -262,7 +263,7 @@ const Comment: React.FC<Comment> = ({ id, dataUser, setIdNews }) => {
                         </div>
 
                     </div>
-                    <div className="border bg-white px-2 absolute bottom-5 w-1/2 max-md:w-full rounded-b-xl flex justify-center items-center">
+                    <div className="border bg-white px-2 absolute bottom-5 w-1/2 max-md:w-full rounded-b-xl flex justify-center items-center z-[50]">
                         <WriteComment setCallAPI={setCallAPI} id={id} data={dataUser}></WriteComment>
                     </div>
                 </div>

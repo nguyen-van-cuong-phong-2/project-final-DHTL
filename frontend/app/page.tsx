@@ -40,7 +40,7 @@ export default async function Home() {
       <Header data={data?.data}></Header>
       <div className="flex justify-between w-full">
         <LeftBody data={data?.data} />
-        <BettwenBody data={data?.data} result={result?.data} friend_goiy={friend_goiy.data} />
+        <BettwenBody data={data?.data} result={result?.data} friend_goiy={friend_goiy?.data} />
         <RightBody />
         <ArrMessage></ArrMessage>
       </div>
