@@ -167,6 +167,10 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
     DivRef.current.innerHTML += emojiData.emoji
   };
+
+  const showVideoCall = async (id: number) => {
+    return window.open(`${process.env.NEXT_PUBLIC_DOMAIN_DOMAIN}/VideoCall?userCall=${user.id}&&userReceiveCall=${id}`, '_blank');
+  }
   return (
     <>
       <div className="block rounded-xl bg-white shadow-md">
@@ -193,13 +197,19 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
             </div>
           </div>
           <div className="flex gap-2 justify-center items-center">
-            <div className="h-6 w-6 flex justify-center items-center">
-              <BsCameraVideoFill
-              className="w-full h-full text-blue-600"
-              ></BsCameraVideoFill>
-            </div>
-            <div className="rounded-full bg-green-600 w-1 h-1 ml-[-5px]">
-            </div>
+            {
+              arrOnline.includes(item.id) && <>
+                <div className="h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-slate-100 p-1 rounded-2xl">
+                  <BsCameraVideoFill
+                    className="w-full h-full text-blue-600"
+                    onClick={() => showVideoCall(item.id)}
+                  ></BsCameraVideoFill>
+                </div>
+                <div className="rounded-full bg-green-600 w-1 h-1 ml-[-5px]">
+                </div>
+              </>
+            }
+
             <div className="h-6 w-6 flex justify-center items-center">
               <ImCancelCircle
                 className="w-full h-full text-blue-500 cursor-pointer hover:opacity-70"

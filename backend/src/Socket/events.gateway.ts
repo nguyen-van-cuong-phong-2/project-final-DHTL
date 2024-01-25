@@ -27,7 +27,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
     private readonly NotificationService: NotificationService,
   ) { }
   handleConnection(client: any) {
-    // console.log(`${client.id} connected`);
+    console.log(`${client.id} connected`);
     // this.arrUserOnline.set(27, client.id);
   }
   @WebSocketServer()
@@ -173,16 +173,17 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   // thông báo cuộc gọi
   @SubscribeMessage('call')
   async CallVideo(@MessageBody() data: any) {
-    const find = this.arrUserOnline.get(data.userReceiveCall);
-    const userCall = this.UserService.getInfoUser(data.userCall, -1)
+    const find = this.arrUserOnline.get(Number(data.userReceiveCall));
+    const userCall = await this.UserService.getInfoUser(Number(data.userCall), -1)
     this.server.to(find).emit('notiCall', { type: 1, userCall })
   }
 
   // nghe hoặc tắt
   @SubscribeMessage('answer_call_socket')
   async AnswerCall(@MessageBody() data: any) {
-    const find = this.arrUserOnline.get(data.userCall);
-    // type:2 nghe điện, type:3 tắt
+    console.log(data)
+    const find = this.arrUserOnline.get(Number(data.userCall));
+    // type:2 nghe điện, type:1 tắt, type:3 đang có cuộc gọi khác
     this.server.to(find).emit('answer_call', { type: data.type })
   }
 }

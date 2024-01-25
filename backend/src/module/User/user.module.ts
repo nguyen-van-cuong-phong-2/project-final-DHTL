@@ -16,10 +16,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { MessageModule } from '../Message/message.module';
 import { FriendModule } from '../Friend/friend.module';
 import { NewsModule } from '../News/news.module';
-// import { News, NewsSchema } from 'src/Schemas/news.schema';
-// import { Like, LikeSchema } from 'src/Schemas/like.schema';
-// import { Comment, CommentSchema } from 'src/Schemas/comment.schema';
-// import { EventsModule } from 'src/Socket/events.module';
+import { SearchSchema, Search } from 'src/Schemas/search.schema';
 
 @Module({
   imports: [
@@ -29,9 +26,10 @@ import { NewsModule } from '../News/news.module';
         name: Friend.name,
         schema: FriendSchema,
       },
-      // { name: News.name, schema: NewsSchema },
-      // { name: Like.name, schema: LikeSchema },
-      // { name: Comment.name, schema: CommentSchema },
+      {
+        name: Search.name,
+        schema: SearchSchema,
+      },
     ]),
     JwtModule.register({
       secret: 'reqr2141!@321321*!!@$%',

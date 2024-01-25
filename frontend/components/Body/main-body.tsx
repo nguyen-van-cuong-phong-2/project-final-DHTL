@@ -7,7 +7,7 @@ import Comment from "../popup/comment";
 import { useMyContext } from "../context/context";
 import { callApi_GetNews } from "../../api/callAPI";
 import GoiYBanBe from "../goi-y-ban-be/GoiYBanBe";
-
+import Tin from '../tin/index';
 interface BettwenBody {
   data: {
     id: number,
@@ -63,7 +63,7 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result, friend_goiy }) => {
   }, [isEndOfScroll]);
   return (
     <div className="w-3/5 flex justify-center items-center max-lg:w-full max-lg:m-0
-    mt-[75px] max-lg:mt-[50px]
+    mt-[50px] max-lg:mt-[50px]
     ">
       <div className="
       flex 
@@ -77,6 +77,7 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result, friend_goiy }) => {
       "
         ref={ref}
       >
+        <Tin></Tin>
         <PostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PostNew>
         {popUpPostNew && <PopupPostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PopupPostNew>}
         {result_1?.map((item: any, index: number) =>

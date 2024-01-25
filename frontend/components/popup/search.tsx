@@ -14,11 +14,12 @@ interface PopUpSearch {
     makefriend: number
   }],
   tatPopup: any,
-  fecth_API_Search: any
+  fecth_API_Search: any;
+  keysearch: string
 }
 
 
-const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search }) => {
+const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search, keysearch }) => {
 
   const { SetContentNotifi, setLoading, socket } = useMyContext();
 
@@ -66,16 +67,16 @@ const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search }
   const router = useRouter();
   return (
     <>
-      <div className={`absolute border rounded-md overflow-auto bg-white h-[500px] md:w-[500px] mt-2 z-50 p-2 shadow-lg max-sm:w-[300px]`} ref={containerRef}>
+      <div className={`absolute border rounded-md no-scrollbar overflow-auto bg-white h-[500px] md:w-[350px] mt-2 z-50 p-2 shadow-lg max-sm:w-[300px] ml-[-65px]`} ref={containerRef}>
+        {!keysearch ? <div className="text-xl font-semibold">Gần đây</div> : <div className="text-xl font-semibold"> Kết quả tìm kiếm</div>}
         {data?.map(item => (
           <div className="pb-1">
-            <div className="flex items-center justify-between cursor-pointer hover:bg-slate-300 hover:rounded-md py-3"
-
+            <div className="flex items-center justify-between cursor-pointer hover:bg-slate-200 hover:rounded-md py-3"
             >
               <div className="flex gap-2 items-center max-w-[60%] overflow-hidden justify-end"
                 onClick={() => router.push(`/Profile?id=${item.id}`)}
               >
-                <div className="w-10 h-10">
+                <div className="w-8 h-8">
                   <Image
                     className="w-full h-full border rounded-full box-border"
                     src={item?.avatar ? item?.avatar : "/images/user.png"}
@@ -90,17 +91,17 @@ const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search }
                   ></Image>
                 </div>
                 <div>
-                  <div className="font-semibold max-w-[200px]">{item.name}</div>
+                  <div className="font-semibold max-w-[200px] text-base">{item.name}</div>
                   {item.makefriend == 2 && <div className="text-xs">Bạn bè</div>}
                 </div>
               </div>
               {
-                item.makefriend == 0 && <div className="border rounded-xl bg-blue-600  px-2 text-white cursor-pointer hover:bg-slate-400"
+                item.makefriend == 0 && <div className="border text-sm rounded-xl bg-blue-600  px-2 text-white cursor-pointer hover:bg-slate-400"
                   onClick={() => them_ban_be(item.id)}
                 >thêm bạn bè</div>
               }
               {
-                item.makefriend == 1 && <div className="border rounded-xl bg-gray-600  px-2 text-white cursor-pointer hover:bg-slate-400"
+                item.makefriend == 1 && <div className="border text-sm rounded-xl bg-gray-600  px-2 text-white cursor-pointer hover:bg-slate-400"
 
                   onClick={() => huy_loi_moi(item.id)}
                 >Huỷ lời mời</div>
@@ -108,8 +109,9 @@ const PopUpSearch: React.FC<PopUpSearch> = ({ data, tatPopup, fecth_API_Search }
             </div>
           </div>
         ))}
-
-
+        {data?.length < 1 && <div className="text-xl font-semibold text-gray-400 w-full h-full flex justify-center items-center">
+          <div>Không có kết quả</div>
+        </div>}
       </div>
     </>
   );

@@ -2,6 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useMyContext } from "../../components/context/context";
 import { functions } from "../../functions/functions";
+import { FaPhoneSlash } from "react-icons/fa6";
+import { callApi_EndVideoCall, callApi_CreateVideoCall } from "../../api/callAPI";
+import Image from "next/image";
 
 const Index = ({
   searchParams,
@@ -12,6 +15,7 @@ const Index = ({
   const user = func.getInfoFromToken();
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
+  const [endCall, setEndCall] = useState(false);
   const { socket, SetContentNotifi } = useMyContext();
   const userCall = searchParams.userCall;
   const userReceiveCall = searchParams.userReceiveCall;
@@ -89,6 +93,8 @@ const Index = ({
         });
       } else if (data.type == 3) {
         SetContentNotifi("Người dùng đã tắt máy");
+      } else if(data.type ==5){
+        endVideoCall()
       }
     } catch (error) {
       console.log("🚀 ~ handleCall ~ error:", error)
@@ -97,6 +103,7 @@ const Index = ({
 
   useEffect(() => {
     if (socket) {
+
       socket.on("offer", handleOffer);
 
       socket.on("answer", handleAnswer);
@@ -106,7 +113,6 @@ const Index = ({
       socket.on("answer_call", handleCall);
 
       startVideoCall();
-
       return () => {
         socket.off("offer");
         socket.off("answer");
@@ -120,15 +126,21 @@ const Index = ({
       localVideoRef.current.srcObject = localStream;
     }
     if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = remoteStream;
+      remoteVideoRef.current.srcObject = localStream || remoteStream;
     }
   }, [localStream, remoteStream]);
   const startVideoCall = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true,
+        // audio: {
+        //   echoCancellation: true,
+        //   autoGainControl: true,
+        //   noiseSuppression: true,
+        // },
+        audio: false
       });
+
       setLocalStream(stream);
 
       stream
@@ -136,13 +148,19 @@ const Index = ({
         .forEach((track) => peerConnection.addTrack(track, stream));
       if (Number(userCall) == user.id) {
         socket.emit("call", { userCall, userReceiveCall });
+      } else {
+        await callApi_CreateVideoCall({ sender_id: userCall, receiver_id: userReceiveCall })
+        socket.emit("answer_call_socket", { type: 2, userCall, userReceiveCall });
       }
     } catch (error) {
       console.error("Error accessing media devices:", error);
     }
   };
 
-  const endVideoCall = () => {
+  const endVideoCall = async () => {
+    await callApi_EndVideoCall({ sender_id: userCall, receiver_id: userReceiveCall });
+    socket.emit("answer_call_socket", { type: 5, userCall, userReceiveCall });
+    setEndCall(true)
     if (localStream) {
       localStream.getTracks().forEach((track: any) => track.stop());
     }
@@ -150,22 +168,25 @@ const Index = ({
     if (remoteStream) {
       remoteStream.getTracks().forEach((track: any) => track.stop());
     }
-
     setLocalStream(null);
     setRemoteStream(null);
   };
   return (
     <>
-      <div className="w-full flex justify-center h-screen bg-black">
-        <div className="w-[70%] relative h-full">
+      {endCall ? <div className="w-screen h-screen bg-[url('/images/call.png')] bg-no-repeat">
+      </div> : <div className="w-full flex justify-center h-screen bg-black">
+        <div className="w-[70%] relative h-full top-0">
           <video
             id="remoteVideo"
             autoPlay
             playsInline
             ref={remoteVideoRef}
             width="100%"
-            style={{height:"100%"}}
-></video>
+            style={{ height: "100%" }}
+          ></video>
+          <div className="absolute bottom-10 left-1/2 bg-white p-5 rounded-full flex justify-center items-center opacity-20 hover:opacity-100 cursor-pointer" onClick={() => endVideoCall()}>
+            <FaPhoneSlash className="text-red-600 text-2xl"></FaPhoneSlash>
+          </div>
           <div className="absolute bottom-0 right-0 w-60 h-60">
             <video id="localVideo" autoPlay playsInline ref={localVideoRef}
               width="100%"
@@ -173,7 +194,9 @@ const Index = ({
             ></video>
           </div>
         </div>
-      </div>
+      </div>}
+
+
     </>
   );
 };

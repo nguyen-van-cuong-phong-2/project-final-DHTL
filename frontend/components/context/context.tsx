@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { io } from "socket.io-client";
 import { functions } from "../../functions/functions";
+import Cookies from "js-cookie";
 
 
 // Define the interface for the object contained in the array
@@ -63,12 +64,14 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
   const [profileChoose, setProfileChoose] = useState(1)
   useEffect(() => {
     const user = new functions().getInfoFromToken();
-
+    // const socketID = Cookies.get('socketID')
     const socketIO = io(`${process.env.NEXT_PUBLIC_DOMAIN_SOCKET}`);
+
     if (user) {
       socketIO.emit('login', { id: user.id })
     }
     if (socketIO) SetSocket(socketIO);
+    if (socketIO) console.log(socketIO.id)
     socketIO.on('notification', (data) => {
       SetTotalNoti(data.data.totalNotifi)
       if (data?.data?.type == 1) {

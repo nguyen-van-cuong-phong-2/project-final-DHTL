@@ -8,6 +8,11 @@ import { useRouter } from "next/navigation";
 import { callApi_SearchUser } from "../../api/callAPI";
 import Noti from '../header/notification';
 import Chat from "./chat";
+import { IoMdSearch } from "react-icons/io";
+import { GoHome } from "react-icons/go";
+import { AiOutlineYoutube } from "react-icons/ai";
+import { RiGroup2Line } from "react-icons/ri";
+import { CgGames } from "react-icons/cg";
 
 interface Header {
   data: {
@@ -26,6 +31,7 @@ const Header: React.FC<Header> = ({ data, reels }) => {
   const [popUpNoti, setpopUpNoti] = useState(false);
   const [popUpChat, setpopUpChat] = useState(false);
   const [fetchData, SetfetchData] = useState<any>([]);
+  const [pageActive, setPageActive] = useState(0)
   const router = useRouter();
 
   const [key, SetKey] = useState('');
@@ -55,21 +61,38 @@ const Header: React.FC<Header> = ({ data, reels }) => {
   return (
     <>
       <div className={`fixed w-full  top-0 z-50 ${reels ? 'bg-black' : 'bg-white'}`}>
-        <div className={`flex  shadow-md p-3 justify-between ${reels ? 'border-none' : 'border'}`}>
+        <div className={`flex items-center shadow-md px-3 justify-between ${reels ? 'border-none' : 'border'}`}>
           <div className="flex w-max gap-3">
-            <div className="border rounded-full h-max w-max px-5 py-3 bg-blue-600 box-border cursor-pointer"
+            <div className="border rounded-full w-[44px] h-[44px] flex justify-center items-start bg-blue-600 box-border cursor-pointer"
               onClick={() => { router.push('/') }}
             >
-              <p className="text-white text-1xl font-bold">B</p>
+              <div className="text-white text-4xl font-bold">B</div>
             </div>
-            <div className={`${reels ? 'hidden' : 'block'}`}>
+            <div className={`${reels ? 'hidden' : 'block'} relative`}>
+              <div className="absolute top-[13px] left-2">
+                <IoMdSearch className="text-gray-500 text-xl"></IoMdSearch>
+              </div>
               <input
                 placeholder="Tìm kiếm trên BlueBook"
-                className="bg-BGICon w-[500px] max-md:w-[105px] border rounded-3xl px-5 outline-none h-[48px] search"
+                className="bg-BGICon w-[250px] max-md:w-[105px] border rounded-3xl px-10 outline-none h-[44px] placeholder:text-base placeholder:text-gray-500 "
                 onClick={() => setpopUpSearch(true)}
                 onChange={(e: any) => SetKey(e.target.value)}
               />
-              {popUpSearch && <PopupSearch data={fetchData} tatPopup={tatPopup} fecth_API_Search={fecth_API_Search} />}
+              {popUpSearch && <PopupSearch data={fetchData} tatPopup={tatPopup} fecth_API_Search={fecth_API_Search} keysearch={key}/>}
+            </div>
+          </div>
+          <div className="flex gap-40 h-[55px] justify-start flex-1 max-lg:hidden lg:gap-5 lg:ml-10 xl:gap-16 xl:ml-24 2xl:gap-24 2xl:ml-36">
+            <div className={`${pageActive == 0 && 'border-b-4 border-blue-600'} hover:rounded-2xl cursor-pointer hover:border-slate-300 hover:border h-full w-20 flex justify-center items-center box-border hover:bg-slate-300`}>
+              <GoHome className={`text-3xl ${pageActive == 0 ? 'text-blue-600' : 'text-gray-500'} `}></GoHome>
+            </div>
+            <div className={`${pageActive == 1 && 'border-b-4 border-blue-600'} hover:rounded-2xl cursor-pointer hover:border-slate-300 hover:border h-full w-20 flex justify-center items-center box-border hover:bg-slate-300`}>
+              <AiOutlineYoutube className={`text-3xl ${pageActive == 1 ? 'text-blue-600' : 'text-gray-500'} `}></AiOutlineYoutube>
+            </div>
+            <div className={`${pageActive == 2 && 'border-b-4 border-blue-600'} hover:rounded-2xl cursor-pointer hover:border-slate-300 hover:border h-full w-20 flex justify-center items-center box-border hover:bg-slate-300`}>
+              <RiGroup2Line className={`text-3xl ${pageActive == 2 ? 'text-blue-600' : 'text-gray-500'} `}></RiGroup2Line>
+            </div>
+            <div className={`${pageActive == 3 && 'border-b-4 border-blue-600'} hover:rounded-2xl cursor-pointer hover:border-slate-300 hover:border h-full w-20 flex justify-center items-center box-border hover:bg-slate-300`}>
+              <CgGames className={`text-3xl ${pageActive == 3 ? 'text-blue-600' : 'text-gray-500'} `}></CgGames>
             </div>
           </div>
           <div className="flex gap-3">

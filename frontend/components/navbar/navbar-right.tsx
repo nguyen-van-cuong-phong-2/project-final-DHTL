@@ -46,7 +46,7 @@ export default function RightBody() {
       h-screen 
       max-lg:hidden
       relative 
-      top-[75px]
+      top-[50px]
       "
       >
         <div className="block mt-[1.5rem] overflow-auto no-scrollbar">

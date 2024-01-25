@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import * as fs from 'node:fs';
 import { Users } from 'src/Schemas/user.schema';
+import { Search } from 'src/Schemas/search.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterUserDto } from './dto/register.dto';
@@ -27,6 +28,7 @@ export class UserService {
     constructor(
         @InjectModel(Users.name) private UsersModel: Model<Users>,
         @InjectModel(Friend.name) private FriendsModel: Model<Friend>,
+        @InjectModel(Search.name) private SearchModel: Model<Search>,
         private readonly jwtService: JwtService,
         private readonly NotificationService: NotificationService,
         private readonly MessageService: MessageService,
@@ -200,6 +202,23 @@ export class UserService {
                             }
                         ]
                     }).lean();
+                    const checkSearch = await this.SearchModel.findOne({ user_id: id_token }).lean();
+
+                    if (checkSearch) {
+                        let arr = checkSearch.userSearch.includes(id) ? [...checkSearch.userSearch] : [id, ...checkSearch.userSearch];
+                        if (arr.length > 10) {
+                            arr = arr.slice(0, 10)
+                        }
+                        await this.SearchModel.findOneAndUpdate({ user_id: id_token }, { userSearch: arr })
+                    } else {
+                        const max_id = await this.SearchModel.findOne({}).sort({ id: -1 }).lean();
+                        const id_search = max_id ? max_id?.id + 1 : 1;
+                        await this.SearchModel.create({
+                            id: id_search,
+                            user_id: id_token,
+                            userSearch: [id]
+                        })
+                    }
                     type Objectt = {
                         id: number,
                         avatar: string,
@@ -233,11 +252,17 @@ export class UserService {
     // tìm kiếm người dùng
     public async SearchUser(key: string, id: number): Promise<object> {
         try {
-
-            const response = await this.UsersModel.aggregate([
-                { $match: { name: new RegExp(key, 'i') } },
-            ]);
-
+            let response = [];
+            if (key && key != '') {
+                response = await this.UsersModel.aggregate([
+                    { $match: { name: new RegExp(key, 'i') } },
+                ])
+            } else {
+                const arrUser = await this.SearchModel.findOne({ user_id: id }).lean();
+                response = await this.UsersModel.aggregate([
+                    { $match: { id: { $in: arrUser?.userSearch } } },
+                ])
+            }
             const arrMakeFriend = await Promise.all(response.map(item => (
                 this.FriendsModel.findOne({
                     $or: [
