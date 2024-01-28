@@ -166,7 +166,7 @@ export class UserService {
         }
     }
 
-    // lấy thông tin người dùng (thiếu lấy danh sách bạn bè online và offline)
+    // lấy thông tin người dùng 
     public async getInfoUser(id: number, id_token: number): Promise<object> {
         try {
             const response_Promise = this.UsersModel.findOne({ id }, { password: 0 }).lean();

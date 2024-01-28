@@ -7,7 +7,7 @@ import Comment from "../popup/comment";
 import { useMyContext } from "../context/context";
 import { callApi_GetNews } from "../../api/callAPI";
 import GoiYBanBe from "../goi-y-ban-be/GoiYBanBe";
-import Tin from '../tin/index';
+import Tin from '../stories/index';
 interface BettwenBody {
   data: {
     id: number,

@@ -37,7 +37,7 @@ const Componentt = ({ name, avatar, created_at, setMute, mute }) => {
                 </div>
             </div>
             <div className='absolute text-white right-28 cursor-pointer z-[9999] max-sm:right-12' onClick={() => setMute(prev => !prev)}>
-                {mute ? <GoUnmute className='text-2xl mt-2'></GoUnmute> : <GoMute className='text-2xl mt-2'></GoMute>}
+                {!mute ? <GoUnmute className='text-2xl mt-2'></GoUnmute> : <GoMute className='text-2xl mt-2'></GoMute>}
             </div>
         </div>
     )

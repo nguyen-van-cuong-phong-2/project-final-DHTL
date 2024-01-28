@@ -179,12 +179,16 @@ export const callApi_CheckUserCall = async (data: object) => {
 }
 
 export const callApi_EndVideoCall = async (data: object) => {
-    console.log("🚀 ~ constcallApi_EndVideoCall= ~ data:", data)
     const response = await callApiPost_Json('VideoCall/EndVideoCall', data)
     return response;
 }
 
 export const callApi_CreateVideoCall = async (data: object) => {
     const response = await callApiPost_Json('VideoCall/CreateVideoCall', data)
+    return response;
+}
+
+export const callApi_GetListStories = async (data: object) => {
+    const response = await callApiPost_Json('Stories/getListStories', data)
     return response;
 }

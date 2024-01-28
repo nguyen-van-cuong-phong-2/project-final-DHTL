@@ -12,6 +12,7 @@ import { NotificationModule } from './module/notification/notification.module';
 import { MessageModule } from './module/Message/message.module';
 import { ReelsModule } from './module/Reels/reels.module';
 import { VideoCallModule } from './module/VideoCall/VideoCall.module';
+import { TinModule } from './module/Stories/stories.module';
 // 'mongodb://nguyencuong:nguyencuong@localhost:27017',
 
 @Module({
@@ -28,6 +29,7 @@ import { VideoCallModule } from './module/VideoCall/VideoCall.module';
     MessageModule,
     ReelsModule,
     VideoCallModule,
+    TinModule,
   ],
   controllers: [AppController],
   providers: [AppService],
