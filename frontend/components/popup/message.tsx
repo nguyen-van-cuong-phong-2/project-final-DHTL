@@ -13,6 +13,7 @@ import { callApi_GetOfflineUser } from "../../api/callAPI";
 import { CiFaceSmile } from "react-icons/ci";
 import EmojiPicker from 'emoji-picker-react';
 import { EmojiClickData } from "emoji-picker-react";
+import { BsCameraVideoFill } from "react-icons/bs";
 
 interface PopUpMessage {
   item: {
@@ -27,7 +28,6 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   const func = new functions();
   const user = func.getInfoFromToken();
   const [data, setData] = useState<any>([]);
-  // console.log("🚀 ~ data:", data)
   const [Typing, SetTyping] = useState(0);
   const [checkTyping, setCheckTyping] = useState(0);
   const { DeleteArrMessage, socket } = useMyContext();
@@ -167,6 +167,10 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
   const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
     DivRef.current.innerHTML += emojiData.emoji
   };
+
+  const showVideoCall = async (id: number) => {
+    return window.open(`${process.env.NEXT_PUBLIC_DOMAIN_DOMAIN}/VideoCall?userCall=${user.id}&&userReceiveCall=${id}`, '_blank');
+  }
   return (
     <>
       <div className="block rounded-xl bg-white shadow-md">
@@ -192,12 +196,28 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
               <p className="text-sm mt-[-5px]">{arrOnline.includes(item.id) ? "Đang hoạt động" : func.TimeAgo(timeOffline)}</p>
             </div>
           </div>
-          <div className="h-6 w-6 flex justify-center items-center">
-            <ImCancelCircle
-              className="w-full h-full text-blue-500 cursor-pointer hover:opacity-70"
-              onClick={() => DeleteArrMessage(item.id)}
-            ></ImCancelCircle>
+          <div className="flex gap-2 justify-center items-center">
+            {
+              arrOnline.includes(item.id) && <>
+                <div className="h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-slate-100 p-1 rounded-2xl">
+                  <BsCameraVideoFill
+                    className="w-full h-full text-blue-600"
+                    onClick={() => showVideoCall(item.id)}
+                  ></BsCameraVideoFill>
+                </div>
+                <div className="rounded-full bg-green-600 w-1 h-1 ml-[-5px]">
+                </div>
+              </>
+            }
+
+            <div className="h-6 w-6 flex justify-center items-center">
+              <ImCancelCircle
+                className="w-full h-full text-blue-500 cursor-pointer hover:opacity-70"
+                onClick={() => DeleteArrMessage(item.id)}
+              ></ImCancelCircle>
+            </div>
           </div>
+
         </div>
 
         <div

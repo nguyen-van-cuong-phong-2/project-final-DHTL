@@ -8,6 +8,9 @@ import { cookies } from 'next/headers';
 import { callApi_getInforUser } from "../api/callAPI";
 import { functions } from '../functions/functions'
 import { callApi_GetNews, callApi_SuggestFriends } from "../api/callAPI";
+import PopUpCuocGoiDen from "../components/videoCall/popUpCuocGoiDen";
+
+
 
 async function LoadingData(token: string): Promise<any> {
   const user = await new functions().getInfoFromTokenServerSide(token);
@@ -40,9 +43,10 @@ export default async function Home() {
       <Header data={data?.data}></Header>
       <div className="flex justify-between w-full">
         <LeftBody data={data?.data} />
-        <BettwenBody data={data?.data} result={result?.data} friend_goiy={friend_goiy.data} />
+        <BettwenBody data={data?.data} result={result?.data} friend_goiy={friend_goiy?.data} />
         <RightBody />
         <ArrMessage></ArrMessage>
+        <PopUpCuocGoiDen></PopUpCuocGoiDen>
       </div>
     </div>
   );

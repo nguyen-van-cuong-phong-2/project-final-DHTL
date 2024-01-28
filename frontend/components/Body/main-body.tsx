@@ -7,7 +7,7 @@ import Comment from "../popup/comment";
 import { useMyContext } from "../context/context";
 import { callApi_GetNews } from "../../api/callAPI";
 import GoiYBanBe from "../goi-y-ban-be/GoiYBanBe";
-
+import Tin from '../stories/index';
 interface BettwenBody {
   data: {
     id: number,
@@ -23,50 +23,73 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result, friend_goiy }) => {
   const [popUpPostNew, SetPopUpPostNew] = useState(false);
   const [result_1, setResult] = useState<any>(result);
   const [idNews, setIdNews] = useState<number>(0);
+  const [isEndOfScroll, setIsEndOfScroll] = useState(false);
+  console.log("🚀 ~ isEndOfScroll:", isEndOfScroll)
+
   const ref = useRef<any>(null);
   useEffect(() => {
     const fetchAPI = async () => {
       const response = await callApi_GetNews({ page: 1 });
-      setResult(response.data)
+      setResult(response?.data)
     }
     fetchAPI()
   }, [popUpPostNew]);
   useEffect(() => {
-    if (ref.current.scrollHeight > ref.current.innerHeight) {
-      console.log('2222222222')
+    const handleScroll = () => {
+      const component = ref.current;
+      if (component) {
+        const isAtEnd = 2 * component.scrollTop >= component.scrollHeight;
+        setIsEndOfScroll(isAtEnd);
+      }
+    };
+
+    const handleApiCall = () => {
+      if (isEndOfScroll) {
+        // Gọi API ở đây
+        setIsEndOfScroll(false)
+      }
+    };
+
+    const component = ref.current;
+    if (component) {
+      component.addEventListener('scroll', handleScroll);
     }
-    console.log(ref?.current?.innerHeight)
-  }, [ref?.current?.innerHeight])
+    handleApiCall()
+    return () => {
+      if (component) {
+        component.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [isEndOfScroll]);
   return (
-    <div className="
+    <div className="w-3/5 flex justify-center items-center max-lg:w-full max-lg:m-0
+    mt-[50px] max-lg:mt-[50px]
+    ">
+      <div className="
       flex 
       flex-col 
-      border 
-      rounded 
-      w-3/5 
+      w-full 
       p-2 
       no-scrollbar
       h-screen
-      overflow-auto
+      overflow-auto 
       overscroll-y-contain
-      ml-20
-      max-lg:w-full
-      max-lg:m-0
-      mt-[75px]
-      max-lg:mt-[50px]
       "
-      ref={ref}
-    >
-      <PostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PostNew>
-      {popUpPostNew && <PopupPostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PopupPostNew>}
-      {result_1?.map((item: any, index: number) =>
-        <>
-          <News key={item.id} data={item} setIdNews={setIdNews}></News>
-          {index == 0 && <GoiYBanBe friend_goiy={friend_goiy}></GoiYBanBe>}
-        </>
-      )}
-      {idNews !== 0 && <Comment id={idNews} dataUser={data} setIdNews={setIdNews}></Comment>}
+        ref={ref}
+      >
+        <Tin></Tin>
+        <PostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PostNew>
+        {popUpPostNew && <PopupPostNew data={data} SetPopUpPostNew={SetPopUpPostNew}></PopupPostNew>}
+        {result_1?.map((item: any, index: number) =>
+          <>
+            <News key={item.id} data={item} setIdNews={setIdNews}></News>
+            {index == 0 && <GoiYBanBe friend_goiy={friend_goiy}></GoiYBanBe>}
+          </>
+        )}
+        {idNews !== 0 && <Comment id={idNews} dataUser={data} setIdNews={setIdNews}></Comment>}
+      </div>
     </div>
+
   );
 }
 

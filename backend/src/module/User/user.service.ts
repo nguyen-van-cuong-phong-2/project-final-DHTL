@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import * as fs from 'node:fs';
 import { Users } from 'src/Schemas/user.schema';
+import { Search } from 'src/Schemas/search.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterUserDto } from './dto/register.dto';
@@ -27,6 +28,7 @@ export class UserService {
     constructor(
         @InjectModel(Users.name) private UsersModel: Model<Users>,
         @InjectModel(Friend.name) private FriendsModel: Model<Friend>,
+        @InjectModel(Search.name) private SearchModel: Model<Search>,
         private readonly jwtService: JwtService,
         private readonly NotificationService: NotificationService,
         private readonly MessageService: MessageService,
@@ -164,7 +166,7 @@ export class UserService {
         }
     }
 
-    // lấy thông tin người dùng (thiếu lấy danh sách bạn bè online và offline)
+    // lấy thông tin người dùng 
     public async getInfoUser(id: number, id_token: number): Promise<object> {
         try {
             const response_Promise = this.UsersModel.findOne({ id }, { password: 0 }).lean();
@@ -200,6 +202,23 @@ export class UserService {
                             }
                         ]
                     }).lean();
+                    const checkSearch = await this.SearchModel.findOne({ user_id: id_token }).lean();
+
+                    if (checkSearch) {
+                        let arr = checkSearch.userSearch.includes(id) ? [...checkSearch.userSearch] : [id, ...checkSearch.userSearch];
+                        if (arr.length > 10) {
+                            arr = arr.slice(0, 10)
+                        }
+                        await this.SearchModel.findOneAndUpdate({ user_id: id_token }, { userSearch: arr })
+                    } else {
+                        const max_id = await this.SearchModel.findOne({}).sort({ id: -1 }).lean();
+                        const id_search = max_id ? max_id?.id + 1 : 1;
+                        await this.SearchModel.create({
+                            id: id_search,
+                            user_id: id_token,
+                            userSearch: [id]
+                        })
+                    }
                     type Objectt = {
                         id: number,
                         avatar: string,
@@ -226,7 +245,6 @@ export class UserService {
             }
             throw new NotFoundException('Không tìm thấy người dùng')
         } catch (error) {
-            console.log("🚀 ~ UserService ~ getInfoUser ~ error:", error)
             throw new BadRequestException(error.message)
         }
     }
@@ -234,11 +252,17 @@ export class UserService {
     // tìm kiếm người dùng
     public async SearchUser(key: string, id: number): Promise<object> {
         try {
-
-            const response = await this.UsersModel.aggregate([
-                { $match: { name: new RegExp(key, 'i') } },
-            ]);
-
+            let response = [];
+            if (key && key != '') {
+                response = await this.UsersModel.aggregate([
+                    { $match: { name: new RegExp(key, 'i') } },
+                ])
+            } else {
+                const arrUser = await this.SearchModel.findOne({ user_id: id }).lean();
+                response = await this.UsersModel.aggregate([
+                    { $match: { id: { $in: arrUser?.userSearch } } },
+                ])
+            }
             const arrMakeFriend = await Promise.all(response.map(item => (
                 this.FriendsModel.findOne({
                     $or: [
@@ -379,7 +403,22 @@ export class UserService {
                     ])
                 ))
             );
-
+            const checkFriend = await Promise.all(
+                response.map(item => (
+                    this.FriendsModel.find({
+                        $or: [
+                            {
+                                sender_id: item.id,
+                                receiver_id: id,
+                            },
+                            {
+                                receiver_id: item.id,
+                                sender_id: id,
+                            },
+                        ]
+                    })
+                ))
+            );
             for (let i = 0; i < response.length; i++) {
                 const element = response[i];
                 element.total = Friend_mutual[i].length;
@@ -391,20 +430,14 @@ export class UserService {
                         return
                     }
                 })
+                element.check_send_make_friend = checkFriend[i].length != 0 ? 1 : 0;
+                if (checkFriend[i].length != 0) {
+                    element.check_send_make_friend = checkFriend[i][0].sender_id == id ? 3 : 2;
+                }
             }
             return response
         } catch (error) {
             throw new BadRequestException()
         }
     }
-
-        // // Lấy data profile
-        // public async GetDataProfile(id: number, id_token: number): Promise<object> {
-        //     try {
-        //         const anh = await this.
-        //         return response
-        //     } catch (error) {
-        //         throw new BadRequestException()
-        //     }
-        // }
 }

@@ -18,8 +18,15 @@ const Main = ({ news, data, id }) => {
         }
         callAPI()
     }, [])
+
+    if (response.image && response.image.length > 0) {
+        var image = response.image.slice(0, 6)
+    }
+    if (response.list_friends && response.list_friends.length > 0) {
+        var list_friends = response.list_friends.slice(0, 6)
+    }
     return (<>
-        <div className="border-t-2 w-[70%] max-xl:w-full max-lg:mt-10">
+        <div className="border-t-2 w-[70%] max-xl:w-full max-lg:mt-10 ">
             {profileChoose == 1 && <div className="flex gap-7 flex-wrap">
                 <div className="lg:w-[40%]  max-lg:w-full">
                     <div className="rounded-2xl bg-white p-2 max-lg:h-[60%]">
@@ -32,7 +39,7 @@ const Main = ({ news, data, id }) => {
                             </div>
                         </div>
                         <div className="flex gap-2 justify-between mt-2 flex-wrap max-lg:h-20">
-                            {response?.image?.map((item: any, index: number) => (
+                            {image?.map((item: any, index: number) => (
                                 <div key={item} className="relative w-[32%] h-32 max-lg:w-[30%] ">
                                     <Image
                                         className="w-full h-full rounded-xl"
@@ -47,7 +54,7 @@ const Main = ({ news, data, id }) => {
                                         }}></Image>
                                 </div>
                             ))}
-                            {response?.image?.length === 0 && <div className="h-20 w-full flex justify-center items-center font-normal text-xl text-gray-500">Không có ảnh</div>}
+                            {image?.length === 0 && <div className="h-20 w-full flex justify-center items-center font-normal text-xl text-gray-500">Không có ảnh</div>}
                         </div>
                     </div>
                     <div className="rounded-2xl bg-white p-2 mt-2  max-lg:w-full max-lg:h-[73%]" >
@@ -64,7 +71,7 @@ const Main = ({ news, data, id }) => {
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
-                            {response?.list_friends?.map((item: any, index: number) => (
+                            {list_friends?.map((item: any, index: number) => (
                                 <div key={item} className="w-[32%] h-40 ">
                                     <div className="relative w-full h-[80%] rounded-2xl">
                                         <Image
@@ -89,17 +96,19 @@ const Main = ({ news, data, id }) => {
                     <div className="w-full  rounded-2xl bg-white p-2 font-bold text-xl">
                         Bài viết
                     </div>
-                    <div className="w-full rounded-2xl bg-white">
+                    <div className="w-full rounded-2xl bg-white relative">
                         {response?.news?.map((item: any) => (
                             <News key={item.id} data={item} setIdNews={setIdNews} profile={true}></News>
                         ))}
-                        {idNews !== 0 && <Comment id={idNews} dataUser={data} setIdNews={setIdNews}></Comment>}
+
                         {response?.news?.length == 0 && <div className="h-20 w-full mt-2 flex justify-center items-center font-normal text-xl text-gray-500">Chưa đăng bài viết nào</div>}
+
                     </div>
                 </div>
             </div>}
             {profileChoose == 2 && <BanBe response={response}></BanBe>}
             {profileChoose == 3 && <Anh response={response}></Anh>}
+            {idNews !== 0 && <Comment id={idNews} dataUser={data} setIdNews={setIdNews}></Comment>}
         </div>
     </>)
 }

@@ -82,7 +82,7 @@ export const ChatMessage: React.FC<ChatMessage> = ({
         rounded-full
         "
               fill
-              objectFit="contain"
+              objectFit="cover"
             ></Image>
           </div>
         </div>

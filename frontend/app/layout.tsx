@@ -12,13 +12,12 @@ export default function RootLayout({
   const token = new functions().getTokenFromClientSide();
   return (
     <html lang="en">
-      <body className=" bg-BGICon no-scrollbar">
+      <body className="bg-BGICon no-scrollbar">
         <MyContextProvider>
           <Loading></Loading>
           {children}
           <Notifications></Notifications>
         </MyContextProvider>
-
       </body>
     </html>
   );

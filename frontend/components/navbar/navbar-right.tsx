@@ -14,13 +14,14 @@ export default function RightBody() {
       const getUserOnline = () => {
         socket.emit("getOnline");
         socket.on("listOnline", (data: Array<number>) => {
+          console.log("🚀 ~ socket.on ~ data:", data)
           setUserOnline(data);
         });
       }
       getUserOnline();
       return () => socket.off("listOnline");
     }
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     const fecthAPI = async () => {
@@ -45,7 +46,7 @@ export default function RightBody() {
       h-screen 
       max-lg:hidden
       relative 
-      top-[75px]
+      top-[50px]
       "
       >
         <div className="block mt-[1.5rem] overflow-auto no-scrollbar">
@@ -53,7 +54,7 @@ export default function RightBody() {
           {arrFriend?.map((item) => (
             <div
               key={item.id}
-              className="flex items-center cursor-pointer hover:bg-gray-300 border rounded-2xl"
+              className="flex items-center cursor-pointer hover:bg-gray-300 hover:border rounded-2xl box-border"
               onClick={() => handleOnClick(item.id)}
             >
               <div

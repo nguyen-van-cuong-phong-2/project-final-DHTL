@@ -40,7 +40,7 @@ module.exports = {
       },
       colors: {
         'BGRegister': '#FFFFFFCC',
-        'BGICon': '#e4e6eb',
+        'BGICon': '#f0f2f5',
         "BGMessages": "#6a248a"
       }
     },

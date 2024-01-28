@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 const BanBe = ({ response }) => {
-    console.log("🚀 ~ BanBe ~ response:", response)
     return (<>
         <div className="w-full bg-white rounded-2xl p-5 flex-grow mb-10">
             <div className=" font-bold text-xl">Bạn bè</div>

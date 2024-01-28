@@ -70,7 +70,7 @@ const Clip = ({ setDataUser, mute }) => {
                         muted={mute}
                         playing={true}
                         autoPlay={true}
-
+                        // style={{height:"100% !important"}}
                     />
                 </div>
                 <div className="border rounded-full p-2 mb-32 cursor-pointer" onClick={handleNextClick}>

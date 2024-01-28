@@ -24,7 +24,7 @@ const Anh = ({ response }) => {
                     ))
                 }
                 {
-                    response?.image.length == 0 && <div className="text-center font-normal text-base flex justify-center">
+                    response?.image?.length == 0 && <div className="text-center font-normal text-base flex justify-center">
                         <div>
                             Chưa có ảnh nào
                         </div>

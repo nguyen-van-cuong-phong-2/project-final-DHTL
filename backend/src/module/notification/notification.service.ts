@@ -69,6 +69,7 @@ export class NotificationService {
             link: 1,
             name: '$user.name',
             avatar: '$user.avatar',
+            type_enmoji: 1,
           },
         },
       ]);
