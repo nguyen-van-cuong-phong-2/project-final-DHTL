@@ -5,10 +5,15 @@ import AllStories from "../../components/stories/allStories";
 import Clip from "../../components/stories/clip";
 import { useEffect, useState } from "react";
 import ModelPostStories from '../../components/stories/modelPostStories'
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import { callApi_GetListStories } from "../../api/callAPI";
+import Cookies from "js-cookie";
 
-export default function Stories() {
+export default function Stories({
+    searchParams,
+}: {
+    searchParams: { [key: string]: string | string[] | undefined }
+}) {
     const [showModal, setShowModal] = useState(false);
     const router = useRouter();
     const [page, setPage] = useState(1);
@@ -16,26 +21,39 @@ export default function Stories() {
     const [storie, setStorie] = useState<any>([]);
     const [choose, setChoose] = useState(0);
     const [result, setResult] = useState<any>(0);
-    useEffect(() => {
-        const ga = storie.findIndex((item: any) => item.user_id == choose)
-        setResult(ga)
-    }, [choose])
 
+    useEffect(() => {
+        if (storie.length > 0) {
+            let ga = storie.findIndex((item: any) => item.user_id == choose)
+            if (ga == -1) ga = 0;
+            setResult(ga)
+        }
+    }, [choose])
 
     useEffect(() => {
         const callAPI = async () => {
-            const response = await callApi_GetListStories({ page: page })
-            setData(response.data);
-            setStorie(vonglap(response.data))
+            const response = await callApi_GetListStories({ page: page });
+            if (response.result == true) {
+                setData(response.data);
+                setStorie(vonglap(response.data))
+            } else if (response.status == 403) {
+                router.push('/Login')
+                Cookies.remove('token')
+            }
         }
         callAPI()
     }, [page])
 
     const vonglap = (data: any) => {
         const arr = [];
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < data?.length; i++) {
             const element = data[i];
             element.data.map((item: any) => arr.push(item))
+        }
+        if (searchParams.id && choose == 0 && page == 1) {
+            const index = arr.findIndex((item: any) => item.id == searchParams.id)
+            let removedItem = arr.splice(index, 1)[0];
+            arr.unshift(removedItem);
         }
         return arr;
     }
@@ -67,7 +85,7 @@ export default function Stories() {
                     </div>
                     <div className="text-base font-semibold ml-1 mt-5">Tất cả tin</div>
                     {
-                        data.map((item, index) => (
+                        data?.map((item, index) => (
                             <AllStories key={index} item={item?.data[0]} index={index} data={data} setChoose={setChoose}></AllStories>
                         ))
                     }
@@ -75,7 +93,7 @@ export default function Stories() {
                 <ModelPostStories showModal={showModal} setShowModal={setShowModal}></ModelPostStories>
             </div>
             <div className="w-[75%] h-full flex justify-center bg-black">
-                <Clip data={storie[result || 0]} setResult={setResult} result={result} storie={storie}></Clip>
+                <Clip data={storie[result]} setResult={setResult} result={result} storie={storie}></Clip>
             </div>
         </div>
     </>)

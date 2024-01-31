@@ -97,4 +97,24 @@ export class TinController {
       throw new BadRequestException(error.message);
     }
   }
+
+  // cập nhật đã xem
+  @Post('updateSeen')
+  async updateSeen(
+    @Body() data: { id: number },
+    @Req() req: ExtendedRequest,
+  ): Promise<object> {
+    try {
+      if (req.user && req.user.id && data) {
+        await this.StoriesService.updateSeen(data.id, Number(req.user.id));
+        return {
+          result: true,
+          status: 200,
+        };
+      }
+      throw new ForbiddenException('missing token');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }

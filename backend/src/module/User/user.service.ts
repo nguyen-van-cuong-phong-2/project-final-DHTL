@@ -144,14 +144,19 @@ export class UserService {
             fs.writeFileSync(filePath, file.buffer);
             return `/pictures/${pathFolder}/${time}_${file.originalname}`;
         } catch (error) {
-            console.log("🚀 ~ UserService ~ uploadFile ~ error:", error)
+            throw new BadRequestException('Có lỗi xảy ra')
         }
     }
 
     // lưu file avatar đã upload vào base
-    public async saveFileOnBase(id: number, path: string): Promise<void> {
+    public async saveFileOnBase(id: number, path: string): Promise<object> {
         try {
             await this.UsersModel.findOneAndUpdate({ id }, { avatar: path });
+            const data = await this.UsersModel.findOne({ id }, { password: 0 }).lean();
+            const token = await this.generateToken(data);
+            const refreshToken = await this.generateToken(data);
+            return { token, refreshToken, data }
+
         } catch (error) {
             throw new BadRequestException(error.message, 'Bad request');
         }
@@ -438,6 +443,19 @@ export class UserService {
             return response
         } catch (error) {
             throw new BadRequestException()
+        }
+    }
+
+    // xác thực tài khoản
+    public async authenticationAccount(id: number): Promise<object> {
+        try {
+            await this.UsersModel.findOneAndUpdate({ id }, { active: 1 });
+            const data = await this.UsersModel.findOne({ id }, { password: 0 }).lean();
+            const token = await this.generateToken(data);
+            const refreshToken = await this.generateToken(data);
+            return { token, refreshToken, data }
+        } catch (error) {
+            throw new BadRequestException(error.message, 'Bad request');
         }
     }
 }

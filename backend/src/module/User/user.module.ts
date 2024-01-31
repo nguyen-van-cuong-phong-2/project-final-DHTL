@@ -55,6 +55,7 @@ export class UserModule implements NestModule {
         { path: '/user/getInforUser', method: RequestMethod.POST },
         { path: '/user/SuggestFriends', method: RequestMethod.POST },
         { path: '/user/GetDataProfile', method: RequestMethod.POST },
+        { path: '/user/authenticationAccount', method: RequestMethod.POST },
       );
   }
 }

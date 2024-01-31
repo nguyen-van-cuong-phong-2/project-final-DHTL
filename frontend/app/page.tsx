@@ -10,8 +10,6 @@ import { functions } from '../functions/functions'
 import { callApi_GetNews, callApi_SuggestFriends } from "../api/callAPI";
 import PopUpCuocGoiDen from "../components/videoCall/popUpCuocGoiDen";
 
-
-
 async function LoadingData(token: string): Promise<any> {
   const user = await new functions().getInfoFromTokenServerSide(token);
   const playlists = await callApi_getInforUser({ id: Number(user.id) }, token)
@@ -29,12 +27,20 @@ const SuggestFriends = async (token: string) => {
 }
 
 export default async function Home() {
-  const cookieStore = cookies()
+  const cookieStore = cookies();
+  const fnc = new functions();
   const token = cookieStore.get('token')
   if (!token) redirect('/Login');
   const data_promise = LoadingData(token.value);
   const result_promise = GetNews(token.value);
   const SuggestFriend_promise = SuggestFriends(token.value)
+  const user: any = await fnc.getInfoFromTokenServerSide(token.value)
+  if (!user || !user.active || user.active == 0) {
+    redirect('/Otp');
+  } else if (!user.avatar || user.avatar == null || user.avatar == 'null' || user.avatar.includes('null')) {
+    redirect('/UploadAvatar');
+  }
+
   const [data, result, friend_goiy] = await Promise.all([
     data_promise, result_promise, SuggestFriend_promise
   ])

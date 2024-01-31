@@ -29,6 +29,9 @@ export class Users {
 
   @Prop({ default: 0 })
   lastLogin: number;
+
+  @Prop({ default: 0 })
+  active: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(Users);

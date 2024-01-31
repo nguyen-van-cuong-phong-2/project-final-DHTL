@@ -33,7 +33,7 @@ const PostNew: React.FC<BettwenBody> = ({ data, SetPopUpPostNew }) => {
         </div>{" "}
         <input
           placeholder={`${name} ơi, bạn đang nghĩ gì thế?`}
-          className="w-[85%] h-10 ml-2 border rounded-3xl outline-none pl-5 bg-BGICon font-semibold text-black-800 py-4"
+          className="w-[85%] 2xl:w-[90%] h-10 ml-2 border rounded-3xl outline-none pl-5 bg-BGICon font-semibold text-black-800 py-4"
         />
         <div className="w-full flex border-t-[1px] mt-3 py-2 px-5 justify-between cursor-pointer max-md:px-0">
           <div className="flex gap-2 mt-2 justify-center items-center">

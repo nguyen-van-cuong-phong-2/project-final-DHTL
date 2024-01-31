@@ -6,6 +6,7 @@ import { Button } from 'antd';
 import { callApi_uploadAvatar } from '../../api/callAPI';
 import { useMyContext } from '../../components/context/context';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function UploadAvatar() {
     const [avatar, SetAvatar] = useState();
@@ -30,7 +31,7 @@ export default function UploadAvatar() {
     const handleSubmit = async () => {
         const response = await callApi_uploadAvatar({ file: fileAvatar })
         if (response.status == 200) {
-            // setLoading(true);
+            Cookies.set('token', response.data.token);
             router.push('/')
         }
     }

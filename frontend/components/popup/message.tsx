@@ -14,6 +14,7 @@ import { CiFaceSmile } from "react-icons/ci";
 import EmojiPicker from 'emoji-picker-react';
 import { EmojiClickData } from "emoji-picker-react";
 import { BsCameraVideoFill } from "react-icons/bs";
+import { MdOutlineClose } from "react-icons/md";
 
 interface PopUpMessage {
   item: {
@@ -62,12 +63,10 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
           sender_id: user.id,
           receiver_id: item.id,
         });
-
         socket.on("PushMessage", (data: any) => {
           if (data.sender_id == item.id || data.receiver_id == item.id)
             setData(data?.data);
         });
-
       }, 2000);
       setShowEmoji(false)
       DivRef.current.innerHTML = "";
@@ -125,11 +124,19 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
         ...prevData,
         {
           ...item.result,
-          id: item.id,
+          // id: item.id,
+          // seen: 0,
+          // _id: "6566f58cb341441c876c6031",
+          // __v: 0,
+          // created_at: new Date().getTime(),
+          created_at: 1706688069623,
+          id: 4,
+          id_story: item.result.id_story ? item.result.id_story : 0,
+          like: item.result.like ? item.result.like : 0,
+          messageLastSeen: true,
           seen: 0,
-          _id: "6566f58cb341441c876c6031",
           __v: 0,
-          created_at: item.created_at,
+          _id: "65b9fe45e2c0c43b794ffd15"
         },
       ]);
     };
@@ -168,12 +175,33 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
     DivRef.current.innerHTML += emojiData.emoji
   };
 
+  const handleLike = async () => {
+    if (socket) {
+      socket.emit('sendMessage', {
+        sender_id: user.id,
+        receiver_id: item.id,
+        content: '👍',
+        like: 1,
+      });
+      setTimeout(() => {
+        socket.emit("getMessage", {
+          sender_id: user.id,
+          receiver_id: item.id,
+        });
+        socket.on("PushMessage", (data: any) => {
+          if (data.sender_id == item.id || data.receiver_id == item.id)
+            setData(data?.data);
+        });
+      }, 2000);
+    }
+  }
+
   const showVideoCall = async (id: number) => {
     return window.open(`${process.env.NEXT_PUBLIC_DOMAIN_DOMAIN}/VideoCall?userCall=${user.id}&&userReceiveCall=${id}`, '_blank');
   }
   return (
     <>
-      <div className="block rounded-xl bg-white shadow-md">
+      <div className="block rounded-lg bg-white shadow-2xl">
         <div className="flex justify-between items-center w-[350px] border-b-0 border-top-1 rounded-t-xl shadow-md border-white bg-white px-1 py-1 max-sm:w-screen">
           <div className="flex items-center gap-1">
             <div className="w-9 h-9 relative">
@@ -211,10 +239,10 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
             }
 
             <div className="h-6 w-6 flex justify-center items-center">
-              <ImCancelCircle
+              <MdOutlineClose
                 className="w-full h-full text-blue-500 cursor-pointer hover:opacity-70"
                 onClick={() => DeleteArrMessage(item.id)}
-              ></ImCancelCircle>
+              ></MdOutlineClose>
             </div>
           </div>
 
@@ -224,7 +252,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
           className="w-[350px] h-[350px] min-w-[100px] overflow-auto no-scrollbar  max-sm:w-screen max-sm:h-[480px]"
           ref={contentRef}
         >
-          {data?.map((itemMap, key) => (
+          {data?.map((itemMap: any, key: any) => (
             <ChatMessage
               key={key}
               index={key}
@@ -268,7 +296,7 @@ export const PopUpMessage: React.FC<PopUpMessage> = ({ item }) => {
             onInput={() => handleChange(1)}
           ></div>
 
-          <div className="p-3 w-[15%]">
+          <div className="p-3 w-[15%] cursor-pointer" onClick={() => handleLike()}>
             <AiFillLike className="h-full w-full text-blue-500"></AiFillLike>
           </div>
         </div>

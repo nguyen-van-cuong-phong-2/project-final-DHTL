@@ -99,11 +99,12 @@ export class UserController {
       throw new NotAcceptableException('Định dạng file không hợp lệ');
     }
     if (req.user && req.user.id) {
-      await this.userService.saveFileOnBase(Number(req.user.id), checkUpload);
+      const response = await this.userService.saveFileOnBase(Number(req.user.id), checkUpload);
       return {
         status: 200,
         result: true,
         message: 'Upload file thành công',
+        data: response
       };
     } else {
       return {
@@ -289,6 +290,27 @@ export class UserController {
             list_friends,
             image
           }
+        };
+      }
+      throw new ForbiddenException('missing token');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // xác thực tài khoản
+  @Post('authenticationAccount')
+  @UsePipes(new ValidationPipe())
+  async authenticationAccount(
+    @Req() req: ExtendedRequest,
+  ): Promise<any> {
+    try {
+      if (req.user && req.user.id) {
+        const response = await this.userService.authenticationAccount(Number(req.user.id))
+        return {
+          status: 200,
+          result: true,
+          data: response
         };
       }
       throw new ForbiddenException('missing token');

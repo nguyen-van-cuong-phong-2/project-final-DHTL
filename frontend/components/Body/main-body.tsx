@@ -24,7 +24,6 @@ const BettwenBody: React.FC<BettwenBody> = ({ data, result, friend_goiy }) => {
   const [result_1, setResult] = useState<any>(result);
   const [idNews, setIdNews] = useState<number>(0);
   const [isEndOfScroll, setIsEndOfScroll] = useState(false);
-  console.log("🚀 ~ isEndOfScroll:", isEndOfScroll)
 
   const ref = useRef<any>(null);
   useEffect(() => {

@@ -22,6 +22,17 @@ export class Message {
 
   @Prop({ default: 0 })
   seen: number;
-}
 
+  @Prop({ default: null })
+  image: string;
+
+  @Prop({ default: null })
+  video: string;
+
+  @Prop({ default: 0 })
+  id_story: number;
+
+  @Prop({ default: 0 })
+  like: number;
+}
 export const MessageSchema = SchemaFactory.createForClass(Message);
