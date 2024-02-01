@@ -5,12 +5,12 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAKw4dTsZwTDWbpg-_4Sy2E0GDrrfrGZnY",
-    authDomain: "bluebook-db882.firebaseapp.com",
-    projectId: "bluebook-db882",
-    storageBucket: "bluebook-db882.appspot.com",
-    messagingSenderId: "222429820880",
-    appId: "1:222429820880:web:df8700dd4764fd47c26bd5"
+    apiKey: process.env.NEXT_PUBLIC_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_PROJECTID,
+    storageBucket: process.env.NEXT_PUBLIC_STORAGEBUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
+    appId: process.env.NEXT_PUBLIC_APPID,
 };
 
 // Initialize Firebase

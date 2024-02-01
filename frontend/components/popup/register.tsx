@@ -66,7 +66,6 @@ const Register = ({ tatPopup }) => {
             <div onClick={() => tatPopup(false)}>
               <MdOutlineCancel
                 className="mt-2 text-3xl hover:cursor-pointer"
-
               ></MdOutlineCancel>
             </div>
 

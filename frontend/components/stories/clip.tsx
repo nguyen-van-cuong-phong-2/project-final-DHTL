@@ -19,7 +19,7 @@ const Clip = ({ data, setResult, result, storie }) => {
     const [comment, setComment] = useState('');
     const phai = () => {
         const key = result + 1;
-        if (key <= storie.length) {
+        if (key < storie.length) {
             setResult(key)
         }
     }
