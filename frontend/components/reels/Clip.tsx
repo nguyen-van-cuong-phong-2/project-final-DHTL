@@ -19,11 +19,11 @@ const Clip = ({ setDataUser, mute }) => {
                 else setData((prev: any) => [...prev, ...response.data])
             }
             if (video.key == 0) {
-                setVideo({ key: 0, video: response.data[0].video })
+                setVideo({ key: 0, video: response.data[0]?.video })
                 setDataUser({
-                    name: response.data[0].name,
-                    avatar: response.data[0].avatar,
-                    created_at: response.data[0].created_at
+                    name: response.data[0]?.name,
+                    avatar: response.data[0]?.avatar,
+                    created_at: response.data[0]?.created_at
                 })
             }
         }

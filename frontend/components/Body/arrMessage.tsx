@@ -21,12 +21,12 @@ export default function ArrMessage() {
     useEffect(() => {
         if (user) {
             const call = async () => {
-                const find = arrMessage.find(item => item.id == user?.sender_id)
-                if (!find && userr.id !== user?.sender_id) {
-                    const response = await callApi_getInforUser({ id: user.sender_id })
+                const find = arrMessage.find(item => item.id == user?.id)
+                if (!find && userr.id !== user?.id) {
+                    const response = await callApi_getInforUser({ id: user.id })
                     if (response?.data) {
                         updateArrMessage({
-                            id: user?.sender_id,
+                            id: user?.id,
                             name: response.data.name,
                             avatar: response.data.avatar,
                         })

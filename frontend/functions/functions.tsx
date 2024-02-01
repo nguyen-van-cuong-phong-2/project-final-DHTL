@@ -4,6 +4,9 @@ import { redirect } from 'next/navigation';
 
 interface TokenInfo {
     id: number;
+    active: number;
+    avatar: string;
+    userName: string;
 }
 
 export class functions {
@@ -12,7 +15,7 @@ export class functions {
             const token = Cookies.get('token');
             return token
         } catch (error) {
-            return null
+            return redirect('/Login')
         }
     }
 
@@ -29,7 +32,7 @@ export class functions {
                 return null
             }
         } catch (error) {
-            return null
+            return redirect('/Login')
         }
     }
 
@@ -42,7 +45,7 @@ export class functions {
             const tokenValue = token.split('=')[1];
             return tokenValue
         } catch (error) {
-            return null
+            return redirect('/Login')
         }
     };
 
@@ -50,7 +53,6 @@ export class functions {
         try {
             const response = JWT.decode(token as string);
             if (typeof response === 'object' && response !== null) {
-                // If the response is an object and not null, attempt to cast it to TokenInfo
                 const tokenInfo = response as TokenInfo;
                 return tokenInfo;
             } else {
@@ -66,19 +68,19 @@ export class functions {
             const currentTime = Date.now() / 1000;
             const inputTime = time / 1000;
             const tg = currentTime - inputTime;
-            
+
             if (tg < 60) {
-                return `${Math.floor(tg)} giây ${type == 1 ? '':"trước"}`;
+                return `${Math.floor(tg)} giây ${type == 1 ? '' : "trước"}`;
             } else if (tg >= 60 && tg < 3600) {
-                return `${Math.floor(tg / 60)} phút ${type == 1 ? '':"trước"}`;
+                return `${Math.floor(tg / 60)} phút ${type == 1 ? '' : "trước"}`;
             } else if (tg >= 3600 && tg < 86400) {
-                return `${Math.floor(tg / 3600)} giờ ${type == 1 ? '':"trước"}`;
+                return `${Math.floor(tg / 3600)} giờ ${type == 1 ? '' : "trước"}`;
             } else if (tg >= 86400 && tg < 2592000) {
-                return `${Math.floor(tg / 86400)} ngày ${type == 1 ? '':"trước"}`;
+                return `${Math.floor(tg / 86400)} ngày ${type == 1 ? '' : "trước"}`;
             } else if (tg >= 2592000 && tg < 77760000) {
-                return `${Math.floor(tg / 2592000)} tháng ${type == 1 ? '':"trước"}`;
+                return `${Math.floor(tg / 2592000)} tháng ${type == 1 ? '' : "trước"}`;
             } else if (tg >= 77760000) {
-                return `${Math.floor(tg / 77760000)} năm ${type == 1 ? '':"trước"}`;
+                return `${Math.floor(tg / 77760000)} năm ${type == 1 ? '' : "trước"}`;
             }
         } catch (error) {
             return ''

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   PayloadTooLargeException,
 } from '@nestjs/common';
 import { createStories } from './dao/createStories.dao';
@@ -52,7 +53,7 @@ export class TinService {
         type,
       };
     } catch (error) {
-      console.log('🚀 ~ UserService ~ uploadFile ~ error:', error);
+      throw new BadRequestException('Có lỗi xảy ra');
     }
   }
 
@@ -105,6 +106,7 @@ export class TinService {
             name: '$user.name',
             created_at: 1,
             user_id: 1,
+            user_seen: 1,
             seen: {
               $cond: {
                 if: { $in: [userId, '$user_seen'] },
@@ -112,6 +114,7 @@ export class TinService {
                 else: false,
               },
             },
+            id: 1,
             avatar: {
               $concat: [
                 {
@@ -176,6 +179,29 @@ export class TinService {
         },
       ]);
       return response;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  // cập nhật đã xem
+  public async updateSeen(id: number, userId: number): Promise<object> {
+    try {
+      const data = await this.StoriesModel.findOne({ id: id }).lean();
+      if (data) {
+        if (!data.user_seen.includes(userId)) {
+          const arr = [userId, ...data.user_seen];
+          await this.StoriesModel.findOneAndUpdate(
+            { id: id },
+            { user_seen: arr },
+          );
+          return {
+            status: 200,
+            result: true,
+          };
+        }
+      }
+      throw new NotFoundException('Không tìm thấy stories');
     } catch (error) {
       throw new BadRequestException(error.message);
     }

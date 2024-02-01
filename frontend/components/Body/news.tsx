@@ -71,7 +71,7 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
     }
     return (
         <div className="w-full flex justify-center">
-            <div className={`${profile ? 'w-full' : 'w-[68%]'} mt-5 border rounded-xl h-max bg-white pt-5 px-5 max-lg:w-full
+            <div className={`${profile ? 'w-full' : 'w-[68%]'} mt-2 border rounded-xl h-max bg-white pt-5 px-5 max-lg:w-full
         max-lg:m-0 max-lg:mt-5`}>
                 <div className="flex gap-2 flex-wrap">
                     <div className="w-12 h-12 relative">
@@ -151,9 +151,9 @@ const News: React.FC<News> = ({ data, setIdNews, profile }) => {
                     {/* {data?.total_comment && data?.total_comment != 0 && <div className="text-gray-600 font-medium text-base">
                     {data.total_comment} bình luận
                 </div>} */}
-                    {data?.total_comment && data?.total_comment > 0 && <div className="text-gray-500 font-normal text-base hover:underline cursor-pointer" onClick={() => setIdNews(data.id)}>
+                    {data?.total_comment && data?.total_comment > 0 ? <div className="text-gray-500 font-normal text-base hover:underline cursor-pointer" onClick={() => setIdNews(data.id)}>
                         {data.total_comment} bình luận
-                    </div>}
+                    </div>:<></>}
                 </div>
 
 

@@ -18,13 +18,10 @@ export default function Login() {
   }
 
   const validateUserName = (rule: any, value: any, callback: any) => {
-    const gmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const phoneNumberRegex = /^(?:\+84|0|\+1)?([1-9][0-9]{8,9})$/;
     if (value == '' || !value) {
       callback('Vui lòng nhập trường này!');
-    } else if (value.includes('@') && !gmailRegex.test(value)) {
-      callback('Nhập email không hợp lệ!');
-    } else if (!value.includes('@') && !phoneNumberRegex.test(value)) {
+    } if (!phoneNumberRegex.test(value)) {
       callback('Nhập số điện thoại không hợp lệ!');
     } else {
       callback();
@@ -45,8 +42,8 @@ export default function Login() {
       router.push('/')
     }
   }
-  return (
 
+  return (
     <div className="w-full h-screen">
       <div className="flex w-full h-screen justify-center items-center gap-5">
         <div className="
@@ -83,7 +80,7 @@ export default function Login() {
                 name="username"
                 rules={[{ validator: validateUserName }]}
               >
-                <Input placeholder="Email hoặc số điện thoại" className="
+                <Input placeholder="Nhập số điện thoại" className="
                 w-96 h-16
                 max-sm:w-60
                 max-sm:h-10
@@ -94,13 +91,13 @@ export default function Login() {
                 rules={[
                   {
                     required: true,
-                    message: 'Please input your Password!',
+                    message: 'Vui lòng nhập mật khẩuuar!',
                   },
                 ]}
               >
                 <Input
                   type="password"
-                  placeholder="Password"
+                  placeholder="Mật khẩu"
                   className="w-96 h-16
                   max-sm:w-60
                 max-sm:h-10"
@@ -146,7 +143,7 @@ export default function Login() {
 
         </div>
       </div>
-      {popUpRegister && <Register tatPopup={() => tatPopUpRegister}></Register>}
+      {popUpRegister && <Register tatPopup={setpopUpRegister}></Register>}
     </div>
   );
 }

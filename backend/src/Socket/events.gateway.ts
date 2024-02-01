@@ -70,16 +70,22 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
       sender_id: number;
       receiver_id: number;
       content: string;
+      image?: string;
+      video?: string;
+      id_story?: number;
+      like?: number;
     },
     @ConnectedSocket() client: Socket,
   ): Promise<any> {
-    if (data.sender_id && data.receiver_id && data.content) {
+    if (data.sender_id && data.receiver_id) {
       const find = this.arrUserOnline.get(data.receiver_id);
-      const [result, total] = await Promise.all([
-        this.messageService.createMessage(data),
-        this.messageService.getTotalMessage(data.receiver_id)
-      ])
-      return this.server.to(client.id).to(find).emit('Message', { result, id: data.receiver_id, total: total + 1 });
+      // const [result, total] = await Promise.all([
+      //   this.messageService.createMessage(data),
+      //   this.messageService.getTotalMessage(data.receiver_id)
+      // ])
+      this.server.to(client.id).to(find).emit('Message', { result: data, id: data.sender_id, total: 1 });
+      return this.messageService.createMessage(data)
+
     }
     return this.server.to(client.id).emit('Message', `Missing data`);
   }
@@ -181,7 +187,6 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   // nghe hoặc tắt
   @SubscribeMessage('answer_call_socket')
   async AnswerCall(@MessageBody() data: any) {
-    console.log(data)
     const find = this.arrUserOnline.get(Number(data.userCall));
     // type:2 nghe điện, type:1 tắt, type:3 đang có cuộc gọi khác
     this.server.to(find).emit('answer_call', { type: data.type })

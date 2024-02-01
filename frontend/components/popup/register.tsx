@@ -7,21 +7,16 @@ import { callApi_Register } from "../../api/callAPI";
 import { useMyContext } from "../context/context";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-interface Register {
-  tatPopup: () => {};
-}
 
-const Register = ({ tatPopup }: Register) => {
+
+const Register = ({ tatPopup }) => {
   const router = useRouter();
 
   const validateUserName = (rule: any, value: any, callback: any) => {
-    const gmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     const phoneNumberRegex = /^(?:\+84|0|\+1)?([1-9][0-9]{8,9})$/;
     if (value == '' || !value) {
       callback('Vui lòng nhập vào trường này!');
-    } else if (value.includes('@') && !gmailRegex.test(value)) {
-      callback('Nhập email không hợp lệ!');
-    } else if (!value.includes('@') && !phoneNumberRegex.test(value)) {
+    } if (!phoneNumberRegex.test(value)) {
       callback('Nhập số điện thoại không hợp lệ!');
     } else {
       callback();
@@ -48,7 +43,7 @@ const Register = ({ tatPopup }: Register) => {
         });
         socket.emit("login", { id: response.data.id })
         SetContentNotifi('Tạo tài khoản thành công!')
-        router.push('/UploadAvatar')
+        router.push('/Otp')
       } else {
         setLoading(false);
         SetContentNotifi('Email hoặc số điện thoại đã được sử dụng!')
@@ -68,10 +63,12 @@ const Register = ({ tatPopup }: Register) => {
         >
           <div className="flex justify-between items-center">
             <span className='text-4xl font-bold'>Đăng ký</span>
-            <MdOutlineCancel
-              className="mt-2 text-3xl hover:cursor-pointer"
-              onClick={() => tatPopup()}
-            ></MdOutlineCancel>
+            <div onClick={() => tatPopup(false)}>
+              <MdOutlineCancel
+                className="mt-2 text-3xl hover:cursor-pointer"
+              ></MdOutlineCancel>
+            </div>
+
           </div>
 
           <div className='flex gap-3 mt-2 justify-center'>
@@ -108,7 +105,7 @@ const Register = ({ tatPopup }: Register) => {
             rules={[{ validator: validateUserName }]}
           >
             <Input
-              placeholder="Số di động hoặc email"
+              placeholder="Nhập vào số điện thoại"
               className='w-[400px] h-[50px] bg-slate-100 max-sm:w-[335px]'
             />
           </Form.Item>

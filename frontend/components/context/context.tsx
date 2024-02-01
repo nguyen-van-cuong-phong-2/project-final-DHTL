@@ -43,6 +43,7 @@ interface MyContextType {
   SetTotalMessage: any;
   profileChoose: any;
   setProfileChoose: any;
+  setToken_bluebook: any;
 }
 
 const MyContext = createContext<MyContextType | undefined>(undefined);
@@ -61,6 +62,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
     content: "Viết bình luận...",
     parent_id: 0
   });
+  const [token_bluebook, setToken_bluebook] = useState<any>();
   const [profileChoose, setProfileChoose] = useState(1)
   useEffect(() => {
     const user = new functions().getInfoFromToken();
@@ -71,7 +73,6 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
       socketIO.emit('login', { id: user.id })
     }
     if (socketIO) SetSocket(socketIO);
-    if (socketIO) console.log(socketIO.id)
     socketIO.on('notification', (data) => {
       SetTotalNoti(data.data.totalNotifi)
       if (data?.data?.type == 1) {
@@ -147,7 +148,8 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({
         totalMessage,
         SetTotalMessage,
         profileChoose,
-        setProfileChoose
+        setProfileChoose,
+        setToken_bluebook
       }}
     >
       {children}

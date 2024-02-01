@@ -12,12 +12,12 @@ const Tin = () => {
         }
         callAPI();
     }, []);
-    const width = data.length < 4 ? data.length * 7 : 68;
+    const width = data.length;
     return (<>
         <div className="w-full flex justify-center">
             <div className={`w-[68%] mt-5 max-lg:w-full
-        max-lg:m-0 max-lg:mt-5 ml-3`}>
-                <div className={`w-[${width}%]`}>
+        max-lg:m-0 max-lg:mt-5`}>
+                <div className={`${width == 1 && 'w-[40%]'} ${width == 2 && 'w-[50%]'} ${width == 3 && 'w-[80%]'}`}>
                     <Carousel slidesToShow={data?.length < 4 ? data?.length : 4} slidesToScroll={2} arrows={true} >
                         {data?.map((item: any, index: number) => (
                             <ItemTin key={index} index={index} item={item}></ItemTin>

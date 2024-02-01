@@ -14,7 +14,6 @@ export default function RightBody() {
       const getUserOnline = () => {
         socket.emit("getOnline");
         socket.on("listOnline", (data: Array<number>) => {
-          console.log("🚀 ~ socket.on ~ data:", data)
           setUserOnline(data);
         });
       }

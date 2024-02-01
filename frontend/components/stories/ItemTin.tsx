@@ -8,7 +8,7 @@ const ItemTin = ({ index, item }) => {
     const user = fnc.getInfoFromToken();
     const router = useRouter()
     return (<>
-        <div className="xl:w-[135px] 2xl:w-[150px] h-64 rounded-xl lg:w-24 md:w-[185px] max-md:w-[91px] bg-white border-2 cursor-pointer" onClick={() => router.push('/Stories')}>
+        <div className="xl:w-[135px] 2xl:w-[150px] h-64 rounded-xl lg:w-24 md:w-[185px] max-md:w-[91px] max-sm:w-[100px] bg-white border-2 cursor-pointer" onClick={() => router.push(`${item?.data ? `/Stories?id=${item?.data[0]?.id}` : '/Stories'}`)}>
             {index == 0 ? <><div className="w-full h-3/4 relative">
                 <Image
                     alt="avatar"
@@ -35,15 +35,15 @@ const ItemTin = ({ index, item }) => {
                     objectFit="cover"
                     style={{ borderRadius: "12px", width: "100%", height: "100%", objectFit: "cover", border: "1px" }}
                 ></Image>}
-                <div className={`w-10 h-10 absolute top-2 left-3 z-50 ${user.id != item.user_id && !item.seen ? 'border-blue-600' : "border-gray-300"} border-[4px] rounded-full`}>
-                  {item?.data &&   <Image
+                <div className={`w-10 h-10 absolute top-2 left-3 z-50 ${user.id != item?.data[0].user_id && !item?.data[0].seen ? 'border-blue-600' : "border-gray-300"} border-[4px] rounded-full`}>
+                    {item?.data && <Image
                         alt="avatar"
                         fill
                         objectFit="cover"
                         src={item?.data[0]?.avatar}
                         className="rounded-full"
                     ></Image>}
-                  
+
                 </div>
                 <div className="absolute bottom-2 left-3 z-50 text-white w-3/4 font-semibold text-xs break-words">{item.name}</div>
             </div>}

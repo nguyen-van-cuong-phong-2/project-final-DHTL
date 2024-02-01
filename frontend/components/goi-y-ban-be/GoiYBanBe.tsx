@@ -7,7 +7,7 @@ const GoiYBanBe = ({ friend_goiy }) => {
         max-lg:m-0 max-lg:mt-5`}>
                 <div className="text-base font-semibold text-gray-600">Gợi ý bạn bè</div>
                 <div className="mt-2 mb-5 gap-2">
-                    <Carousel slidesToShow={2} slidesToScroll={2} arrows={true} >
+                    <Carousel slidesToShow={3} slidesToScroll={1} arrows={true} >
                         {friend_goiy?.map((item: any) => (
                             <Body key={item.id} item={item}></Body>
                         ))}
